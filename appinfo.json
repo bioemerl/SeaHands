@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "cromo_man94@yahoo.com",
+    "longName": "SeaHands",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "SeaHands",
+    "uuid": "1bedccdc-b3c1-48e0-88e3-c99ad301643f",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
