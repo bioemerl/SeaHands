@@ -54,6 +54,18 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
       graphics_context_set_fill_color(ctx, GColorBlack);
       GPoint islandpoint = GPoint(gamedata.islandsx[i] - gamedata.playerx + 72, gamedata.islandsy[i] - gamedata.playery + 84);
       graphics_fill_circle(ctx, islandpoint, 25);
+      if(gamedata.islandstypes[i] == 1){
+        graphics_context_set_fill_color(ctx, GColorWhite);
+        graphics_fill_circle(ctx, islandpoint, 3);
+      }
+      if(gamedata.islandstypes[i] == 2){
+        graphics_context_set_fill_color(ctx, GColorWhite);
+        graphics_fill_circle(ctx, islandpoint, 8);
+      }
+      if(gamedata.islandstypes[i] == 3){
+        graphics_context_set_fill_color(ctx, GColorWhite);
+        graphics_fill_circle(ctx, islandpoint, 15);
+      }
     }
   }
   
@@ -67,6 +79,18 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
     }
   }
   
+  //draw the GUI that will go atop the screen
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_text_color(ctx, GColorWhite);
+  char playerGUI[50];
+  snprintf(playerGUI, sizeof(playerGUI), "Mt:%d Wd:%d St:%d Fd:%d",
+           gamedata.playercargo[0], gamedata.playercargo[1], 
+           gamedata.playercargo[2], gamedata.playercargo[3]);
+  GRect guibox = GRect(0,0,148, 15);
+  graphics_fill_rect(ctx, guibox, 0, GCornerNone);
+  graphics_draw_text(ctx, playerGUI, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), guibox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  
+  //draw menus
   if(gamedata.gamemode == 'm'){ //draw menus from the info in gamedata
     graphics_context_set_text_color(ctx, GColorWhite);
     graphics_context_set_fill_color(ctx, GColorBlack);
@@ -184,7 +208,7 @@ static void init(void) {
   window_stack_push(window, animated);
   
   //begin initializing game elements
-  gamedata.gamemode = 'm';
+  gamedata.gamemode = 'p';
   gamedata.playerisland = 1;
   initialize_islands(&gamedata);
   initialize_player(&gamedata);

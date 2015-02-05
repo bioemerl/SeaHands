@@ -17,8 +17,10 @@ void update_game(GameData* gamedata){
   //APP_LOG(APP_LOG_LEVEL_INFO, "Updating Game %i", framespassed);
   //APP_LOG(APP_LOG_LEVEL_INFO, "PlayerX %i", gamedata->playerx);
   
-  if(twohundredcountdown == 100)
+  if(twohundredcountdown == 100){
+    burn_player_cargo(gamedata);
     update_islands(gamedata);
+  }
   update_ships(gamedata);
   update_player(gamedata);
       
@@ -34,10 +36,22 @@ void initialize_player(GameData* gamedata){
   gamedata->playery = 50;
   //initiate player cargo
   gamedata->playercargo[0] = 0;
-  gamedata->playercargo[1] = 0;
+  gamedata->playercargo[1] = 10;
   gamedata->playercargo[2] = 0;
   gamedata->playercargo[3] = 10;
   
+}
+
+void burn_player_cargo(GameData* gamedata){
+  if(random(3) == 2){
+    gamedata->playercargo[1] += -1; //burn wood
+    if(gamedata->playercargo[1] < 0){
+      initialize_player(gamedata);
+    }
+  }
+  if(random(5) == 4){
+    gamedata->playercargo[3] += -1; //burn food
+  }
 }
 
 void update_player(GameData* gamedata){
@@ -112,6 +126,27 @@ void update_player(GameData* gamedata){
     }*/
     //switch statment here.  1 to the number of menu items, with each containing what code to do if they are activated.
     
+    if(gamedata->currentmenu == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
+       && gamedata->playercargo[0] < 10 && gamedata->islandscargo[gamedata->playerisland][0] > 0){
+      gamedata->islandscargo[gamedata->playerisland][0] += -1;
+      gamedata->playercargo[0] += 1;
+    }
+    if(gamedata->currentmenu == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
+       && gamedata->playercargo[1] < 10 && gamedata->islandscargo[gamedata->playerisland][1] > 0){
+      gamedata->islandscargo[gamedata->playerisland][1] += -1;
+      gamedata->playercargo[1] += 1;
+    }
+    if(gamedata->currentmenu == 2 && gamedata->uphit == 1 && gamedata->downhit == 1 
+       && gamedata->playercargo[2] < 10 && gamedata->islandscargo[gamedata->playerisland][2] > 0){
+      gamedata->islandscargo[gamedata->playerisland][2] += -1;
+      gamedata->playercargo[2] += 1;
+    }
+    if(gamedata->currentmenu == 3 && gamedata->uphit == 1 && gamedata->downhit == 1 
+       && gamedata->playercargo[3] < 10 && gamedata->islandscargo[gamedata->playerisland][3] > 0){
+      gamedata->islandscargo[gamedata->playerisland][3] += -1;
+      gamedata->playercargo[3] += 1;
+    }
+    
     //if up is pressed, 
     //if exit is highlighted leave
     if(gamedata->currentmenu == 4 && gamedata->uphit == 1 && gamedata->downhit == 1){
@@ -133,6 +168,7 @@ void update_player(GameData* gamedata){
     }
   }
   
+  //if player colides with an island, set the game-mode to showing the menu
   for(int i = 0; i < TOTALISLANDS; i++){
    
     if(finddistance(gamedata->playerx, gamedata->playery, gamedata->islandsx[i], gamedata->islandsy[i]) <= 25*25){ //(size of island)
@@ -225,25 +261,37 @@ void update_islands(GameData* gamedata){
     if(gamedata->islandstypes[i] == 0){
        if(gamedata->islandscargo[i][0] < 100 && gamedata->islandscargo[i][1] > 0){
         gamedata->islandscargo[i][1]--; //remove one wood
-        gamedata->islandscargo[i][0] += 2; //add 2 metal
+        gamedata->islandscargo[i][0] += 1; //add 1 metal
+       }
+       if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
+         gamedata->islandscargo[i][3]--;
        }
     }
     if(gamedata->islandstypes[i] == 1){
       if(gamedata->islandscargo[i][1] < 100 && gamedata->islandscargo[i][3] > 0){
         gamedata->islandscargo[i][3]--; //remove one food
-        gamedata->islandscargo[i][1] += 2; //add 2 wood
+        gamedata->islandscargo[i][1] += 3; //add 3 wood
+       }
+      if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
+         gamedata->islandscargo[i][3]--;
        }
     }
     if(gamedata->islandstypes[i] == 2){
       if(gamedata->islandscargo[i][2] < 100 && gamedata->islandscargo[i][1] > 0){
         gamedata->islandscargo[i][1]--; //remove one wood
-        gamedata->islandscargo[i][2] += 2; //add 2 stone
+        gamedata->islandscargo[i][2] += 3; //add 3 stone
+       }
+      if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
+         gamedata->islandscargo[i][3]--;
        }
     }
     if(gamedata->islandstypes[i] == 3){
       if(gamedata->islandscargo[i][3] < 100 && gamedata->islandscargo[i][0] > 0){
         gamedata->islandscargo[i][0]--; //remove one iron
-        gamedata->islandscargo[i][3] += 2; //add 2 food
+        gamedata->islandscargo[i][3] += 4; //add 4 food
+       }
+      if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
+         gamedata->islandscargo[i][3]--; 
        }
     }
     //APP_LOG(APP_LOG_LEVEL_INFO, "Metal %i", gamedata->islandscargo[i][0]);
@@ -267,7 +315,8 @@ void update_islands(GameData* gamedata){
     if(picounter >= 0){ //if there were any valid targets
       int randomvalue = random(picounter);
       //APP_LOG(APP_LOG_LEVEL_INFO, "RANDOM INT IS %i PICOUNTER IS %i", randomvalue, picounter);
-      create_ship(gamedata, i, possibleislands[randomvalue]);
+      if(gamedata->islandscargo[i][1] >= 10 && gamedata->islandscargo[i][2] >= 10)
+        create_ship(gamedata, i, possibleislands[randomvalue]);
     }
   
   }
@@ -297,6 +346,9 @@ void create_ship(GameData* gamedata, int8_t islandnumber, int8_t destinationnumb
     gamedata->shipsy[gamedata->totalships] = gamedata->islandsy[islandnumber];
     gamedata->shipsisland[gamedata->totalships] = destinationnumber;
     //APP_LOG(APP_LOG_LEVEL_INFO, "Destination Stored at index %i: %i", gamedata->totalships, gamedata->shipsisland[gamedata->totalships]);
+    //remove building resources from the island
+    gamedata->islandscargo[islandnumber][2] += -2; //remove 2 wood
+    gamedata->islandscargo[islandnumber][1] += -2; //remove 2 stone
     //set cargo, and remove cargo from spawning island
     gamedata->islandscargo[islandnumber][gamedata->islandstypes[islandnumber]] += -10;
     gamedata->shipscargo[gamedata->totalships] = 10;

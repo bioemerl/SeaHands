@@ -17,3 +17,4 @@ void destroy_ship(GameData* gamedata, int shipnumber, int reacheddestination);
 int random(int max); //thanks to user FlashBIOS on the pebble forums for this
 void update_player(GameData* gamedata);
 int finddistance(int x1, int y1, int x2, int y2);
+void burn_player_cargo(GameData* gamedata);
