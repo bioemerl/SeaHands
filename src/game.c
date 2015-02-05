@@ -121,9 +121,12 @@ void update_player(GameData* gamedata){
       gamedata->buttonrelease = 0;
     }
     
-    /*if(gamedata->uphit == 1 && gamedata->downhit == 0){  !!!FIX THIS LATER!!! MAKES MENU MOVE UP
-      gamedata->currentmenu = (MENUITEMSCNT + gamedata->currentmenu - 1)%MENUITEMSCNT+1; //SHOULD WORK, MAY NOT, UNTESTED
-    }*/
+    if(gamedata->uphit == 1 && gamedata->downhit == 0 && gamedata->buttonrelease == 1){  //!!!FIX THIS LATER!!! MAKES MENU MOVE UP
+      gamedata->currentmenu = ((gamedata->currentmenu - 1) % MENUITEMSCNT);
+      gamedata->buttonrelease = 0;
+      if(gamedata->currentmenu < 0)
+        gamedata->currentmenu = MENUITEMSCNT - 1;
+    }
     //switch statment here.  1 to the number of menu items, with each containing what code to do if they are activated.
     
     if(gamedata->currentmenu == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
