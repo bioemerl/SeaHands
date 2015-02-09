@@ -98,10 +98,10 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
     //menu is otherwise drawn statically, with no difference between boxes.
     //may have to run a function to display the menu, will draw the black box as part of the canvas layer.
     
-    graphics_fill_rect(ctx, GRect(0,0,54,76), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(0,15,54,76), 0, GCornerNone);
     graphics_context_set_stroke_color(ctx, GColorWhite);
-    graphics_draw_rect(ctx, GRect(0, gamedata.currentmenu*15, 54, 15 ));
-    GRect textbox = GRect(0, 0, 54, 73);
+    graphics_draw_rect(ctx, GRect(0, 15+gamedata.currentmenu[0]*15, 54, 15 ));
+    GRect textbox = GRect(0, 15, 54, 73);
     char totalmenu[9 * NUMBEROFMENUITEMS];
     //create the char array for the menu    
     snprintf(totalmenu, sizeof(totalmenu), "Metal:%d\nWood:%d\nStone:%d\nFood:%d\n-Exit-\n",
@@ -110,6 +110,21 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
            gamedata.islandscargo[gamedata.playerisland][2],
            gamedata.islandscargo[gamedata.playerisland][3]);
     graphics_draw_text(ctx, totalmenu, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), textbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  //draw further layers if they have been selected
+    if(gamedata.menulayer == 1){ //only is 0 for debugging, should be 1
+      GRect layer2text = GRect(54,15,46, 50);
+      graphics_context_set_fill_color(ctx, GColorBlack);
+      char firstmenulayer[15] = "Buy\nSell\nBack";
+      graphics_fill_rect(ctx, GRect(54,15,46,50), 0, GCornerNone);
+      graphics_draw_text(ctx, firstmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer2text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+      graphics_draw_rect(ctx, GRect(54, 15+gamedata.currentmenu[1]*15, 46, 15));
+    }
+    if(gamedata.menulayer == 2){
+      //are you insane?
+      //this shit gets exponential!  
+      //depends if menu layer 2 can be accessed from each menu layer 1, if menu layer 2 is restricted
+      //to one layer, it is much more sane.
+    }
   }
   
   //draw loop
@@ -132,7 +147,7 @@ static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 static void select_release_handler(ClickRecognizerRef recognizer, void *context) {
   gamedata.downhit = 0;
   gamedata.uphit = 0;
-  
+  gamedata.buttonrelease = 1;
   //text_layer_set_text(text_layer, "XSelect");
 }
 
@@ -210,6 +225,9 @@ static void init(void) {
   //begin initializing game elements
   gamedata.gamemode = 'p';
   gamedata.playerisland = 1;
+  gamedata.menulayer = 0;
+  for(int i = 0; i < 5; i++)
+    gamedata.currentmenu[i] = 0;
   initialize_islands(&gamedata);
   initialize_player(&gamedata);
   initialize_ships(&gamedata);

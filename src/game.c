@@ -5,6 +5,7 @@
 static int twohundredcountdown = 200;
 const int TOTALISLANDS = 8;
 const int MENUITEMSCNT = 5;
+const int MENU2ITEMSCNT = 3;
 
 void update_game(GameData* gamedata){ 
   //set up a timer as to not update everything every frame
@@ -114,45 +115,98 @@ void update_player(GameData* gamedata){
     //take up down left and right to adjust things
     //take back to leave menu
     
-    //if down is pressed, incriment currentmenu by 1
-    if(gamedata->downhit == 1 && gamedata->uphit == 0 && gamedata->buttonrelease == 1){
-      //APP_LOG(APP_LOG_LEVEL_INFO, "RAN");
-      gamedata->currentmenu = ((gamedata->currentmenu + 1) % MENUITEMSCNT);
+    //DOWN PRESSED IN MENU LAYER ZERO
+    if(gamedata->menulayer == 0 && gamedata->downhit == 1 && gamedata->uphit == 0 && gamedata->buttonrelease == 1){
+      APP_LOG(APP_LOG_LEVEL_INFO, "RANLAYERZERO");
+      gamedata->currentmenu[0] = ((gamedata->currentmenu[0] + 1) % MENUITEMSCNT);
+      gamedata->buttonrelease = 0;
+    }
+    //DOWN PRESSED IN MENU LAYER ONE
+    if(gamedata->menulayer == 1 && gamedata->downhit == 1 && gamedata->uphit == 0 && gamedata->buttonrelease == 1){
+      gamedata->currentmenu[1] = ((gamedata->currentmenu[1] + 1) % MENU2ITEMSCNT);
       gamedata->buttonrelease = 0;
     }
     
-    if(gamedata->uphit == 1 && gamedata->downhit == 0 && gamedata->buttonrelease == 1){  //!!!FIX THIS LATER!!! MAKES MENU MOVE UP
-      gamedata->currentmenu = ((gamedata->currentmenu - 1) % MENUITEMSCNT);
+    //UP PRESSED MENU LAYER 0
+    if(gamedata->menulayer == 0 && gamedata->uphit == 1 && gamedata->downhit == 0 && gamedata->buttonrelease == 1){
+      gamedata->currentmenu[0] = ((gamedata->currentmenu[0] - 1) % MENUITEMSCNT);
       gamedata->buttonrelease = 0;
-      if(gamedata->currentmenu < 0)
-        gamedata->currentmenu = MENUITEMSCNT - 1;
+      if(gamedata->currentmenu[0] < 0)
+        gamedata->currentmenu[0] = MENUITEMSCNT - 1;
     }
-    //switch statment here.  1 to the number of menu items, with each containing what code to do if they are activated.
-    
-    if(gamedata->currentmenu == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
-       && gamedata->playercargo[0] < 10 && gamedata->islandscargo[gamedata->playerisland][0] > 0){
-      gamedata->islandscargo[gamedata->playerisland][0] += -1;
-      gamedata->playercargo[0] += 1;
-    }
-    if(gamedata->currentmenu == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
-       && gamedata->playercargo[1] < 10 && gamedata->islandscargo[gamedata->playerisland][1] > 0){
-      gamedata->islandscargo[gamedata->playerisland][1] += -1;
-      gamedata->playercargo[1] += 1;
-    }
-    if(gamedata->currentmenu == 2 && gamedata->uphit == 1 && gamedata->downhit == 1 
-       && gamedata->playercargo[2] < 10 && gamedata->islandscargo[gamedata->playerisland][2] > 0){
-      gamedata->islandscargo[gamedata->playerisland][2] += -1;
-      gamedata->playercargo[2] += 1;
-    }
-    if(gamedata->currentmenu == 3 && gamedata->uphit == 1 && gamedata->downhit == 1 
-       && gamedata->playercargo[3] < 10 && gamedata->islandscargo[gamedata->playerisland][3] > 0){
-      gamedata->islandscargo[gamedata->playerisland][3] += -1;
-      gamedata->playercargo[3] += 1;
+    //UP PRESSED MENU LAYER 1
+    if(gamedata->menulayer == 1 && gamedata->uphit == 1 && gamedata->downhit == 0 && gamedata->buttonrelease == 1){
+      gamedata->currentmenu[1] = ((gamedata->currentmenu[1] - 1) % MENUITEMSCNT);
+      gamedata->buttonrelease = 0;
+      if(gamedata->currentmenu[1] < 0)
+        gamedata->currentmenu[1] = MENU2ITEMSCNT - 1;
     }
     
+    //IF SELECT IS HIT AND MENULAYER IS 0
+    if(gamedata->currentmenu[0] >=0 && gamedata->currentmenu[0] <= 3 && gamedata->menulayer == 0
+       && gamedata->uphit == 1 && gamedata->downhit == 1 && gamedata->buttonrelease == 1){
+      gamedata->menulayer = 1;
+      gamedata->buttonrelease = 1;
+    }
+    
+    
+    
+    //SELETIONS FOR BUY AND SELL IF LAYER IS ONE
+    if(gamedata->menulayer == 1){
+      //IF THE FIRST IS SELECTED
+      if(gamedata->currentmenu[0] == 0 && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
+         && gamedata->playercargo[0] < 10 && gamedata->islandscargo[gamedata->playerisland][0] > 0){
+        gamedata->islandscargo[gamedata->playerisland][0] += -1;
+        gamedata->playercargo[0] += 1;
+      } // sell item back
+      if(gamedata->currentmenu[0] == 0  && gamedata->currentmenu[1] == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
+         && gamedata->playercargo[0] > 0 && gamedata->islandscargo[gamedata->playerisland][0] < 100){
+        gamedata->islandscargo[gamedata->playerisland][0] += 1;
+        gamedata->playercargo[0] += -1;
+      }
+      //IF SECOND IS SELECTED
+      if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
+         && gamedata->playercargo[1] < 10 && gamedata->islandscargo[gamedata->playerisland][1] > 0){
+        gamedata->islandscargo[gamedata->playerisland][1] += -1;
+        gamedata->playercargo[1] += 1;
+      } // sell item back
+      if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
+         && gamedata->playercargo[1] > 0 && gamedata->islandscargo[gamedata->playerisland][1] < 100){
+        gamedata->islandscargo[gamedata->playerisland][1] += 1;
+        gamedata->playercargo[1] += -1;
+      }
+      //IF THIRD IS SELETED
+      if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
+         && gamedata->playercargo[2] < 10 && gamedata->islandscargo[gamedata->playerisland][2] > 0){
+        gamedata->islandscargo[gamedata->playerisland][2] += -1;
+        gamedata->playercargo[2] += 1;
+      } // sell item back
+      if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
+         && gamedata->playercargo[2] > 0 && gamedata->islandscargo[gamedata->playerisland][2] < 100){
+        gamedata->islandscargo[gamedata->playerisland][2] += 1;
+        gamedata->playercargo[2] += -1;
+      }
+      //IF FOURTH IS SELECTED buy item
+      if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
+         && gamedata->playercargo[3] < 10 && gamedata->islandscargo[gamedata->playerisland][3] > 0){
+        gamedata->islandscargo[gamedata->playerisland][3] += -1;
+        gamedata->playercargo[3] += 1;
+      } // sell item back
+      if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
+         && gamedata->playercargo[3] > 0 && gamedata->islandscargo[gamedata->playerisland][3] < 100){
+        gamedata->islandscargo[gamedata->playerisland][3] += 1;
+        gamedata->playercargo[3] += -1;
+      }
+      //IF SECOND MENU THIRD ITEM IS SELETED, REGARDLESS OF FIRST LEVEL, GO BACK TO FIRST MENU
+      if(gamedata->currentmenu[1] == 2 && gamedata->uphit == 1 && gamedata->downhit == 1){
+        gamedata->menulayer = 0;
+        gamedata->currentmenu[1] = 0;
+        gamedata->buttonrelease = 0;
+      }
+    }
     //if up is pressed, 
     //if exit is highlighted leave
-    if(gamedata->currentmenu == 4 && gamedata->uphit == 1 && gamedata->downhit == 1){
+    if(gamedata->currentmenu[0] == 4 && gamedata->uphit == 1 && gamedata->downhit == 1){
       if(gamedata->playerx > gamedata->islandsx[gamedata->playerisland]){
         gamedata->playerx = gamedata->islandsx[gamedata->playerisland] + 30;
       }
@@ -166,7 +220,7 @@ void update_player(GameData* gamedata){
         gamedata->playery = gamedata->islandsy[gamedata->playerisland] - 30;
       }
       
-      gamedata->currentmenu = 0;
+      gamedata->currentmenu[0] = 0;
       gamedata->gamemode = 'p';
     }
   }
@@ -176,6 +230,8 @@ void update_player(GameData* gamedata){
    
     if(finddistance(gamedata->playerx, gamedata->playery, gamedata->islandsx[i], gamedata->islandsy[i]) <= 25*25){ //(size of island)
       gamedata->playerisland = i;
+      if(gamedata->gamemode == 'p')
+      gamedata->menulayer = 0;
       gamedata->gamemode = 'm';
       break;
     }

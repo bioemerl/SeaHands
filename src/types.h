@@ -2,7 +2,8 @@
 
 typedef struct{
   char gamemode;
-  int currentmenu;
+  int currentmenu[5];
+  int menulayer;
   int downhit;
   int uphit;
   int buttonrelease;
