@@ -90,6 +90,19 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
   graphics_fill_rect(ctx, guibox, 0, GCornerNone);
   graphics_draw_text(ctx, playerGUI, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), guibox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   
+  //draw the GUI for the bottom of the screen to show player money
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_text_color(ctx, GColorWhite);
+  char moneyGUIRight[10];
+  char moneyGUILeft[4];
+  snprintf(moneyGUIRight, sizeof(moneyGUIRight), "%i", gamedata.playerwallet);
+  snprintf(moneyGUILeft, sizeof(moneyGUILeft), "$:");
+  GRect moneyguibox = GRect(0, PEBBLEHEIGHT - 29, 70, 15);
+  GRect moneytextbox = GRect(0, PEBBLEHEIGHT - 32, 70, 12);
+  graphics_fill_rect(ctx, moneyguibox, 0, GCornerNone);
+  graphics_draw_text(ctx, moneyGUILeft, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), moneytextbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  graphics_draw_text(ctx, moneyGUIRight, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), moneytextbox, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
+  
   //draw menus
   if(gamedata.gamemode == 'm'){ //draw menus from the info in gamedata
     graphics_context_set_text_color(ctx, GColorWhite);
@@ -114,7 +127,25 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
     if(gamedata.menulayer == 1){ //only is 0 for debugging, should be 1
       GRect layer2text = GRect(54,15,46, 50);
       graphics_context_set_fill_color(ctx, GColorBlack);
-      char firstmenulayer[15] = "Buy\nSell\nBack";
+      
+      //needs to be made better later, shouldn't calculate for all at once, should do one at a time
+      //this change will increase performance
+      APP_LOG(APP_LOG_LEVEL_INFO, "playerisland: %i", gamedata.playerisland);
+      ResourceValues buysellvals = getmoneyvalue(&gamedata, gamedata.playerisland);
+      int resourcevalue = 0;
+      if(gamedata.currentmenu[0] == 0)
+        resourcevalue = buysellvals.metalvalue;
+      if(gamedata.currentmenu[0] == 1)
+        resourcevalue = buysellvals.woodvalue;
+      if(gamedata.currentmenu[0] == 2)
+        resourcevalue = buysellvals.stonevalue;
+      if(gamedata.currentmenu[0] == 3)
+        resourcevalue = buysellvals.foodvalue;
+      gamedata.currentcosts = resourcevalue;
+      //end area that needs changing 
+      
+      char firstmenulayer[30];
+      snprintf(firstmenulayer, sizeof(firstmenulayer), "Buy:%i\nSell\nBack", resourcevalue);
       graphics_fill_rect(ctx, GRect(54,15,46,50), 0, GCornerNone);
       graphics_draw_text(ctx, firstmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer2text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
       graphics_draw_rect(ctx, GRect(54, 15+gamedata.currentmenu[1]*15, 46, 15));

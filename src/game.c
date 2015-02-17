@@ -1,6 +1,8 @@
 #include <pebble.h>
 #include "game.h"
 #include "types.h"
+  //main character's name is bill
+  //bill because he looks for money all the time.
 
 static int twohundredcountdown = 200;
 const int TOTALISLANDS = 8;
@@ -40,7 +42,7 @@ void initialize_player(GameData* gamedata){
   gamedata->playercargo[1] = 10;
   gamedata->playercargo[2] = 0;
   gamedata->playercargo[3] = 10;
-  
+  gamedata->playerwallet = 500;
 }
 
 void burn_player_cargo(GameData* gamedata){
@@ -155,47 +157,55 @@ void update_player(GameData* gamedata){
     if(gamedata->menulayer == 1){
       //IF THE FIRST IS SELECTED
       if(gamedata->currentmenu[0] == 0 && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
-         && gamedata->playercargo[0] < 10 && gamedata->islandscargo[gamedata->playerisland][0] > 0){
+         && gamedata->playercargo[0] < 10 && gamedata->islandscargo[gamedata->playerisland][0] > 0 && gamedata->playerwallet > gamedata->currentcosts){
         gamedata->islandscargo[gamedata->playerisland][0] += -1;
         gamedata->playercargo[0] += 1;
+        gamedata->playerwallet = gamedata->playerwallet - gamedata->currentcosts;
       } // sell item back
       if(gamedata->currentmenu[0] == 0  && gamedata->currentmenu[1] == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
          && gamedata->playercargo[0] > 0 && gamedata->islandscargo[gamedata->playerisland][0] < 100){
         gamedata->islandscargo[gamedata->playerisland][0] += 1;
         gamedata->playercargo[0] += -1;
+        gamedata->playerwallet = gamedata->playerwallet + gamedata->currentcosts;
       }
       //IF SECOND IS SELECTED
       if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
-         && gamedata->playercargo[1] < 10 && gamedata->islandscargo[gamedata->playerisland][1] > 0){
+         && gamedata->playercargo[1] < 10 && gamedata->islandscargo[gamedata->playerisland][1] > 0 && gamedata->playerwallet > gamedata->currentcosts){
         gamedata->islandscargo[gamedata->playerisland][1] += -1;
         gamedata->playercargo[1] += 1;
+        gamedata->playerwallet = gamedata->playerwallet - gamedata->currentcosts;
       } // sell item back
       if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
          && gamedata->playercargo[1] > 0 && gamedata->islandscargo[gamedata->playerisland][1] < 100){
         gamedata->islandscargo[gamedata->playerisland][1] += 1;
         gamedata->playercargo[1] += -1;
+        gamedata->playerwallet = gamedata->playerwallet + gamedata->currentcosts;
       }
       //IF THIRD IS SELETED
       if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
-         && gamedata->playercargo[2] < 10 && gamedata->islandscargo[gamedata->playerisland][2] > 0){
+         && gamedata->playercargo[2] < 10 && gamedata->islandscargo[gamedata->playerisland][2] > 0 && gamedata->playerwallet > gamedata->currentcosts){
         gamedata->islandscargo[gamedata->playerisland][2] += -1;
         gamedata->playercargo[2] += 1;
+        gamedata->playerwallet = gamedata->playerwallet - gamedata->currentcosts;
       } // sell item back
       if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
          && gamedata->playercargo[2] > 0 && gamedata->islandscargo[gamedata->playerisland][2] < 100){
         gamedata->islandscargo[gamedata->playerisland][2] += 1;
         gamedata->playercargo[2] += -1;
+        gamedata->playerwallet = gamedata->playerwallet + gamedata->currentcosts;
       }
       //IF FOURTH IS SELECTED buy item
       if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
-         && gamedata->playercargo[3] < 10 && gamedata->islandscargo[gamedata->playerisland][3] > 0){
+         && gamedata->playercargo[3] < 10 && gamedata->islandscargo[gamedata->playerisland][3] > 0 && gamedata->playerwallet > gamedata->currentcosts){
         gamedata->islandscargo[gamedata->playerisland][3] += -1;
         gamedata->playercargo[3] += 1;
+        gamedata->playerwallet = gamedata->playerwallet - gamedata->currentcosts;
       } // sell item back
-      if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 0 && gamedata->uphit == 1 && gamedata->downhit == 1 
+      if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 1 && gamedata->uphit == 1 && gamedata->downhit == 1 
          && gamedata->playercargo[3] > 0 && gamedata->islandscargo[gamedata->playerisland][3] < 100){
         gamedata->islandscargo[gamedata->playerisland][3] += 1;
         gamedata->playercargo[3] += -1;
+        gamedata->playerwallet = gamedata->playerwallet + gamedata->currentcosts;
       }
       //IF SECOND MENU THIRD ITEM IS SELETED, REGARDLESS OF FIRST LEVEL, GO BACK TO FIRST MENU
       if(gamedata->currentmenu[1] == 2 && gamedata->uphit == 1 && gamedata->downhit == 1){
@@ -315,6 +325,18 @@ void initialize_islands(GameData* gamedata){
 }
 
 void update_islands(GameData* gamedata){
+  
+  /*DEBUG CODE
+  int metalval, stoneval, foodval, woodval;
+  ResourceValues currentvalues; 
+  currentvalues = getmoneyvalue(gamedata, -1);
+  metalval = currentvalues.metalvalue;
+  woodval = currentvalues.woodvalue;
+  stoneval = currentvalues.stonevalue;
+  foodval = currentvalues.foodvalue;
+  APP_LOG(APP_LOG_LEVEL_INFO, "\nMETAL VALUE: %i\nWOOD VALUE: %i\nSTONE VALUE: %i\nFOOD VALUE: %i\n", metalval, woodval, stoneval, foodval);
+  END DEBUG CODE*/
+  
   for(int i = 0; i < TOTALISLANDS; i++){
     //later on, update all 10 islands.  However, only one for now
     if(gamedata->islandstypes[i] == 0){
@@ -419,16 +441,6 @@ void update_ships(GameData* gamedata){
   //APP_LOG(APP_LOG_LEVEL_INFO, "Updating Ships");
   for(int i = 0; i <= gamedata->totalships; i++){
     //calculate movment, simple algorithm to do so
-    if(i == 1){
-    //APP_LOG(APP_LOG_LEVEL_INFO, "SHIP AT X: %i", gamedata->shipsx[i]);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "SHIP AT Y: %i", gamedata->shipsy[i]);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "SHIP INDEX %i", i);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "ISLAND NUMBER: %i", gamedata->shipsisland[i]);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "ISLAND NUMBER0: %i", gamedata->shipsisland[0]);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "ISLAND NUMBER1: %i", gamedata->shipsisland[1]);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "ISLAND AT X: %i",  gamedata->islandsx[gamedata->shipsisland[i]]);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "ISLAND AT Y: %i", gamedata->islandsy[gamedata->shipsisland[i]]);
-    }
     
     if(gamedata->shipsx[i] < gamedata->islandsx[ gamedata->shipsisland[i] ]){
       gamedata->shipsx[i]++;
@@ -477,7 +489,7 @@ void destroy_ship(GameData* gamedata, int shipnumber, int reacheddestination){
   }
   gamedata->totalships--;
   if(gamedata->totalships < -1){
-    //APP_LOG(APP_LOG_LEVEL_ERROR, "ATTEMPTED TO DELETE NONEXISTANT SHIP");
+    APP_LOG(APP_LOG_LEVEL_ERROR, "ATTEMPTED TO DELETE NONEXISTANT SHIP");
     gamedata->totalships = -1;
   }
 }
@@ -508,4 +520,70 @@ int finddistance(int x1, int y1, int x2, int y2){
   long long int xsquared = xminus * xminus;
   long long int ysquared = yminus * yminus;
   return xsquared + ysquared;
+}
+
+//takes the gamedata, and figures out how much of each resource exists
+//returns the total value of each resource based on this, based on how much of each mineral
+//exists in relation to the others
+// 0 - 100 results in a high price for the 0
+// 0 - 0 results in average price for both
+//currentisland can either be a number 1 - max, or will default to "average" values with -1
+//returns values for all 4 inside of int8_t data
+ResourceValues getmoneyvalue(GameData* gamedata, int currentisland){
+  APP_LOG(APP_LOG_LEVEL_INFO, "CURRENTISLAND IS: %i", currentisland);
+  int totalmetal = 0, totalwood = 0, totalstone = 0, totalfood = 0, average = 0;
+  for(int i = 0; i < TOTALISLANDS; i++){
+    totalmetal += gamedata->islandscargo[i][0];
+    totalwood += gamedata->islandscargo[i][1];
+    totalstone  += gamedata->islandscargo[i][2];
+    totalfood += gamedata->islandscargo[i][3];
+  }
+  average = totalmetal + totalwood + totalstone + totalfood;
+  average = average / 4;
+  
+  ResourceValues returnvalue;
+  
+  //find initial values based on currency
+  if(totalmetal > 0)
+    returnvalue.metalvalue = ((10 * average)/totalmetal);
+  else
+    returnvalue.metalvalue = 1;
+  if(totalstone > 0)
+    returnvalue.stonevalue = ((10 * average)/totalstone);
+  else
+    returnvalue.stonevalue = 1;
+  if(totalwood > 0)
+    returnvalue.woodvalue = ((10 * average)/totalwood);
+  else
+    returnvalue.woodvalue = 1;
+  if(totalfood > 0)
+    returnvalue.foodvalue = ((10 * average)/totalfood);
+  else
+    returnvalue.foodvalue = 1;
+  
+  if(returnvalue.metalvalue > 200)
+    returnvalue.metalvalue = 200;
+  if(returnvalue.woodvalue > 200)
+    returnvalue.woodvalue = 200;
+  if(returnvalue.stonevalue > 200)
+    returnvalue.stonevalue = 200;
+  if(returnvalue.foodvalue > 200)
+    returnvalue.foodvalue = 200;
+  //adjust values based on island cargo levels if an island was selected
+  if(currentisland != -1){
+    returnvalue.metalvalue = returnvalue.metalvalue + (returnvalue.metalvalue* (50-gamedata->islandscargo[currentisland][0])/100);
+    returnvalue.woodvalue = returnvalue.woodvalue + (returnvalue.woodvalue* (50-gamedata->islandscargo[currentisland][1])/100);
+    returnvalue.stonevalue = returnvalue.stonevalue + (returnvalue.stonevalue* (50-gamedata->islandscargo[currentisland][2])/100);
+    returnvalue.foodvalue =  returnvalue.foodvalue + (returnvalue.foodvalue* (50-gamedata->islandscargo[currentisland][3])/100);
+  }
+  
+  
+  //ten credits is on average worth 1 resource
+  //islands value resources they have less than average of
+  //islands do not value resources they have more than average of
+  //a resource that has more than the average number of units, is less valuable
+  //a resources that has less than the average number of units is more valuable
+  
+  
+  return returnvalue;
 }

@@ -17,5 +17,15 @@ typedef struct{
   int8_t shipstype[10]; //the boat cargo type
   int8_t playercargo[4]; //the player cargo
   int8_t playerisland;
+  int16_t playerwallet;
+  int16_t currentcosts;
   int16_t playerx, playery, playerxvelocity, playeryvelocity;
 } GameData;
+
+typedef struct{
+  int16_t metalvalue,
+         stonevalue,
+         woodvalue,
+         foodvalue;
+  
+} ResourceValues;
