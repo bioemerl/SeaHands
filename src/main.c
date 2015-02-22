@@ -1,6 +1,6 @@
 #include <pebble.h>
 #include "game.h"
-#include "types.h"
+
   
 //define a number of constants
 const uint8_t PEBBLEHEIGHT = 168;
@@ -253,15 +253,9 @@ static void init(void) {
   const bool animated = true;
   window_stack_push(window, animated);
   
-  //begin initializing game elements
-  gamedata.gamemode = 'p';
-  gamedata.playerisland = 1;
-  gamedata.menulayer = 0;
-  for(int i = 0; i < 5; i++)
-    gamedata.currentmenu[i] = 0;
-  initialize_islands(&gamedata);
-  initialize_player(&gamedata);
-  initialize_ships(&gamedata);
+
+  initialize_game(&gamedata);
+  load_data(&gamedata);
   
 
   //start the game loop
@@ -269,6 +263,7 @@ static void init(void) {
 }
 
 static void deinit(void) {
+  save_data(&gamedata);
   window_destroy(window);
 }
 
