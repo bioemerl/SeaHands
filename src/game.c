@@ -3,15 +3,12 @@
 #include "player.h"
 #include "island.h"
 #include "ship.h"
-
 //main character's name is bill
 //bill because he looks for money all the time.
 
-  
 static int twohundredcountdown = 200;
 
 void initialize_game(GameData* gamedata){
-    //begin initializing game elements
   gamedata->gamemode = 'p';
   gamedata->playerisland = 1;
   gamedata->menulayer = 0;
@@ -43,20 +40,7 @@ void update_game(GameData* gamedata){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-int random(int max)
-{
+int random(int max){
 if(max == 0)
   return 0;
 time_t temp = time(NULL);
@@ -72,6 +56,7 @@ seed = (((seed * 214013L + 2531011L) >> 16) & 32767);
 
 return ((seed % (max+1)));
 }
+
 
 int finddistance(int x1, int y1, int x2, int y2){
   int xminus;
@@ -145,9 +130,9 @@ ResourceValues getmoneyvalue(GameData* gamedata, int currentisland){
   //a resource that has more than the average number of units, is less valuable
   //a resources that has less than the average number of units is more valuable
   
-  
   return returnvalue;
 }
+
 
 void save_data(GameData* gamedata){
   //Object object;

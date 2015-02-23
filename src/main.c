@@ -1,6 +1,11 @@
 #include <pebble.h>
 #include "game.h"
 
+//prototypes
+void draw_ships(Layer *this_layer, GContext *ctx);
+void draw_gui(Layer *this_layer, GContext *ctx);
+void draw_islands(Layer *this_layer, GContext *ctx);
+void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int x, int y);
   
 //define a number of constants
 const uint8_t PEBBLEHEIGHT = 168;
@@ -45,6 +50,108 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
     graphics_fill_circle(ctx, playervector, 2);
   }
   
+  draw_islands(this_layer, ctx);
+  draw_ships(this_layer, ctx);
+  draw_gui(this_layer, ctx);
+  
+  //draw the menus
+  if(gamedata.gamemode == 'm'){
+    //always draw the base menu
+    draw_menu_layer(this_layer, ctx, 0, 0, 15);
+    if(gamedata.menulayer == 1)
+      draw_menu_layer(this_layer, ctx, 1, 54, 15);
+    if(gamedata.menulayer == 2)
+      draw_menu_layer(this_layer, ctx, 1, 45, 15);
+  }
+}
+
+//system for menus will be as such:
+//I am going to have menu "layers" which I should probably rename to something else
+//Each layer is a different set of options for a menu.  0 is the base menu, 1 is the buy/sell, 2 is the upgrades
+//this function should draw the specific menu it is requested, at the point that menu is typically at.  It should draw the
+//menu at an X/Y coordinate given to it.  The selected item in the menu is based off the corresponding int inside of menulayer[]
+//the currentmenu int value tells the function that calls this one which layers to draw, and where
+//currentmenu should also probably be renamed to "menuformat" or something of that sort
+void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int x, int y){
+  
+  graphics_context_set_text_color(ctx, GColorWhite);
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+  
+  //any layer: draw the background box, then draw the highlighting box, then draw the text
+  //base menu layer
+  if(menulayernumber == 0){
+    graphics_fill_rect(ctx, GRect(x,y,54,76), 0, GCornerNone); //background box
+    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[0]*15, 54, 15 )); //highlighting box
+    
+    //text prep
+    GRect textbox = GRect(x, y, 54, 73);
+    char totalmenu[9 * NUMBEROFMENUITEMS];
+    //create the char array for the menu    
+    snprintf(totalmenu, sizeof(totalmenu), "Metal:%d\nWood:%d\nStone:%d\nFood:%d\n-Exit-\n",
+           gamedata.islandscargo[gamedata.playerisland][0],
+           gamedata.islandscargo[gamedata.playerisland][1],
+           gamedata.islandscargo[gamedata.playerisland][2],
+           gamedata.islandscargo[gamedata.playerisland][3]);
+    //draw text
+    graphics_draw_text(ctx, totalmenu, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), textbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  }
+  //menu layer for buying and selling resources
+  if(menulayernumber == 1){
+    
+    graphics_fill_rect(ctx, GRect(x,y,46,50), 0, GCornerNone);
+    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[1]*15, 46, 15));
+      
+    //needs to be made better later, shouldn't calculate for all at once, should do one at a time
+    //this change will increase performance
+    ResourceValues buysellvals = getmoneyvalue(&gamedata, gamedata.playerisland);
+    int resourcevalue = 0;
+    if(gamedata.currentmenu[0] == 0)
+      resourcevalue = buysellvals.metalvalue;
+    if(gamedata.currentmenu[0] == 1)
+      resourcevalue = buysellvals.woodvalue;
+    if(gamedata.currentmenu[0] == 2)
+      resourcevalue = buysellvals.stonevalue;
+    if(gamedata.currentmenu[0] == 3)
+      resourcevalue = buysellvals.foodvalue;
+    gamedata.currentcosts = resourcevalue;
+    //end area that needs changing 
+    //prepare the text
+    GRect layer2text = GRect(x,y,46, 50);
+    char firstmenulayer[30];
+    snprintf(firstmenulayer, sizeof(firstmenulayer), "Buy:%i\nSell\nBack", resourcevalue);
+    //print the text
+    graphics_draw_text(ctx, firstmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer2text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  }
+  //menu layer for upgrade purchases
+  if(menulayernumber == 2){
+    graphics_fill_rect(ctx, GRect(x,y,46,50), 0, GCornerNone);
+    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[2]*15, 46, 15));
+    
+    //get needed data
+    //find current upgrade level, and change the price for that upgrade by a function on the constant
+    //BASE_VALUE_UPGRADENAME
+    int cargoprice = 1;
+    int speedprice = 1;
+    
+    char secondmenulayer[30];
+    snprintf(secondmenulayer, sizeof(secondmenulayer), "Cargo: %i\nSpeed: %i\n", cargoprice, speedprice);
+  }
+}
+
+void draw_ships(Layer *this_layer, GContext *ctx){
+  //draw any ships that exist, and are on screen
+  if(gamedata.totalships >= 0){
+    for(int i = 0; i <= gamedata.totalships; i++){
+      if(abs(gamedata.shipsx[i]-gamedata.playerx) < 146 && abs(gamedata.shipsy[i] - gamedata.playery) < 165)
+      graphics_context_set_fill_color(ctx, GColorBlack);
+      GPoint shippoint = GPoint(gamedata.shipsx[i] - gamedata.playerx + 72, gamedata.shipsy[i] - gamedata.playery + 84);
+      graphics_fill_circle(ctx, shippoint, 3);
+    }
+  }
+}
+
+void draw_islands(Layer *this_layer, GContext *ctx){
   //draw any islands that are currently on screen.
   for(int i = 0; i < 10; i++){
     if(gamedata.islandsx[i] == -1 && gamedata.islandsy[i] == -1){
@@ -68,17 +175,9 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
       }
     }
   }
-  
-  //draw any ships that exist, and are on screen
-  if(gamedata.totalships >= 0){
-    for(int i = 0; i <= gamedata.totalships; i++){
-      if(abs(gamedata.shipsx[i]-gamedata.playerx) < 146 && abs(gamedata.shipsy[i] - gamedata.playery) < 165)
-      graphics_context_set_fill_color(ctx, GColorBlack);
-      GPoint shippoint = GPoint(gamedata.shipsx[i] - gamedata.playerx + 72, gamedata.shipsy[i] - gamedata.playery + 84);
-      graphics_fill_circle(ctx, shippoint, 3);
-    }
-  }
-  
+}
+
+void draw_gui(Layer *this_layer, GContext *ctx){
   //draw the GUI that will go atop the screen
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_context_set_text_color(ctx, GColorWhite);
@@ -102,70 +201,6 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
   graphics_fill_rect(ctx, moneyguibox, 0, GCornerNone);
   graphics_draw_text(ctx, moneyGUILeft, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), moneytextbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   graphics_draw_text(ctx, moneyGUIRight, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), moneytextbox, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
-  
-  //draw menus
-  if(gamedata.gamemode == 'm'){ //draw menus from the info in gamedata
-    graphics_context_set_text_color(ctx, GColorWhite);
-    graphics_context_set_fill_color(ctx, GColorBlack);
-    //will extract whatever number is selected.  Then draw a box at some X Y coords depending on that, the box shows what menu icon is selected
-    //menu is otherwise drawn statically, with no difference between boxes.
-    //may have to run a function to display the menu, will draw the black box as part of the canvas layer.
-    
-    graphics_fill_rect(ctx, GRect(0,15,54,76), 0, GCornerNone);
-    graphics_context_set_stroke_color(ctx, GColorWhite);
-    graphics_draw_rect(ctx, GRect(0, 15+gamedata.currentmenu[0]*15, 54, 15 ));
-    GRect textbox = GRect(0, 15, 54, 73);
-    char totalmenu[9 * NUMBEROFMENUITEMS];
-    //create the char array for the menu    
-    snprintf(totalmenu, sizeof(totalmenu), "Metal:%d\nWood:%d\nStone:%d\nFood:%d\n-Exit-\n",
-           gamedata.islandscargo[gamedata.playerisland][0],
-           gamedata.islandscargo[gamedata.playerisland][1],
-           gamedata.islandscargo[gamedata.playerisland][2],
-           gamedata.islandscargo[gamedata.playerisland][3]);
-    graphics_draw_text(ctx, totalmenu, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), textbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-  //draw further layers if they have been selected
-    if(gamedata.menulayer == 1){ //only is 0 for debugging, should be 1
-      GRect layer2text = GRect(54,15,46, 50);
-      graphics_context_set_fill_color(ctx, GColorBlack);
-      
-      //needs to be made better later, shouldn't calculate for all at once, should do one at a time
-      //this change will increase performance
-      APP_LOG(APP_LOG_LEVEL_INFO, "playerisland: %i", gamedata.playerisland);
-      ResourceValues buysellvals = getmoneyvalue(&gamedata, gamedata.playerisland);
-      int resourcevalue = 0;
-      if(gamedata.currentmenu[0] == 0)
-        resourcevalue = buysellvals.metalvalue;
-      if(gamedata.currentmenu[0] == 1)
-        resourcevalue = buysellvals.woodvalue;
-      if(gamedata.currentmenu[0] == 2)
-        resourcevalue = buysellvals.stonevalue;
-      if(gamedata.currentmenu[0] == 3)
-        resourcevalue = buysellvals.foodvalue;
-      gamedata.currentcosts = resourcevalue;
-      //end area that needs changing 
-      
-      char firstmenulayer[30];
-      snprintf(firstmenulayer, sizeof(firstmenulayer), "Buy:%i\nSell\nBack", resourcevalue);
-      graphics_fill_rect(ctx, GRect(54,15,46,50), 0, GCornerNone);
-      graphics_draw_text(ctx, firstmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer2text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-      graphics_draw_rect(ctx, GRect(54, 15+gamedata.currentmenu[1]*15, 46, 15));
-    }
-    if(gamedata.menulayer == 2){
-      //are you insane?
-      //this shit gets exponential!  
-      //depends if menu layer 2 can be accessed from each menu layer 1, if menu layer 2 is restricted
-      //to one layer, it is much more sane.
-    }
-  }
-  
-  //draw loop
-  //graphics_context_set_fill_color(ctx, GColorBlack);
-  //graphics_fill_circle(ctx, center, 40);
-  //graphics_context_set_fill_color(ctx, GColorWhite);
-  //graphics_fill_circle(ctx, center, 35);
-  //draw the "stalk"
-  //graphics_context_set_fill_color(ctx, GColorBlack);
-  //graphics_fill_rect(ctx, GRect(32, 50, 5, 100), 0, GCornerNone);
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {

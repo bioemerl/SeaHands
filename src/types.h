@@ -1,5 +1,6 @@
 #pragma once
 
+#define GAMELOOP_TIMER_INTERVALL 45
 extern const int DATA_KEY;
 extern const int VERSION_KEY;
 extern const int TOTALISLANDS;
@@ -27,6 +28,8 @@ typedef struct{
   int16_t currentcosts;
   int16_t playerx, playery;
   int8_t playerxvelocity, playeryvelocity;
+  //player upgrades
+  int8_t maxplayercargo, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage;
 } GameData;
 
 typedef struct{
@@ -34,7 +37,6 @@ typedef struct{
          stonevalue,
          woodvalue,
          foodvalue;
-  
 } ResourceValues;
 
 typedef struct{
@@ -48,6 +50,6 @@ typedef struct{
   int16_t playerwallet; //16 bits
   //int16_t playerx, playery; //32 bits
   //int8_t playerxvelocity, playeryvelocity; //16 bits
-  //total: 1296 bytes
+  //total: 1296 bytes, less now.
   //max 2048 bytes
 } SaveValues;
