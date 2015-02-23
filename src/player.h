@@ -14,3 +14,7 @@ int8_t check_player_upgrade_price(GameData* gamedata);
 void update_player_menu(GameData* gamedata);
 void update_player_movement(GameData* gamedata);
 int check_current_button(GameData* gamedata);
+void menuzeroupdate(GameData* gamedata);
+void menuoneupdate(GameData* gamedata);
+void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount);
+void buysellresources(GameData* gamedata, int8_t buyorsell, int resource, int islandnumber, int resourcecost);
