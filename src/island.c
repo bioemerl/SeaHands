@@ -98,7 +98,7 @@ void update_islands(GameData* gamedata){
     if(gamedata->islandstypes[i] == 0){
        if(gamedata->islandscargo[i][0] < 100 && gamedata->islandscargo[i][1] > 0){
         gamedata->islandscargo[i][1]--; //remove one wood
-        gamedata->islandscargo[i][0] += 1; //add 1 metal
+        gamedata->islandscargo[i][0] += 2; //add 2 metal
        }
        if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
          gamedata->islandscargo[i][3]--;
@@ -116,7 +116,7 @@ void update_islands(GameData* gamedata){
     if(gamedata->islandstypes[i] == 2){
       if(gamedata->islandscargo[i][2] < 100 && gamedata->islandscargo[i][1] > 0){
         gamedata->islandscargo[i][1]--; //remove one wood
-        gamedata->islandscargo[i][2] += 3; //add 3 stone
+        gamedata->islandscargo[i][2] += 2; //add 2 stone
        }
       if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
          gamedata->islandscargo[i][3]--;
@@ -125,7 +125,7 @@ void update_islands(GameData* gamedata){
     if(gamedata->islandstypes[i] == 3){
       if(gamedata->islandscargo[i][3] < 100 && gamedata->islandscargo[i][0] > 0){
         gamedata->islandscargo[i][0]--; //remove one iron
-        gamedata->islandscargo[i][3] += 4; //add 4 food
+        gamedata->islandscargo[i][3] += 5; //add 5 food
        }
       if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
          gamedata->islandscargo[i][3]--; 

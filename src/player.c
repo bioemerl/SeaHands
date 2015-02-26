@@ -11,7 +11,7 @@ const int BASE_PLAYER_CARGO = 10;
 void initialize_player(GameData* gamedata){
   //initiate player values
   gamedata->playerxvelocity = 0;
-  gamedata->playeryvelocity = BASE_PLAYER_SPEED;
+  gamedata->playeryvelocity = gamedata->currentspeed;
   gamedata->playerx = 50;
   gamedata->playery = 50;
   //initiate player cargo
@@ -20,7 +20,7 @@ void initialize_player(GameData* gamedata){
   gamedata->playercargo[2] = 0;
   gamedata->playercargo[3] = 10;
   gamedata->playerwallet = 500;
-  gamedata->maxplayercargo = BASE_PLAYER_CARGO;
+  //gamedata->maxplayercargo = BASE_PLAYER_CARGO;
 }
 
 void burn_player_cargo(GameData* gamedata){
@@ -58,6 +58,8 @@ void update_player_menu(GameData* gamedata){
     menuzeroupdate(gamedata);
   if(gamedata->menulayer == 1)
     menuoneupdate(gamedata); 
+  if(gamedata->menulayer == 2)
+    menutwoupdate(gamedata);
 }
 
 void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount){
@@ -81,10 +83,14 @@ void menuzeroupdate(GameData* gamedata){
     if(gamedata->currentmenu[0] >=0 && gamedata->currentmenu[0] <= 3 && gamedata->menulayer == 0
        && gamedata->uphit == 1 && gamedata->downhit == 1 && gamedata->buttonrelease == 1){
       gamedata->menulayer = 1;
-      gamedata->buttonrelease = 1;
+      gamedata->buttonrelease = 0;
     }
    //if exit is highlighted leave
-    if(gamedata->currentmenu[0] == 4 && buttonpress == 3){
+    if(gamedata->currentmenu[0] == 4 && buttonpress == 3 && gamedata->buttonrelease == 1){
+      gamedata->menulayer = 2;
+      gamedata->buttonrelease = 0;
+    }
+    if(gamedata->currentmenu[0] == 5 && buttonpress == 3){
       if(gamedata->playerx > gamedata->islandsx[gamedata->playerisland]){
         gamedata->playerx = gamedata->islandsx[gamedata->playerisland] + 30;
       }
@@ -109,28 +115,28 @@ void menuoneupdate(GameData* gamedata){
 
   //SELETIONS FOR BUY AND SELL IF LAYER IS ONE
   //IF THE FIRST IS SELECTED
-  if(gamedata->currentmenu[0] == 0 && gamedata->currentmenu[1] == 0 && buttonpress == 3){
+  if(gamedata->currentmenu[0] == 0 && gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
     buysellresources(gamedata, 0, 0, gamedata->playerisland, gamedata->currentcosts);
   } // sell item back
   if(gamedata->currentmenu[0] == 0  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
     buysellresources(gamedata, 1, 0, gamedata->playerisland, gamedata->currentcosts);
   }
   //IF SECOND IS SELECTED
-  if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 0 && buttonpress == 3){
+  if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
     buysellresources(gamedata, 0, 1, gamedata->playerisland, gamedata->currentcosts);
   } // sell item back
   if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
     buysellresources(gamedata, 1, 1, gamedata->playerisland, gamedata->currentcosts);
   }
   //IF THIRD IS SELETED
-  if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 0 && buttonpress == 3){
+  if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
     buysellresources(gamedata, 0, 2, gamedata->playerisland, gamedata->currentcosts);
   } // sell item back
   if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
     buysellresources(gamedata, 1, 2, gamedata->playerisland, gamedata->currentcosts);
   }
   //IF FOURTH IS SELECTED buy item
-  if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 0 && buttonpress == 3){
+  if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
     buysellresources(gamedata, 0, 3, gamedata->playerisland, gamedata->currentcosts);
   } // sell item back
   if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
@@ -164,51 +170,72 @@ void buysellresources(GameData* gamedata, int8_t buyorsell, int resource, int is
 }
 
 void menutwoupdate(GameData* gamedata){
-  
+  int buttonpress = check_current_button(gamedata);
+  updatemenuselection(gamedata, 2, MENU3ITEMSCNT);
+  if(gamedata->currentmenu[2] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
+    gamedata->buttonrelease = 0;
+    int upgradeprice = check_player_upgrade_price(gamedata, 0);
+    if(gamedata->playerwallet >= upgradeprice){
+      gamedata->cargolevel++;
+      gamedata->maxplayercargo += 5;
+      gamedata->playerwallet += -upgradeprice;
+    }
+  }
+  if(gamedata->currentmenu[2] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
+    gamedata->buttonrelease = 0;
+    int upgradeprice = check_player_upgrade_price(gamedata, 1);
+    if(gamedata->playerwallet >= upgradeprice){
+      gamedata->currentspeed++;
+      gamedata->speedlevel++;
+      gamedata->playerwallet += -upgradeprice;
+    }
+  }
+  if(gamedata->currentmenu[2] == 2 && buttonpress == 3){
+    gamedata->menulayer = 0;
+    gamedata->currentmenu[2] = 0;
+    gamedata->buttonrelease = 0;
+  }
 }
 
 void update_player_movement(GameData* gamedata){
   int buttonhit = check_current_button(gamedata);
   //UP TRIGGER
-  if(buttonhit == 1){    
+  if(buttonhit == 1){   
     //move the velocity in a square
-    if(gamedata->playerxvelocity >=0 && gamedata->playeryvelocity >=0){
+    if(gamedata->playerxvelocity >= 0 && gamedata->playeryvelocity > 0){
       gamedata->playerxvelocity++;
       gamedata->playeryvelocity--;
     }
-    if(gamedata->playerxvelocity >=0 && gamedata->playeryvelocity <=0){
+    if(gamedata->playerxvelocity <= 0 && gamedata->playeryvelocity < 0){
+      gamedata->playerxvelocity--;
+      gamedata->playeryvelocity++;
+    }
+    if(gamedata->playerxvelocity > 0 && gamedata->playeryvelocity <= 0){
       gamedata->playerxvelocity--;
       gamedata->playeryvelocity--;
     }
-    if(gamedata->playerxvelocity <=0 && gamedata->playeryvelocity <=0){
-      gamedata->playerxvelocity--;
-      gamedata->playeryvelocity++;
-    }
-    if(gamedata->playerxvelocity <=0 && gamedata->playeryvelocity >=0){
+    if(gamedata->playerxvelocity < 0 && gamedata->playeryvelocity >= 0){
       gamedata->playerxvelocity++;
       gamedata->playeryvelocity++;
     }
-      
-    //APP_LOG(APP_LOG_LEVEL_INFO, "up");
-    //gamedata->playerxvelocity++;
   }
   
   //DOWN TRIGGER
   if(buttonhit == 2){
     //move the velocity in a counterclockwise square
-    if(gamedata->playerxvelocity >=0 && gamedata->playeryvelocity >=0){
+    if(gamedata->playerxvelocity > 0 && gamedata->playeryvelocity >= 0){
       gamedata->playerxvelocity--;
       gamedata->playeryvelocity++;
     }
-    if(gamedata->playerxvelocity >=0 && gamedata->playeryvelocity <=0){
+    if(gamedata->playerxvelocity >= 0 && gamedata->playeryvelocity < 0){
       gamedata->playerxvelocity++;
       gamedata->playeryvelocity++;
     }
-    if(gamedata->playerxvelocity <=0 && gamedata->playeryvelocity <=0){
+    if(gamedata->playerxvelocity < 0 && gamedata->playeryvelocity <= 0){
       gamedata->playerxvelocity++;
       gamedata->playeryvelocity--;
     }
-    if(gamedata->playerxvelocity <=0 && gamedata->playeryvelocity >=0){
+    if(gamedata->playerxvelocity <= 0 && gamedata->playeryvelocity > 0){
       gamedata->playerxvelocity--;
       gamedata->playeryvelocity--;
     }
@@ -224,6 +251,7 @@ void update_player_movement(GameData* gamedata){
   for(int i = 0; i < TOTALISLANDS; i++){
     if(finddistance(gamedata->playerx, gamedata->playery, gamedata->islandsx[i], gamedata->islandsy[i]) <= 25*25){ //(size of island)
       gamedata->playerisland = i;
+      gamedata->buttonrelease = 0;
       if(gamedata->gamemode == 'p')
       gamedata->menulayer = 0;
       gamedata->gamemode = 'm';
@@ -232,10 +260,3 @@ void update_player_movement(GameData* gamedata){
   }
 }
 
-int8_t check_for_player_upgrade(GameData* gamedata){
-  return 0;
-}
-
-int8_t check_player_upgrade_price(GameData* gamedata){
-  return 0;
-}

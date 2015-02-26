@@ -1,6 +1,6 @@
 #include <pebble.h>
 #include "game.h"
-
+  
 //prototypes
 void draw_ships(Layer *this_layer, GContext *ctx);
 void draw_gui(Layer *this_layer, GContext *ctx);
@@ -61,7 +61,7 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
     if(gamedata.menulayer == 1)
       draw_menu_layer(this_layer, ctx, 1, 54, 15);
     if(gamedata.menulayer == 2)
-      draw_menu_layer(this_layer, ctx, 1, 45, 15);
+      draw_menu_layer(this_layer, ctx, 2, 45, 15);
   }
 }
 
@@ -81,14 +81,14 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //any layer: draw the background box, then draw the highlighting box, then draw the text
   //base menu layer
   if(menulayernumber == 0){
-    graphics_fill_rect(ctx, GRect(x,y,54,76), 0, GCornerNone); //background box
+    graphics_fill_rect(ctx, GRect(x,y,54,90), 0, GCornerNone); //background box
     graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[0]*15, 54, 15 )); //highlighting box
     
     //text prep
-    GRect textbox = GRect(x, y, 54, 73);
-    char totalmenu[9 * NUMBEROFMENUITEMS];
+    GRect textbox = GRect(x, y, 54, 105);
+    char totalmenu[60];
     //create the char array for the menu    
-    snprintf(totalmenu, sizeof(totalmenu), "Metal:%d\nWood:%d\nStone:%d\nFood:%d\n-Exit-\n",
+    snprintf(totalmenu, sizeof(totalmenu), "Metal:%d\nWood:%d\nStone:%d\nFood:%d\nUpgrades:\n-Exit-",
            gamedata.islandscargo[gamedata.playerisland][0],
            gamedata.islandscargo[gamedata.playerisland][1],
            gamedata.islandscargo[gamedata.playerisland][2],
@@ -125,9 +125,9 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   }
   //menu layer for upgrade purchases
   if(menulayernumber == 2){
-    graphics_fill_rect(ctx, GRect(x,y,46,50), 0, GCornerNone);
-    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[2]*15, 46, 15));
-    
+    graphics_fill_rect(ctx, GRect(x,y,80,50), 0, GCornerNone);
+    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[2]*15, 80, 15));
+    GRect layer3text = GRect(x,y,80, 50);
     //get needed data
     //find current upgrade level, and change the price for that upgrade by a function on the constant
     //BASE_VALUE_UPGRADENAME
@@ -135,7 +135,13 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     int speedprice = 1;
     
     char secondmenulayer[30];
-    snprintf(secondmenulayer, sizeof(secondmenulayer), "Cargo: %i\nSpeed: %i\n", cargoprice, speedprice);
+    int upgradeprices[3];
+    for(int i = 0; i < 2; i++)
+      upgradeprices[i] = check_player_upgrade_price(&gamedata, i);
+    cargoprice = upgradeprices[0];
+    speedprice = upgradeprices[1];
+    snprintf(secondmenulayer, sizeof(secondmenulayer), "Cargo: %i\nSpeed: %i\nBack", cargoprice, speedprice);
+    graphics_draw_text(ctx, secondmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer3text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
 }
 

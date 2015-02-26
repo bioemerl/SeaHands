@@ -14,6 +14,10 @@ void initialize_game(GameData* gamedata){
   gamedata->menulayer = 0;
   for(int i = 0; i < 5; i++)
     gamedata->currentmenu[i] = 0;
+  gamedata->maxplayercargo = BASE_PLAYER_CARGO;
+  gamedata->currentspeed = BASE_PLAYER_SPEED;
+  gamedata->speedlevel = 0;
+  gamedata->cargolevel = 0;
   initialize_islands(gamedata);
   initialize_player(gamedata);
   initialize_ships(gamedata);
@@ -144,6 +148,9 @@ void save_data(GameData* gamedata){
   for(int i = 0; i < 10; i++){
     saving.shipsx[i] = gamedata->shipsx[i];
     saving.shipsy[i] = gamedata->shipsy[i];
+    
+    
+    
     //these are hardcoded... for now.
     //islandsx[i] = gamedata->islandsx[i];
     //islandsy[i] =  = gamedata->islandsy[i];
@@ -153,9 +160,13 @@ void save_data(GameData* gamedata){
     saving.shipsisland[i] = gamedata->shipsisland[i];
     saving.shipstype[i] = gamedata->shipstype[i];
   }
-  for(int i = 0; i < 4; i++)
+  for(int i = 0; i < 5; i++)
     saving.playercargo[i] = gamedata->playercargo[i];
   saving.playerwallet = gamedata->playerwallet;
+  saving.maxplayercargo = gamedata->maxplayercargo;
+  saving.currentspeed = gamedata->currentspeed;
+  saving.cargolevel = gamedata->cargolevel;
+  saving.speedlevel = gamedata->speedlevel;
   
   //save the object into memory
   persist_write_data(DATA_KEY, &saving, sizeof(saving));
@@ -181,8 +192,27 @@ void load_data(GameData* gamedata){
       gamedata->shipsisland[i] = loading.shipsisland[i];
       gamedata->shipstype[i] = loading.shipstype[i];
     }
-    for(int i = 0; i < 4; i++)
+    for(int i = 0; i < 5; i++)
       gamedata->playercargo[i] = loading.playercargo[i];
     gamedata->playerwallet = loading.playerwallet;
+    gamedata->maxplayercargo = loading.maxplayercargo;
+    gamedata->currentspeed = loading.currentspeed;
+    gamedata->playeryvelocity = loading.currentspeed;
+    gamedata->cargolevel = loading.cargolevel;
+    gamedata->speedlevel = loading.speedlevel;
   }
+}
+
+int check_for_player_upgrade(GameData* gamedata, int upgradetype){
+  return 0;
+}
+
+int check_player_upgrade_price(GameData* gamedata, int upgradetype){
+  if(upgradetype == 0){
+    return (gamedata->cargolevel + 1)*100;
+  }
+  if(upgradetype == 1){
+    return (gamedata->speedlevel + 1)*500;
+  }
+  return 0;
 }
