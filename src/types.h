@@ -7,6 +7,7 @@ extern const int TOTALISLANDS;
 extern const int MENUITEMSCNT;
 extern const int MENU2ITEMSCNT;
 extern const int MENU3ITEMSCNT;
+extern const int BASE_PRICE_SUPPLIES;
 
 typedef struct{
   char gamemode;

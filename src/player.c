@@ -8,6 +8,7 @@ const int BASE_VALUE_UPGRADECARGO = 10;
 const int BASE_PLAYER_SPEED = 4;
 const int BASE_PLAYER_CARGO = 10;
 
+
 void initialize_player(GameData* gamedata){
   //initiate player values
   gamedata->playerxvelocity = 0;
@@ -19,19 +20,18 @@ void initialize_player(GameData* gamedata){
   gamedata->playercargo[1] = 10;
   gamedata->playercargo[2] = 0;
   gamedata->playercargo[3] = 10;
+  gamedata->playercargo[4] = 5;
   gamedata->playerwallet = 500;
   //gamedata->maxplayercargo = BASE_PLAYER_CARGO;
 }
 
 void burn_player_cargo(GameData* gamedata){
   if(random(3) == 2){
-    gamedata->playercargo[1] += -1; //burn wood
-    if(gamedata->playercargo[1] < 0){
-      initialize_player(gamedata);
-    }
+    gamedata->playercargo[4] += -1; //burn supplies
   }
-  if(random(5) == 4){
-    gamedata->playercargo[3] += -1; //burn food
+  if(gamedata->playercargo[4] <= 0){
+    initialize_player(gamedata);
+    gamedata->playerwallet = (gamedata->playerwallet -(gamedata->playerwallet/5));
   }
 }
 
@@ -85,11 +85,11 @@ void menuzeroupdate(GameData* gamedata){
       gamedata->menulayer = 1;
       gamedata->buttonrelease = 0;
     }
-   //if exit is highlighted leave
     if(gamedata->currentmenu[0] == 4 && buttonpress == 3 && gamedata->buttonrelease == 1){
       gamedata->menulayer = 2;
       gamedata->buttonrelease = 0;
     }
+    //if exit is highlighted leave
     if(gamedata->currentmenu[0] == 5 && buttonpress == 3){
       if(gamedata->playerx > gamedata->islandsx[gamedata->playerisland]){
         gamedata->playerx = gamedata->islandsx[gamedata->playerisland] + 30;
@@ -112,41 +112,41 @@ void menuzeroupdate(GameData* gamedata){
 void menuoneupdate(GameData* gamedata){
   int buttonpress = check_current_button(gamedata);
   updatemenuselection(gamedata, 1, MENU2ITEMSCNT);
-
-  //SELETIONS FOR BUY AND SELL IF LAYER IS ONE
-  //IF THE FIRST IS SELECTED
-  if(gamedata->currentmenu[0] == 0 && gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
-    buysellresources(gamedata, 0, 0, gamedata->playerisland, gamedata->currentcosts);
-  } // sell item back
-  if(gamedata->currentmenu[0] == 0  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
-    buysellresources(gamedata, 1, 0, gamedata->playerisland, gamedata->currentcosts);
-  }
-  //IF SECOND IS SELECTED
-  if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
-    buysellresources(gamedata, 0, 1, gamedata->playerisland, gamedata->currentcosts);
-  } // sell item back
-  if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
-    buysellresources(gamedata, 1, 1, gamedata->playerisland, gamedata->currentcosts);
-  }
-  //IF THIRD IS SELETED
-  if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
-    buysellresources(gamedata, 0, 2, gamedata->playerisland, gamedata->currentcosts);
-  } // sell item back
-  if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
-    buysellresources(gamedata, 1, 2, gamedata->playerisland, gamedata->currentcosts);
-  }
-  //IF FOURTH IS SELECTED buy item
-  if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
-    buysellresources(gamedata, 0, 3, gamedata->playerisland, gamedata->currentcosts);
-  } // sell item back
-  if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
-    buysellresources(gamedata, 1, 3, gamedata->playerisland, gamedata->currentcosts);
-  }
-  //IF SECOND MENU THIRD ITEM IS SELETED, REGARDLESS OF FIRST LEVEL, GO BACK TO FIRST MENU
-  if(gamedata->currentmenu[1] == 2 && buttonpress == 3){
+  
+  //IF SECOND MENU FIRST ITEM IS SELETED, REGARDLESS OF FIRST LEVEL, GO BACK TO FIRST MENU
+  if(gamedata->currentmenu[1] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
     gamedata->menulayer = 0;
     gamedata->currentmenu[1] = 0;
     gamedata->buttonrelease = 0;
+  }
+  //SELETIONS FOR BUY AND SELL IF LAYER IS ONE
+  //IF THE FIRST IS SELECTED
+  if(gamedata->currentmenu[0] == 0 && gamedata->currentmenu[1] == 1 && buttonpress == 3){
+    buysellresources(gamedata, 0, 0, gamedata->playerisland, gamedata->currentcosts);
+  } // sell item back
+  if(gamedata->currentmenu[0] == 0  && gamedata->currentmenu[1] == 2 && buttonpress == 3){
+    buysellresources(gamedata, 1, 0, gamedata->playerisland, gamedata->currentcosts);
+  }
+  //IF SECOND IS SELECTED
+  if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
+    buysellresources(gamedata, 0, 1, gamedata->playerisland, gamedata->currentcosts);
+  } // sell item back
+  if(gamedata->currentmenu[0] == 1  && gamedata->currentmenu[1] == 2 && buttonpress == 3){
+    buysellresources(gamedata, 1, 1, gamedata->playerisland, gamedata->currentcosts);
+  }
+  //IF THIRD IS SELETED
+  if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
+    buysellresources(gamedata, 0, 2, gamedata->playerisland, gamedata->currentcosts);
+  } // sell item back
+  if(gamedata->currentmenu[0] == 2  && gamedata->currentmenu[1] == 2 && buttonpress == 3){
+    buysellresources(gamedata, 1, 2, gamedata->playerisland, gamedata->currentcosts);
+  }
+  //IF FOURTH IS SELECTED buy item
+  if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 1 && buttonpress == 3){
+    buysellresources(gamedata, 0, 3, gamedata->playerisland, gamedata->currentcosts);
+  } // sell item back
+  if(gamedata->currentmenu[0] == 3  && gamedata->currentmenu[1] == 2 && buttonpress == 3){
+    buysellresources(gamedata, 1, 3, gamedata->playerisland, gamedata->currentcosts);
   }
 }
 
@@ -174,15 +174,21 @@ void menutwoupdate(GameData* gamedata){
   updatemenuselection(gamedata, 2, MENU3ITEMSCNT);
   if(gamedata->currentmenu[2] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
     gamedata->buttonrelease = 0;
+    if(gamedata->playerwallet >= BASE_PRICE_SUPPLIES && gamedata->playercargo[4] < 10){
+      gamedata->playercargo[4]++;
+      gamedata->playerwallet += -BASE_PRICE_SUPPLIES;
+    }
+  }
+  if(gamedata->currentmenu[2] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
+   gamedata->buttonrelease = 0;
     int upgradeprice = check_player_upgrade_price(gamedata, 0);
     if(gamedata->playerwallet >= upgradeprice){
       gamedata->cargolevel++;
       gamedata->maxplayercargo += 5;
       gamedata->playerwallet += -upgradeprice;
-    }
+    } 
   }
-  if(gamedata->currentmenu[2] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
-    gamedata->buttonrelease = 0;
+  if(gamedata->currentmenu[2] == 2 && buttonpress == 3){
     int upgradeprice = check_player_upgrade_price(gamedata, 1);
     if(gamedata->playerwallet >= upgradeprice){
       gamedata->currentspeed++;
@@ -190,7 +196,7 @@ void menutwoupdate(GameData* gamedata){
       gamedata->playerwallet += -upgradeprice;
     }
   }
-  if(gamedata->currentmenu[2] == 2 && buttonpress == 3){
+  if(gamedata->currentmenu[2] == 3 && buttonpress == 3){
     gamedata->menulayer = 0;
     gamedata->currentmenu[2] = 0;
     gamedata->buttonrelease = 0;
@@ -260,3 +266,42 @@ void update_player_movement(GameData* gamedata){
   }
 }
 
+//returns a value 1 to 8 depending on the players position and so on
+//1 to 8 will refer to directions of wind, with 1 being flat east, 5 being west, 3-7 being north and south
+//and so on
+//wind will always be speed of "(0,3), (3,0), (2,2)"
+// a value of zero means no wind, and no change to the player.
+int calculatewindspeed(GameData* gamedata){
+  //get the current hour here:
+  //going to base this on a 12 hour time?
+  time_t temp = time(NULL);
+  struct tm *tick_time = localtime(&temp);
+  int hour = 0;
+  hour = tick_time->tm_hour;
+  //hour is a number between 1 and 24
+  //12 is noon 24 is midnight
+  //and so on
+  if(hour <= 24){
+    if(gamedata->playery >=0 && gamedata->playery <=1250 || gamedata->playery <= -1250 && gamedata->playery >= -2500){
+      //head right
+    }
+    else{
+      //head left
+    }
+  }
+  else if(hour > 5){
+    if(gamedata->playery >=0 && gamedata->playery <=1250 || gamedata->playery <= -1250 && gamedata->playery >= -2500){
+      //head left
+    }
+    else{
+      //head right
+    }
+  }
+  else{
+    //no wind
+    return 0;
+  }
+  
+  
+  return 0;
+}

@@ -9,6 +9,7 @@
     "resources": {
         "media": []
     },
+    "sdkVersion": "2",
     "shortName": "SeaHands",
     "uuid": "1bedccdc-b3c1-48e0-88e3-c99ad301643f",
     "versionCode": 1,

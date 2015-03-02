@@ -88,7 +88,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     GRect textbox = GRect(x, y, 54, 105);
     char totalmenu[60];
     //create the char array for the menu    
-    snprintf(totalmenu, sizeof(totalmenu), "Metal:%d\nWood:%d\nStone:%d\nFood:%d\nUpgrades:\n-Exit-",
+    snprintf(totalmenu, sizeof(totalmenu), "Metal:%d\nWood:%d\nStone:%d\nFood:%d\nIsland:\n-Exit-",
            gamedata.islandscargo[gamedata.playerisland][0],
            gamedata.islandscargo[gamedata.playerisland][1],
            gamedata.islandscargo[gamedata.playerisland][2],
@@ -119,28 +119,28 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     //prepare the text
     GRect layer2text = GRect(x,y,46, 50);
     char firstmenulayer[30];
-    snprintf(firstmenulayer, sizeof(firstmenulayer), "Buy:%i\nSell\nBack", resourcevalue);
+    snprintf(firstmenulayer, sizeof(firstmenulayer), "Back\nBuy:%i\nSell", resourcevalue);
     //print the text
     graphics_draw_text(ctx, firstmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer2text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
   //menu layer for upgrade purchases
   if(menulayernumber == 2){
-    graphics_fill_rect(ctx, GRect(x,y,80,50), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(x,y,80,65), 0, GCornerNone);
     graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[2]*15, 80, 15));
-    GRect layer3text = GRect(x,y,80, 50);
+    GRect layer3text = GRect(x,y,80, 65);
     //get needed data
     //find current upgrade level, and change the price for that upgrade by a function on the constant
     //BASE_VALUE_UPGRADENAME
     int cargoprice = 1;
     int speedprice = 1;
     
-    char secondmenulayer[30];
+    char secondmenulayer[45];
     int upgradeprices[3];
     for(int i = 0; i < 2; i++)
       upgradeprices[i] = check_player_upgrade_price(&gamedata, i);
     cargoprice = upgradeprices[0];
     speedprice = upgradeprices[1];
-    snprintf(secondmenulayer, sizeof(secondmenulayer), "Cargo: %i\nSpeed: %i\nBack", cargoprice, speedprice);
+    snprintf(secondmenulayer, sizeof(secondmenulayer), "BuySu:%i\nUpCrgo:%i\nUpSpd: %i\nBack", BASE_PRICE_SUPPLIES, cargoprice, speedprice);
     graphics_draw_text(ctx, secondmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer3text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
 }
@@ -196,17 +196,23 @@ void draw_gui(Layer *this_layer, GContext *ctx){
   graphics_draw_text(ctx, playerGUI, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), guibox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   
   //draw the GUI for the bottom of the screen to show player money
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_context_set_text_color(ctx, GColorWhite);
   char moneyGUIRight[10];
   char moneyGUILeft[4];
   snprintf(moneyGUIRight, sizeof(moneyGUIRight), "%i", gamedata.playerwallet);
   snprintf(moneyGUILeft, sizeof(moneyGUILeft), "$:");
-  GRect moneyguibox = GRect(0, PEBBLEHEIGHT - 29, 70, 15);
-  GRect moneytextbox = GRect(0, PEBBLEHEIGHT - 32, 70, 12);
+  GRect moneyguibox = GRect(0, PEBBLEHEIGHT - 29, 55, 15);
+  GRect moneytextbox = GRect(0, PEBBLEHEIGHT - 32, 55, 12);
   graphics_fill_rect(ctx, moneyguibox, 0, GCornerNone);
   graphics_draw_text(ctx, moneyGUILeft, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), moneytextbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   graphics_draw_text(ctx, moneyGUIRight, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), moneytextbox, GTextOverflowModeWordWrap, GTextAlignmentRight, NULL);
+  
+  //draw the GUI to show the number of player supplies
+  char suppliesGUI[7];
+  snprintf(suppliesGUI, sizeof(suppliesGUI), "Su:%i", gamedata.playercargo[4]);
+  GRect suppliesbox = GRect(PEBBLEWIDTH - 33, PEBBLEHEIGHT - 29, 33, 15);
+  GRect suppliestextbox = GRect(PEBBLEWIDTH - 33, PEBBLEHEIGHT - 32, 33, 12);
+  graphics_fill_rect(ctx, suppliesbox, 0, GCornerNone);
+  graphics_draw_text(ctx, suppliesGUI, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), suppliestextbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
