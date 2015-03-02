@@ -174,9 +174,12 @@ void menutwoupdate(GameData* gamedata){
   updatemenuselection(gamedata, 2, MENU3ITEMSCNT);
   if(gamedata->currentmenu[2] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
     gamedata->buttonrelease = 0;
-    if(gamedata->playerwallet >= BASE_PRICE_SUPPLIES && gamedata->playercargo[4] < 10){
+    if(gamedata->playerwallet >= BASE_PRICE_SUPPLIES && gamedata->playercargo[4] < 10 
+       && gamedata->playercargo[3] > 0 && gamedata->playercargo[1] > 0){
       gamedata->playercargo[4]++;
       gamedata->playerwallet += -BASE_PRICE_SUPPLIES;
+      gamedata->playercargo[3]--;
+      gamedata->playercargo[1]--;
     }
   }
   if(gamedata->currentmenu[2] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
@@ -282,7 +285,7 @@ int calculatewindspeed(GameData* gamedata){
   //12 is noon 24 is midnight
   //and so on
   if(hour <= 24){
-    if(gamedata->playery >=0 && gamedata->playery <=1250 || gamedata->playery <= -1250 && gamedata->playery >= -2500){
+    if((gamedata->playery >=0 && gamedata->playery <=1250) || (gamedata->playery <= -1250 && gamedata->playery >= -2500)){
       //head right
     }
     else{
@@ -290,7 +293,7 @@ int calculatewindspeed(GameData* gamedata){
     }
   }
   else if(hour > 5){
-    if(gamedata->playery >=0 && gamedata->playery <=1250 || gamedata->playery <= -1250 && gamedata->playery >= -2500){
+    if((gamedata->playery >=0 && gamedata->playery <=1250) || (gamedata->playery <= -1250 && gamedata->playery >= -2500)){
       //head left
     }
     else{
