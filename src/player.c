@@ -7,6 +7,7 @@ const int BASE_VALUE_UPGRADESPEED = 100;
 const int BASE_VALUE_UPGRADECARGO = 10;
 const int BASE_PLAYER_SPEED = 4;
 const int BASE_PLAYER_CARGO = 10;
+const int WIND_SPEED_SECTOR_SIZE = 100;
 
 
 void initialize_player(GameData* gamedata){
@@ -22,10 +23,12 @@ void initialize_player(GameData* gamedata){
   gamedata->playercargo[3] = 10;
   gamedata->playercargo[4] = 5;
   gamedata->playerwallet = 500;
+  gamedata->currentwindspeed = calculatewindspeed(gamedata);
   //gamedata->maxplayercargo = BASE_PLAYER_CARGO;
 }
 
 void burn_player_cargo(GameData* gamedata){
+  //APP_LOG(APP_LOG_LEVEL_INFO, "Speed = %i: X: %i Y: %i", calculatewindspeed(gamedata), gamedata->playerx, gamedata->playery);
   if(random(3) == 2){
     gamedata->playercargo[4] += -1; //burn supplies
   }
@@ -208,6 +211,7 @@ void menutwoupdate(GameData* gamedata){
 
 void update_player_movement(GameData* gamedata){
   int buttonhit = check_current_button(gamedata);
+  
   //UP TRIGGER
   if(buttonhit == 1){   
     //move the velocity in a square
@@ -251,9 +255,46 @@ void update_player_movement(GameData* gamedata){
   }
   
   //SELECT TRIGGER
-  if(buttonhit == 3){
+  if(buttonhit != 3){
+    //cause base player movement
     gamedata->playerx += gamedata->playerxvelocity;
     gamedata->playery += gamedata->playeryvelocity;
+    //adjust for wind
+    if(gamedata->currentwindspeed == 1){
+      gamedata->playerx += 0;
+      gamedata->playery += 2;
+    }
+    if(gamedata->currentwindspeed == 2){
+      gamedata->playerx += 1;
+      gamedata->playery += 1;
+    }
+    if(gamedata->currentwindspeed == 3){
+      gamedata->playerx += 2;
+      gamedata->playery += 0;
+    }
+    if(gamedata->currentwindspeed == 4){
+      gamedata->playerx += 1;
+      gamedata->playery += -1;
+    }
+    if(gamedata->currentwindspeed == 5){
+      gamedata->playerx += 0;
+      gamedata->playery += -2;
+    }
+    if(gamedata->currentwindspeed == 6){
+      gamedata->playerx += -1;
+      gamedata->playery += -1;
+    }
+    if(gamedata->currentwindspeed == 7){
+      gamedata->playerx += -2;
+      gamedata->playery += 0;
+    }
+    if(gamedata->currentwindspeed == 8){
+      gamedata->playerx += -1;
+      gamedata->playery += 1;
+    }
+    if(gamedata->playerx%WIND_SPEED_SECTOR_SIZE == 0 || gamedata->playery%WIND_SPEED_SECTOR_SIZE == 0){
+      gamedata->currentwindspeed = calculatewindspeed(gamedata);
+    }
   }
   
   //if player colides with an island, set the game-mode to showing the menu
@@ -270,8 +311,7 @@ void update_player_movement(GameData* gamedata){
 }
 
 //returns a value 1 to 8 depending on the players position and so on
-//1 to 8 will refer to directions of wind, with 1 being flat east, 5 being west, 3-7 being north and south
-//and so on
+//1 to 8 will refer to directions of wind, with 1 being flat down
 //wind will always be speed of "(0,3), (3,0), (2,2)"
 // a value of zero means no wind, and no change to the player.
 int calculatewindspeed(GameData* gamedata){
@@ -280,31 +320,36 @@ int calculatewindspeed(GameData* gamedata){
   time_t temp = time(NULL);
   struct tm *tick_time = localtime(&temp);
   int hour = 0;
+  int currentspeed;
   hour = tick_time->tm_hour;
   //hour is a number between 1 and 24
   //12 is noon 24 is midnight
   //and so on
-  if(hour <= 24){
+  if(hour <= 12 && hour >= 6){
     if((gamedata->playery >=0 && gamedata->playery <=1250) || (gamedata->playery <= -1250 && gamedata->playery >= -2500)){
       //head right
+      currentspeed = 1 + abs((((hour+gamedata->playerx)/WIND_SPEED_SECTOR_SIZE) + ((hour+gamedata->playery)/WIND_SPEED_SECTOR_SIZE) * hour)%4);
     }
     else{
       //head left
+      currentspeed = 9 - (1 + abs((((hour+gamedata->playerx)/WIND_SPEED_SECTOR_SIZE) + ((hour+gamedata->playery)/WIND_SPEED_SECTOR_SIZE) * hour)%3));
     }
   }
-  else if(hour > 5){
+  else if(hour > 12){
     if((gamedata->playery >=0 && gamedata->playery <=1250) || (gamedata->playery <= -1250 && gamedata->playery >= -2500)){
       //head left
+      currentspeed = 9 - (1 + abs((((hour+gamedata->playerx)/WIND_SPEED_SECTOR_SIZE) + ((hour+gamedata->playery)/WIND_SPEED_SECTOR_SIZE) * hour)%3));
     }
     else{
       //head right
+      currentspeed = 1 + abs((((hour+gamedata->playerx)/WIND_SPEED_SECTOR_SIZE) + ((hour+gamedata->playery)/WIND_SPEED_SECTOR_SIZE) * hour)%4);
     }
   }
   else{
     //no wind
-    return 0;
+    currentspeed = 0;
   }
+  currentspeed = abs(currentspeed);
   
-  
-  return 0;
+  return currentspeed;
 }

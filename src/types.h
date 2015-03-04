@@ -37,6 +37,7 @@ typedef struct{
   int16_t playerwallet;
   int16_t playerx, playery;
   int8_t playerxvelocity, playeryvelocity;
+  int8_t currentwindspeed;
   
   //player upgrades
   int8_t maxplayercargo, currentspeed;

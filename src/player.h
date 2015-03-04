@@ -5,6 +5,7 @@ extern const int BASE_VALUE_UPGRADECARGO;
 extern const int BASE_VALUE_UPGRADESPEED;
 extern const int BASE_PLAYER_SPEED;
 extern const int BASE_PLAYER_CARGO;
+extern const int WIND_SPEED_SECTOR_SIZE;
 
   
 void initialize_player(GameData* gamedata);

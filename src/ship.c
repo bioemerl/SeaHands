@@ -75,10 +75,12 @@ void destroy_ship(GameData* gamedata, int shipnumber, int reacheddestination){
     //add the ships cargo and type to the islands cargo and type
     //APP_LOG(APP_LOG_LEVEL_INFO, "Ship Cargo: %i", gamedata->shipscargo[shipnumber]);
     gamedata->islandscargo[gamedata->shipsisland[shipnumber]][gamedata->shipstype[shipnumber]] += gamedata->shipscargo[shipnumber];
+    gamedata->islandscargo[gamedata->shipsisland[shipnumber]][1] += 1;
     //reset the ship's cargo
     gamedata->shipsisland[shipnumber] = 0;
     gamedata->shipscargo[shipnumber] = 0;
     gamedata->shipstype[shipnumber] = 0;
+    
   }
   //adjust all the ships back one unit in the array to make sure the array has no gaps
   for(int i = shipnumber; i < gamedata->totalships; i++){
