@@ -67,3 +67,16 @@ typedef struct{
   int8_t maxplayercargo, currentspeed; 
   int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage;
 } SaveValues;
+
+typedef struct{
+  int16_t playerx,
+          enemyx,
+          enemytimer,
+          shiptimer,
+          shotsx[10],
+          shotsy[10];
+  
+  int8_t numberofshots;
+  char shotsside[10];
+          
+} ShipBattleData;

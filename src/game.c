@@ -3,13 +3,15 @@
 #include "player.h"
 #include "island.h"
 #include "ship.h"
+#include "shipbattle.h"
+
 //main character's name is bill
 //bill because he looks for money all the time.
 
 static int twohundredcountdown = 200;
 
 void initialize_game(GameData* gamedata){
-  gamedata->gamemode = 'p';
+  gamedata->gamemode = 'b';
   gamedata->playerisland = 1;
   gamedata->menulayer = 0;
   for(int i = 0; i < 5; i++)
@@ -23,24 +25,18 @@ void initialize_game(GameData* gamedata){
   initialize_ships(gamedata);
 }
 
-void update_game(GameData* gamedata){ 
+void update_game(GameData* gamedata){
   //set up a timer as to not update everything every frame
   twohundredcountdown--;
   if(twohundredcountdown <= 0)
     twohundredcountdown = 200;
-  
-  //adjust player's Y velocity depending on where they are on the screen.
-
-  //APP_LOG(APP_LOG_LEVEL_INFO, "Updating Game %i", framespassed);
-  //APP_LOG(APP_LOG_LEVEL_INFO, "PlayerX %i", gamedata->playerx);
-  
+  //what to do on each timer final
   if(twohundredcountdown == 100){
     burn_player_cargo(gamedata);
     update_islands(gamedata);
   }
   update_ships(gamedata);
-  update_player(gamedata);
-      
+  update_player(gamedata); 
 }
 
 
@@ -214,5 +210,16 @@ int check_player_upgrade_price(GameData* gamedata, int upgradetype){
   if(upgradetype == 1){
     return (gamedata->speedlevel + 1)*500;
   }
+  return 0;
+}
+
+//returns 1 for up 2 for down, and 3 for select
+int check_current_button(GameData* gamedata){
+  if(gamedata->uphit == 1 && gamedata->downhit == 0)
+    return 1;
+  if(gamedata->uphit == 0 && gamedata->downhit == 1)
+    return 2;
+  if(gamedata->uphit == 1 && gamedata->downhit == 1)
+    return 3;
   return 0;
 }

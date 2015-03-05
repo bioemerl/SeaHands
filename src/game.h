@@ -13,3 +13,4 @@ void load_data(GameData* gamedata);
 void save_data(GameData* gamedata);
 int check_for_player_upgrade(GameData* gamedata, int upgradetype);
 int check_player_upgrade_price(GameData* gamedata, int upgradetype);
+int check_current_button(GameData* gamedata);

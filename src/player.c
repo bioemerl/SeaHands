@@ -45,16 +45,7 @@ void update_player(GameData* gamedata){
     update_player_menu(gamedata);    
 }
 
-//returns 1 for up, 2 for down, and 3 for select
-int check_current_button(GameData* gamedata){
-  if(gamedata->uphit == 1 && gamedata->downhit == 0)
-    return 1;
-  if(gamedata->uphit == 0 && gamedata->downhit == 1)
-    return 2;
-  if(gamedata->uphit == 1 && gamedata->downhit == 1)
-    return 3;
-  return 0;
-}
+
 
 void update_player_menu(GameData* gamedata){
   if(gamedata->menulayer == 0)

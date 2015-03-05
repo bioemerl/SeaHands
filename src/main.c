@@ -1,11 +1,14 @@
 #include <pebble.h>
 #include "game.h"
+#include "shipbattle.h"
   
 //prototypes
 void draw_ships(Layer *this_layer, GContext *ctx);
 void draw_gui(Layer *this_layer, GContext *ctx);
 void draw_islands(Layer *this_layer, GContext *ctx);
 void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int x, int y);
+void drawmaingame(Layer *this_layer, GContext *ctx);
+void drawbattle(Layer *this_layer, GContext *ctx);
   
 //define a number of constants
 const uint8_t PEBBLEHEIGHT = 168;
@@ -28,13 +31,36 @@ static Window *window;
 static Layer *graphics_canvas_layer;
 
 GameData gamedata;
+ShipBattleData shipbattledata;
 
 static void canvas_update_proc(Layer *this_layer, GContext *ctx){
   //GRect bounds = layer_get_bounds(this_layer);
   //get the bounds of the layer
   //get center of screen
   //GPoint center = GPoint((bounds.size.w / 2), (bounds.size.h / 2));
+  if(gamedata.gamemode != 'b')
+    drawmaingame(this_layer, ctx);
+  if(gamedata.gamemode == 'b')
+    drawbattle(this_layer, ctx);
   
+}
+
+void drawbattle(Layer *this_layer, GContext *ctx){
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  GPoint bullet;
+  //draw all bullets
+  for(int i = 1; i <= shipbattledata.numberofshots; i++){
+    bullet = GPoint(shipbattledata.shotsx[i],shipbattledata.shotsy[i]);
+    graphics_fill_circle(ctx, bullet, 3);
+  }
+  //draw player and enemy
+  GPoint player = GPoint(shipbattledata.playerx,PLAYER_Y_LEVEL);
+  GPoint enemy = GPoint(shipbattledata.enemyx,ENEMY_Y_LEVEL);
+  graphics_fill_circle(ctx, player, 6);
+  graphics_fill_circle(ctx, enemy, 6);
+}
+
+void drawmaingame(Layer *this_layer, GContext *ctx){
   //draw the player
   GPoint player = GPoint(72, 82);
   graphics_context_set_fill_color(ctx, GColorBlack);
@@ -284,7 +310,10 @@ void handleTimer(){
   //tell the watch to run this again and again and again, X amount of time apart
   app_timer_register(GAMELOOP_TIMER_INTERVALL, handleTimer, NULL);
   //function that is called to update the values in gamedata
-  update_game(&gamedata);
+  if(gamedata.gamemode != 'b')
+    update_game(&gamedata);
+  if(gamedata.gamemode == 'b')
+    updatebattle(&shipbattledata, &gamedata);
   //make sure the layer gets redrawn
   layer_mark_dirty(graphics_canvas_layer);
 }
@@ -300,7 +329,7 @@ static void init(void) {
   const bool animated = true;
   window_stack_push(window, animated);
   
-
+  initializebattle(&shipbattledata);
   initialize_game(&gamedata);
   load_data(&gamedata);
   

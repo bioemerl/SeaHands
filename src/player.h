@@ -13,7 +13,7 @@ void update_player(GameData* gamedata);
 void burn_player_cargo(GameData* gamedata);
 void update_player_menu(GameData* gamedata);
 void update_player_movement(GameData* gamedata);
-int check_current_button(GameData* gamedata);
+
 void menuzeroupdate(GameData* gamedata);
 void menuoneupdate(GameData* gamedata);
 void menutwoupdate(GameData* gamedata);
