@@ -72,6 +72,7 @@ typedef struct{
   int16_t playerx,
           enemyx,
           enemytimer,
+          enemytarget,
           shiptimer,
           shotsx[10],
           shotsy[10];

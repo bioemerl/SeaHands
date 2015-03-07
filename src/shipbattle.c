@@ -5,7 +5,7 @@
   
 const int PLAYER_Y_LEVEL = 140;
 const int ENEMY_Y_LEVEL = 10;
-const int ENEMY_FIRE_SPEED = 100;
+const int ENEMY_FIRE_SPEED = 30;
 const int PLAYER_FIRE_SPEED = 100;
   
 void initializebattle(ShipBattleData* shipbattledata){
@@ -45,12 +45,20 @@ void updateplayer(ShipBattleData* shipbattledata, GameData* gamedata){
 }
 
 void updateenemy(ShipBattleData* shipbattledata){
+  
   if(shipbattledata->enemytimer > 0)
     shipbattledata->enemytimer--;
-  if(shipbattledata->enemyx < shipbattledata->playerx){
+  
+  if(shipbattledata->enemyx == shipbattledata->enemytarget && shipbattledata->enemytimer == 0){
+    createbullet(shipbattledata, 'e', shipbattledata->enemyx, ENEMY_Y_LEVEL);
+    shipbattledata->enemytimer = ENEMY_FIRE_SPEED;
+    shipbattledata->enemytarget = random(144);
+  }
+  
+  if(shipbattledata->enemyx < shipbattledata->enemytarget){
     shipbattledata->enemyx++;
   }
-  if(shipbattledata->enemyx > shipbattledata->playerx){
+  if(shipbattledata->enemyx > shipbattledata->enemytarget){
     shipbattledata->enemyx--;
   }
   if(shipbattledata->enemyx == shipbattledata->playerx && shipbattledata->enemytimer == 0){
@@ -64,7 +72,7 @@ void updateshots(ShipBattleData* shipbattledata, GameData* gamedata){
     
     if(shipbattledata->shotsside[i] == 'p'){
       //check for death
-      if(shipbattledata->shotsx[i] == shipbattledata->enemyx && shipbattledata->shotsy[i] == ENEMY_Y_LEVEL)
+      if((shipbattledata->shotsx[i] < shipbattledata->enemyx + 6 && shipbattledata->shotsx[i] > shipbattledata->enemyx - 6) && shipbattledata->shotsy[i] == ENEMY_Y_LEVEL)
         endgame(shipbattledata, gamedata, 'p');
       //update shot movement
       shipbattledata->shotsy[i]--;
@@ -74,7 +82,7 @@ void updateshots(ShipBattleData* shipbattledata, GameData* gamedata){
     }
     if(shipbattledata->shotsside[i] == 'e'){
       //check for death
-      if(shipbattledata->shotsx[i] == shipbattledata->playerx && shipbattledata->shotsy[i] == PLAYER_Y_LEVEL)
+      if((shipbattledata->shotsx[i] < shipbattledata->playerx + 6 && shipbattledata->shotsx[i] > shipbattledata->playerx - 6) && (shipbattledata->shotsy[i] == PLAYER_Y_LEVEL))
         endgame(shipbattledata, gamedata, 'e');
       //update shot movement
       shipbattledata->shotsy[i]++;
