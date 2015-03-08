@@ -17,6 +17,7 @@ void update_player_movement(GameData* gamedata);
 void menuzeroupdate(GameData* gamedata);
 void menuoneupdate(GameData* gamedata);
 void menutwoupdate(GameData* gamedata);
+void menuthreeupdate(GameData* gamedata);
 void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount);
 void buysellresources(GameData* gamedata, int8_t buyorsell, int resource, int islandnumber, int resourcecost);
 int calculatewindspeed(GameData* gamedata);

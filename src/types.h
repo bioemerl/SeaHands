@@ -7,6 +7,7 @@ extern const int TOTALISLANDS;
 extern const int MENUITEMSCNT;
 extern const int MENU2ITEMSCNT;
 extern const int MENU3ITEMSCNT;
+extern const int MENU4ITEMSCNT;
 extern const int BASE_PRICE_SUPPLIES;
 
 typedef struct{
@@ -34,10 +35,17 @@ typedef struct{
   
   int8_t playercargo[5]; //the player cargo
   int8_t playerisland;
+  int8_t playership;
   int16_t playerwallet;
   int16_t playerx, playery;
   int8_t playerxvelocity, playeryvelocity;
   int8_t currentwindspeed;
+   
+  //only to be looked at or changed when the gamemode changes between states
+  //use different flag for each nested gamelayer change, with the main layer being the base layer of any others
+  //say I enter a menu, then enter a game from in the menu, that will change the flag 2, so that the menu layer can
+  //also use a flag
+  char gamemodeswitchflag1;
   
   //player upgrades
   int8_t maxplayercargo, currentspeed;

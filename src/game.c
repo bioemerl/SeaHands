@@ -11,7 +11,8 @@
 static int twohundredcountdown = 200;
 
 void initialize_game(GameData* gamedata){
-  gamedata->gamemode = 'b';
+  gamedata->playership = -1;
+  gamedata->gamemode = 'p';
   gamedata->playerisland = 1;
   gamedata->menulayer = 0;
   for(int i = 0; i < 5; i++)
@@ -196,6 +197,10 @@ void load_data(GameData* gamedata){
     gamedata->playeryvelocity = loading.currentspeed;
     gamedata->cargolevel = loading.cargolevel;
     gamedata->speedlevel = loading.speedlevel;
+  }
+  else{
+    //if no previous data values, set default values
+    gamedata->playerwallet = 500;
   }
 }
 

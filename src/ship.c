@@ -42,28 +42,32 @@ void update_ships(GameData* gamedata){
   //APP_LOG(APP_LOG_LEVEL_INFO, "Updating Ships");
   for(int i = 0; i <= gamedata->totalships; i++){
     //calculate movment, simple algorithm to do so
-    
-    if(gamedata->shipsx[i] < gamedata->islandsx[ gamedata->shipsisland[i] ]){
-      gamedata->shipsx[i]++;
+    if(i != gamedata->playership){
+      if(gamedata->shipsx[i] < gamedata->islandsx[gamedata->shipsisland[i]]){
+        gamedata->shipsx[i]++;
+      }
+      if(gamedata->shipsx[i] > gamedata->islandsx[gamedata->shipsisland[i]]){
+        gamedata->shipsx[i]--;
+      }
+      if(gamedata->shipsy[i] < gamedata->islandsy[gamedata->shipsisland[i]]){
+        gamedata->shipsy[i]++;
+      }
+      if(gamedata->shipsy[i] > gamedata->islandsy[gamedata->shipsisland[i]]){
+        gamedata->shipsy[i]--;
+      }
+      if((gamedata->shipsx[i] == gamedata->islandsx[gamedata->shipsisland[i]]) && (gamedata->shipsy[i] == gamedata->islandsy[gamedata->shipsisland[i]])){
+       //APP_LOG(APP_LOG_LEVEL_INFO, "Attempting to destroy ship %i", i);
+       destroy_ship(gamedata, i, 1);
+      }
     }
-    if(gamedata->shipsx[i] > gamedata->islandsx[gamedata->shipsisland[i]]){
-      gamedata->shipsx[i]--;
-    }
-    if(gamedata->shipsy[i] < gamedata->islandsy[gamedata->shipsisland[i]]){
-      gamedata->shipsy[i]++;
-    }
-   if(gamedata->shipsy[i] > gamedata->islandsy[gamedata->shipsisland[i]]){
-      gamedata->shipsy[i]--;
-    }
-   if((gamedata->shipsx[i] == gamedata->islandsx[gamedata->shipsisland[i]]) && (gamedata->shipsy[i] == gamedata->islandsy[gamedata->shipsisland[i]])){
-     //APP_LOG(APP_LOG_LEVEL_INFO, "Attempting to destroy ship %i", i);
-     destroy_ship(gamedata, i, 1);
-   }
   }//end for
 }
 
 void destroy_ship(GameData* gamedata, int shipnumber, int reacheddestination){
   //APP_LOG(APP_LOG_LEVEL_INFO, "Destroying ship - reached %i", reacheddestination);
+  if(shipnumber < gamedata->playership){ //ensure that the ships frozen in player encounter stay frozen
+    gamedata->playership--;
+  }
   if(reacheddestination == 0){
     gamedata->shipsx[shipnumber] = -1;
     gamedata->shipsy[shipnumber] = -1;

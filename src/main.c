@@ -46,6 +46,8 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
 }
 
 void drawbattle(Layer *this_layer, GContext *ctx){
+  //graphics_fill_rect(ctx, GRect(x,y,54,90), 0, GCornerNone);
+  
   graphics_context_set_fill_color(ctx, GColorBlack);
   GPoint bullet;
   //draw all bullets
@@ -54,10 +56,21 @@ void drawbattle(Layer *this_layer, GContext *ctx){
     graphics_fill_circle(ctx, bullet, 3);
   }
   //draw player and enemy
-  GPoint player = GPoint(shipbattledata.playerx,PLAYER_Y_LEVEL);
-  GPoint enemy = GPoint(shipbattledata.enemyx,ENEMY_Y_LEVEL);
-  graphics_fill_circle(ctx, player, 6);
-  graphics_fill_circle(ctx, enemy, 6);
+  
+  //draw the player body
+  graphics_fill_rect(ctx, GRect(shipbattledata.playerx - PLAYER_SHIP_SIZE/2, PLAYER_Y_LEVEL - PLAYER_SHIP_SIZE/4, PLAYER_SHIP_SIZE, (PLAYER_SHIP_SIZE/2) + 1), 0, GCornerNone);
+  //draw player endpoints
+  graphics_fill_circle(ctx, GPoint(shipbattledata.playerx - PLAYER_SHIP_SIZE/2 ,PLAYER_Y_LEVEL), PLAYER_SHIP_SIZE/4);
+  graphics_fill_circle(ctx, GPoint(shipbattledata.playerx + PLAYER_SHIP_SIZE/2 ,PLAYER_Y_LEVEL), PLAYER_SHIP_SIZE/4);
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_fill_circle(ctx, GPoint(shipbattledata.playerx, PLAYER_Y_LEVEL), PLAYER_SHIP_SIZE/4 - PLAYER_SHIP_SIZE/8);
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  
+  //draw enemy body
+  graphics_fill_rect(ctx, GRect(shipbattledata.enemyx - ENEMY_SHIP_SIZE/2, ENEMY_Y_LEVEL - ENEMY_SHIP_SIZE/4, ENEMY_SHIP_SIZE, (ENEMY_SHIP_SIZE/2) + 1), 0, GCornerNone);
+  //draw enemy endpoints
+  graphics_fill_circle(ctx, GPoint(shipbattledata.enemyx - ENEMY_SHIP_SIZE/2 ,ENEMY_Y_LEVEL), ENEMY_SHIP_SIZE/4);
+  graphics_fill_circle(ctx, GPoint(shipbattledata.enemyx + ENEMY_SHIP_SIZE/2 ,ENEMY_Y_LEVEL), ENEMY_SHIP_SIZE/4);
 }
 
 void drawmaingame(Layer *this_layer, GContext *ctx){
@@ -83,11 +96,14 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
   //draw the menus
   if(gamedata.gamemode == 'm'){
     //always draw the base menu
-    draw_menu_layer(this_layer, ctx, 0, 0, 15);
-    if(gamedata.menulayer == 1)
+    if(gamedata.menulayer == 0 || gamedata.menulayer == 1 || gamedata.menulayer == 2)
+      draw_menu_layer(this_layer, ctx, 0, 0, 15); //the base menu layer
+    if(gamedata.menulayer == 1)//buysellmenu
       draw_menu_layer(this_layer, ctx, 1, 54, 15);
-    if(gamedata.menulayer == 2)
+    if(gamedata.menulayer == 2) // the islands upgrade menu
       draw_menu_layer(this_layer, ctx, 2, 45, 15);
+    if(gamedata.menulayer == 3) //the ship pillage menu
+      draw_menu_layer(this_layer, ctx, 3, 0, 15);
   }
 }
 
@@ -168,6 +184,15 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     speedprice = upgradeprices[1];
     snprintf(secondmenulayer, sizeof(secondmenulayer), "BuySu:%i\nUpCrgo:%i\nUpSpd: %i\nBack", BASE_PRICE_SUPPLIES, cargoprice, speedprice);
     graphics_draw_text(ctx, secondmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer3text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  }
+  if(menulayernumber == 3){
+    graphics_fill_rect(ctx, GRect(x,y,40,35), 0, GCornerNone);
+    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[3]*15, 40, 15));
+    GRect layer4text = GRect(x,y,40, 35);
+    
+    char thirdmenulayer[17];
+    snprintf(thirdmenulayer, sizeof(thirdmenulayer), "Pillage:\nBack:");
+    graphics_draw_text(ctx, thirdmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer4text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
 }
 

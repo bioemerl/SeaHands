@@ -11,6 +11,12 @@ const int WIND_SPEED_SECTOR_SIZE = 100;
 
 
 void initialize_player(GameData* gamedata){
+  //kill all layers
+  for(int i = 0; i < 4; i++){
+    gamedata->currentmenu[i] = 0;
+  }
+  gamedata->menulayer = 0;
+  gamedata->gamemode = 'p';
   //initiate player values
   gamedata->playerxvelocity = 0;
   gamedata->playeryvelocity = gamedata->currentspeed;
@@ -22,14 +28,13 @@ void initialize_player(GameData* gamedata){
   gamedata->playercargo[2] = 0;
   gamedata->playercargo[3] = 10;
   gamedata->playercargo[4] = 5;
-  gamedata->playerwallet = 500;
   gamedata->currentwindspeed = calculatewindspeed(gamedata);
   //gamedata->maxplayercargo = BASE_PLAYER_CARGO;
 }
 
 void burn_player_cargo(GameData* gamedata){
   //APP_LOG(APP_LOG_LEVEL_INFO, "Speed = %i: X: %i Y: %i", calculatewindspeed(gamedata), gamedata->playerx, gamedata->playery);
-  if(random(3) == 2){
+  if(random(5) == 2){
     gamedata->playercargo[4] += -1; //burn supplies
   }
   if(gamedata->playercargo[4] <= 0){
@@ -54,6 +59,8 @@ void update_player_menu(GameData* gamedata){
     menuoneupdate(gamedata); 
   if(gamedata->menulayer == 2)
     menutwoupdate(gamedata);
+  if(gamedata->menulayer == 3)
+    menuthreeupdate(gamedata);
 }
 
 void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount){
@@ -200,6 +207,24 @@ void menutwoupdate(GameData* gamedata){
   }
 }
 
+void menuthreeupdate(GameData* gamedata){
+  int buttonpress = check_current_button(gamedata);
+  updatemenuselection(gamedata, 3, MENU4ITEMSCNT);
+  if(gamedata->currentmenu[3] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
+    //pillage
+    gamedata->gamemodeswitchflag1 = 'p';
+    gamedata->gamemode = 'b';
+  }
+  if(gamedata->currentmenu[3] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
+    //exit menu
+    gamedata->playership = -1;
+    gamedata->currentmenu[3] = 0;
+    gamedata->gamemode = 'p';
+    gamedata->playerx += 6;
+    gamedata->playery += 6;
+  }
+}
+
 void update_player_movement(GameData* gamedata){
   int buttonhit = check_current_button(gamedata);
   
@@ -297,6 +322,17 @@ void update_player_movement(GameData* gamedata){
       gamedata->menulayer = 0;
       gamedata->gamemode = 'm';
       break;
+    }
+  }
+  //APP_LOG(APP_LOG_LEVEL_INFO, "NUMBEROFSHIPS %i", gamedata->totalships);
+  for(int i = 0; i <= gamedata->totalships; i++){
+    //APP_LOG(APP_LOG_LEVEL_INFO, "TEST: %i", (finddistance(gamedata->playerx, gamedata->playery, gamedata->shipsx[i], gamedata->shipsy[i]) <= 8*8));
+    if(finddistance(gamedata->playerx, gamedata->playery, gamedata->shipsx[i], gamedata->shipsy[i]) <= 8*8){
+      //open up a menu
+      gamedata->playership = i;
+      APP_LOG(APP_LOG_LEVEL_INFO, "HIT SHIP");
+      gamedata->gamemode = 'm';
+      gamedata->menulayer = 3;
     }
   }
 }

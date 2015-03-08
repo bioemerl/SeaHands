@@ -2,12 +2,19 @@
 #include "shipbattle.h"
 #include "game.h"
 #include "types.h"
+#include "player.h"
+#include "ship.h"
   
 const int PLAYER_Y_LEVEL = 140;
 const int ENEMY_Y_LEVEL = 10;
-const int ENEMY_FIRE_SPEED = 30;
-const int PLAYER_FIRE_SPEED = 100;
-  
+const int ENEMY_FIRE_SPEED = 25;
+const int PLAYER_FIRE_SPEED = 42;
+const int PLAYER_MOVE_SPEED = 1;
+const int ENEMY_MOVE_SPEED = 1;
+const int SHOT_MOVE_SPEED = 3;
+const int PLAYER_SHIP_SIZE = 24; //must be higher than 8, devisible by 4
+const int ENEMY_SHIP_SIZE = 24; //same as below
+
 void initializebattle(ShipBattleData* shipbattledata){
   shipbattledata->playerx = 0;
   shipbattledata->enemyx = 0;
@@ -32,10 +39,10 @@ void updateplayer(ShipBattleData* shipbattledata, GameData* gamedata){
     shipbattledata->shiptimer--;
   int currentbutton = check_current_button(gamedata);
   if(currentbutton == 1){
-    shipbattledata->playerx--;
+    shipbattledata->playerx -= PLAYER_MOVE_SPEED;
   }
   if(currentbutton == 2){
-    shipbattledata->playerx++;
+    shipbattledata->playerx += PLAYER_MOVE_SPEED;
   }
   if(currentbutton == 3 && gamedata->buttonrelease == 1 && shipbattledata->shiptimer == 0){
     shipbattledata->shiptimer = PLAYER_FIRE_SPEED;
@@ -45,21 +52,20 @@ void updateplayer(ShipBattleData* shipbattledata, GameData* gamedata){
 }
 
 void updateenemy(ShipBattleData* shipbattledata){
-  
   if(shipbattledata->enemytimer > 0)
     shipbattledata->enemytimer--;
   
-  if(shipbattledata->enemyx == shipbattledata->enemytarget && shipbattledata->enemytimer == 0){
+  if((shipbattledata->enemyx <= shipbattledata->enemytarget + ENEMY_MOVE_SPEED && shipbattledata->enemyx >= shipbattledata->enemytarget - ENEMY_MOVE_SPEED) && shipbattledata->enemytimer == 0){
     createbullet(shipbattledata, 'e', shipbattledata->enemyx, ENEMY_Y_LEVEL);
     shipbattledata->enemytimer = ENEMY_FIRE_SPEED;
-    shipbattledata->enemytarget = random(144);
+    shipbattledata->enemytarget = ((ENEMY_SHIP_SIZE /2 + ENEMY_SHIP_SIZE + 4)/2) + random(144 - (ENEMY_SHIP_SIZE /2 + ENEMY_SHIP_SIZE + 4));
   }
   
   if(shipbattledata->enemyx < shipbattledata->enemytarget){
-    shipbattledata->enemyx++;
+    shipbattledata->enemyx += ENEMY_MOVE_SPEED;
   }
   if(shipbattledata->enemyx > shipbattledata->enemytarget){
-    shipbattledata->enemyx--;
+    shipbattledata->enemyx -= ENEMY_MOVE_SPEED;
   }
   if(shipbattledata->enemyx == shipbattledata->playerx && shipbattledata->enemytimer == 0){
     shipbattledata->enemytimer = ENEMY_FIRE_SPEED;
@@ -72,20 +78,20 @@ void updateshots(ShipBattleData* shipbattledata, GameData* gamedata){
     
     if(shipbattledata->shotsside[i] == 'p'){
       //check for death
-      if((shipbattledata->shotsx[i] < shipbattledata->enemyx + 6 && shipbattledata->shotsx[i] > shipbattledata->enemyx - 6) && shipbattledata->shotsy[i] == ENEMY_Y_LEVEL)
+      if((shipbattledata->shotsx[i] < shipbattledata->enemyx + ENEMY_SHIP_SIZE/2 + ENEMY_SHIP_SIZE/4 && shipbattledata->shotsx[i] > shipbattledata->enemyx - ENEMY_SHIP_SIZE/2 - ENEMY_SHIP_SIZE/4) && (abs(shipbattledata->shotsy[i] - ENEMY_Y_LEVEL) <= ENEMY_SHIP_SIZE/4))
         endgame(shipbattledata, gamedata, 'p');
       //update shot movement
-      shipbattledata->shotsy[i]--;
+      shipbattledata->shotsy[i] -= SHOT_MOVE_SPEED;
       //destroy bullet if necessary
       if(shipbattledata->shotsy[i] < 0 || shipbattledata->shotsy[i] > 200)
         destroybullet(shipbattledata, i);
     }
     if(shipbattledata->shotsside[i] == 'e'){
       //check for death
-      if((shipbattledata->shotsx[i] < shipbattledata->playerx + 6 && shipbattledata->shotsx[i] > shipbattledata->playerx - 6) && (shipbattledata->shotsy[i] == PLAYER_Y_LEVEL))
+      if((shipbattledata->shotsx[i] < shipbattledata->playerx + PLAYER_SHIP_SIZE/2 + PLAYER_SHIP_SIZE/4 && shipbattledata->shotsx[i] > shipbattledata->playerx - PLAYER_SHIP_SIZE/2 - PLAYER_SHIP_SIZE/4) && (abs(shipbattledata->shotsy[i] - PLAYER_Y_LEVEL) <= PLAYER_SHIP_SIZE/4))
         endgame(shipbattledata, gamedata, 'e');
       //update shot movement
-      shipbattledata->shotsy[i]++;
+      shipbattledata->shotsy[i] += SHOT_MOVE_SPEED;
       //destroy bullet if necessary
       if(shipbattledata->shotsy[i] < 0 || shipbattledata->shotsy[i] > 200)
         destroybullet(shipbattledata, i);
@@ -121,6 +127,22 @@ void destroybullet(ShipBattleData* shipbattledata, int bulletnumber){
 }
 
 void endgame(ShipBattleData* shipbattledata, GameData* gamedata, char winner){
+  if(winner == 'e'){
+    //if player lost, punish the player
+    initialize_player(gamedata);
+    gamedata->playerwallet = (gamedata->playerwallet -(gamedata->playerwallet/5));
+  }
+  if(gamedata->gamemodeswitchflag1 == 'p'){ //if p for pillage
+    if(gamedata->playercargo[gamedata->shipstype[gamedata->playership]] + 10 <= gamedata->maxplayercargo)
+      gamedata->playercargo[gamedata->shipstype[gamedata->playership]] += 10;
+    if(gamedata->playercargo[4] < gamedata->maxplayercargo)
+      gamedata->playercargo[4]++;
+    destroy_ship(gamedata, gamedata->playership, 0);
+  }
+  if(gamedata->gamemodeswitchflag1 == 'h'){ //if h for hijack
+     
+  }
   gamedata->gamemode = 'p';
+  gamedata->playership = -1;
   initializebattle(shipbattledata);
 }
