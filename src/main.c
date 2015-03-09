@@ -9,6 +9,7 @@ void draw_islands(Layer *this_layer, GContext *ctx);
 void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int x, int y);
 void drawmaingame(Layer *this_layer, GContext *ctx);
 void drawbattle(Layer *this_layer, GContext *ctx);
+void draw_edge_points(Layer *this_layer, GContext *ctx);
   
 //define a number of constants
 const uint8_t PEBBLEHEIGHT = 168;
@@ -88,7 +89,7 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
     GPoint playervector = GPoint((72 + gamedata.playerxvelocity), (82 + gamedata.playeryvelocity));
     graphics_fill_circle(ctx, playervector, 2);
   }
-  
+  draw_edge_points(this_layer, ctx);
   draw_islands(this_layer, ctx);
   draw_ships(this_layer, ctx);
   draw_gui(this_layer, ctx);
@@ -104,6 +105,64 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
       draw_menu_layer(this_layer, ctx, 2, 45, 15);
     if(gamedata.menulayer == 3) //the ship pillage menu
       draw_menu_layer(this_layer, ctx, 3, 0, 15);
+  }
+}
+
+void draw_edge_points(Layer *this_layer, GContext *ctx){
+  for(int i = 0; i < TOTALISLANDS; i++){
+    int fullx = gamedata.islandsx[i] - gamedata.playerx;
+    int fully = gamedata.islandsy[i] - gamedata.playery;
+    int pointx, pointy;
+    pointx = 0;
+    pointy = 0;
+    pointx = pointy + pointx; //because you have to use pointx, apparently.
+    //check if the line is straight
+    if(abs(fullx) < 72 && abs(fully) < 84){
+      
+    }
+    else if(fullx == 0){
+      pointx = 72;
+      if(fully > 0)
+        pointy = 138;
+      if(fully < 0)
+        pointy = 15;
+    }
+    else if(fully == 0){
+      pointy = (77);
+      if(fullx > 0)
+        pointx = 144;
+      if(fully < 0)
+        pointx = 0;
+    }
+    else{
+      //create values
+      if(fullx > 0){
+        pointx = 144;
+        pointy = (77) + ((fully * 77)/fullx);
+      }
+      if(fullx < 0){
+        pointx = 0;
+        pointy = (77) - ((fully * 77)/fullx);
+      }
+
+      if(pointy >= 138 || pointy <= 15){
+        if(fully < 0){
+          pointy = 15;
+          pointx = (72) - ((fullx * 72)/fully);
+        }
+        if(fully > 0){
+          pointy = 138;
+          pointx = (72) + ((fullx * 72)/fully);
+        }
+        
+      }
+    }
+    //draw the point here
+    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_fill_circle(ctx, GPoint(pointx, pointy), 3);
+    graphics_context_set_fill_color(ctx, GColorWhite);
+    graphics_fill_circle(ctx, GPoint(pointx, pointy), 2);
+    graphics_context_set_fill_color(ctx, GColorBlack);
   }
 }
 

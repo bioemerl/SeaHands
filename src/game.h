@@ -2,6 +2,9 @@
 #include "types.h"
 
 //static int framespassed;
+  
+//idea: every so often, open up a news report that tells the player what is going on
+//in the game world (METAL IS EXPENSIVE!)
 
 
 void initialize_game(GameData* gamedata);
