@@ -29,6 +29,7 @@ void initialize_player(GameData* gamedata){
   gamedata->playercargo[3] = 10;
   gamedata->playercargo[4] = 5;
   gamedata->currentwindspeed = calculatewindspeed(gamedata);
+  gamedata->playersailsdeployed = 0;
   //gamedata->maxplayercargo = BASE_PLAYER_CARGO;
 }
 
@@ -100,13 +101,15 @@ void menuzeroupdate(GameData* gamedata){
       }
       if(gamedata->playery > gamedata->islandsy[gamedata->playerisland]){
         gamedata->playery = gamedata->islandsy[gamedata->playerisland] + 30;
+
       }
       else{
         gamedata->playery = gamedata->islandsy[gamedata->playerisland] - 30;
       }
-      
+      gamedata->playersailsdeployed = 0;
       gamedata->currentmenu[0] = 0;
       gamedata->gamemode = 'p';
+      gamedata->buttonrelease = 0;
     }
 }
 
@@ -271,7 +274,18 @@ void update_player_movement(GameData* gamedata){
   }
   
   //SELECT TRIGGER
-  if(buttonhit != 3){
+  if(buttonhit == 3 && gamedata->buttonrelease == 1){
+   if(gamedata->playersailsdeployed == 0){
+     gamedata->playersailsdeployed = 1;
+    }
+    else{
+      gamedata->playersailsdeployed = 0;
+    }
+    gamedata->buttonrelease = 0;
+  }
+  
+  
+  if(gamedata->playersailsdeployed == 1){
     //cause base player movement
     gamedata->playerx += gamedata->playerxvelocity;
     gamedata->playery += gamedata->playeryvelocity;

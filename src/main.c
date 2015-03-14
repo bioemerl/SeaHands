@@ -159,9 +159,16 @@ void draw_edge_points(Layer *this_layer, GContext *ctx){
     }
     //draw the point here
     graphics_context_set_fill_color(ctx, GColorBlack);
-    graphics_fill_circle(ctx, GPoint(pointx, pointy), 3);
+    graphics_fill_circle(ctx, GPoint(pointx, pointy), 4);
     graphics_context_set_fill_color(ctx, GColorWhite);
-    graphics_fill_circle(ctx, GPoint(pointx, pointy), 2);
+    if(gamedata.islandstypes[i] == 0)
+      graphics_fill_circle(ctx, GPoint(pointx, pointy), 0);
+    if(gamedata.islandstypes[i] == 1)
+      graphics_fill_circle(ctx, GPoint(pointx, pointy), 1);
+    if(gamedata.islandstypes[i] == 2)
+      graphics_fill_circle(ctx, GPoint(pointx, pointy), 2);
+    if(gamedata.islandstypes[i] == 3)
+      graphics_fill_circle(ctx, GPoint(pointx, pointy), 3);
     graphics_context_set_fill_color(ctx, GColorBlack);
   }
 }

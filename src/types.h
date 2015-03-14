@@ -39,6 +39,7 @@ typedef struct{
   int16_t playerwallet;
   int16_t playerx, playery;
   int8_t playerxvelocity, playeryvelocity;
+  int8_t playersailsdeployed;
   int8_t currentwindspeed;
    
   //only to be looked at or changed when the gamemode changes between states

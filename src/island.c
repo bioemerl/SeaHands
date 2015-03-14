@@ -11,8 +11,8 @@ void initialize_islands(GameData* gamedata){
     gamedata->islandsy[i] = -1;
   }
   //now initialize them to actual island positions
-  gamedata->islandsx[0] = 100;
-  gamedata->islandsy[0] = 100;
+  gamedata->islandsx[0] = -200;
+  gamedata->islandsy[0] = 200;
   //now set their cargos, and their types
   //1 - metal       2 - wood        3 - stone      4 - food
   //1 - loses wood. 2 - looses stone 3 - loses food 4 - loses metal
@@ -23,32 +23,32 @@ void initialize_islands(GameData* gamedata){
   gamedata->islandscargo[0][2] = 100; //stone
   gamedata->islandscargo[0][3] = 100; //food
   
-  gamedata->islandsx[1] = 150;
-  gamedata->islandsy[1] = 170;
+  gamedata->islandsx[1] = 300;
+  gamedata->islandsy[1] = 340;
   gamedata->islandstypes[1] = 1;
   gamedata->islandscargo[1][0] = 100; //metal
   gamedata->islandscargo[1][1] = 20; //wood
   gamedata->islandscargo[1][2] = 100; //stone
   gamedata->islandscargo[1][3] = 0; //food
   
-  gamedata->islandsx[2] = 220;
-  gamedata->islandsy[2] = 170;
+  gamedata->islandsx[2] = 440;
+  gamedata->islandsy[2] = 400;
   gamedata->islandstypes[2] = 2;
   gamedata->islandscargo[2][0] = 100; //metal
   gamedata->islandscargo[2][1] = 0; //wood
   gamedata->islandscargo[2][2] = 20; //stone
   gamedata->islandscargo[2][3] = 100; //food
   
-  gamedata->islandsx[3] = 230;
-  gamedata->islandsy[3] = 100;
+  gamedata->islandsx[3] = 300;
+  gamedata->islandsy[3] = -512;
   gamedata->islandstypes[3] = 3;
   gamedata->islandscargo[3][0] = 0; //metal
   gamedata->islandscargo[3][1] = 100; //wood
   gamedata->islandscargo[3][2] = 100; //stone
   gamedata->islandscargo[3][3] = 20; //food
   
-  gamedata->islandsx[4] = 250;
-  gamedata->islandsy[4] = 270;
+  gamedata->islandsx[4] = -250;
+  gamedata->islandsy[4] = -270;
   gamedata->islandstypes[4] = 0;
   gamedata->islandscargo[4][0] = 20; //metal
   gamedata->islandscargo[4][1] = 0; //wood
@@ -73,11 +73,27 @@ void initialize_islands(GameData* gamedata){
   
   gamedata->islandsx[7] = 200;
   gamedata->islandsy[7] = 0;
-  gamedata->islandstypes[7] = 3;
+  gamedata->islandstypes[7] = 1;
   gamedata->islandscargo[7][0] = 0; //metal
   gamedata->islandscargo[7][1] = 100; //wood
   gamedata->islandscargo[7][2] = 100; //stone
   gamedata->islandscargo[7][3] = 20; //food
+
+  gamedata->islandsx[8] = 50;
+  gamedata->islandsy[8] = -80;
+  gamedata->islandstypes[8] = 3;
+  gamedata->islandscargo[8][0] = 100; //metal
+  gamedata->islandscargo[8][1] = 100; //wood
+  gamedata->islandscargo[8][2] = 100; //stone
+  gamedata->islandscargo[8][3] = 100; //food
+  
+  gamedata->islandsx[9] = -10;
+  gamedata->islandsy[9] = 15;
+  gamedata->islandstypes[9] = 2;
+  gamedata->islandscargo[9][0] = 100; //metal
+  gamedata->islandscargo[9][1] = 100; //wood
+  gamedata->islandscargo[9][2] = 100; //stone
+  gamedata->islandscargo[9][3] = 100; //food
 }
 
 void update_islands(GameData* gamedata){
