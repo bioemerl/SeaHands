@@ -105,6 +105,8 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
       draw_menu_layer(this_layer, ctx, 2, 45, 15);
     if(gamedata.menulayer == 3) //the ship pillage menu
       draw_menu_layer(this_layer, ctx, 3, 0, 15);
+    if(gamedata.menulayer == 4)
+      draw_menu_layer(this_layer, ctx, 4, 0, 0);
   }
 }
 
@@ -203,6 +205,30 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
            gamedata.islandscargo[gamedata.playerisland][3]);
     //draw text
     graphics_draw_text(ctx, totalmenu, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), textbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    //draw two white bars to display which resource is being bought or sold
+    int producerectpos, consumerectpos;
+    //find where the island produce is on the menu
+    producerectpos = gamedata.islandstypes[gamedata.playerisland] * 15;
+    //find where island consumption is on the menu
+    if(gamedata.islandstypes[gamedata.playerisland] == 0){
+      consumerectpos = 2 * 15;
+    }
+    if(gamedata.islandstypes[gamedata.playerisland] == 1){
+      consumerectpos = 3 * 15;
+    }
+    if(gamedata.islandstypes[gamedata.playerisland] == 2){
+      consumerectpos = 1 * 15;
+    }
+    if(gamedata.islandstypes[gamedata.playerisland] == 3){
+      consumerectpos = 0 * 15;
+    }
+    //draw the icons for the two
+    graphics_context_set_fill_color(ctx, GColorWhite);
+    GRect producerect = GRect(50, producerectpos + 17, 2, 11);
+    GRect consumerect = GRect(51, consumerectpos + 17, 1, 11);
+    graphics_fill_rect(ctx, producerect, 0, GCornerNone);
+    graphics_fill_rect(ctx, consumerect, 0, GCornerNone);
+    graphics_context_set_fill_color(ctx, GColorBlack);
   }
   //menu layer for buying and selling resources
   if(menulayernumber == 1){
@@ -251,6 +277,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     snprintf(secondmenulayer, sizeof(secondmenulayer), "BuySu:%i\nUpCrgo:%i\nUpSpd: %i\nBack", BASE_PRICE_SUPPLIES, cargoprice, speedprice);
     graphics_draw_text(ctx, secondmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer3text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
+  //menu layer for ship interactions
   if(menulayernumber == 3){
     graphics_fill_rect(ctx, GRect(x,y,40,35), 0, GCornerNone);
     graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[3]*15, 40, 15));
@@ -259,6 +286,12 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     char thirdmenulayer[17];
     snprintf(thirdmenulayer, sizeof(thirdmenulayer), "Pillage:\nBack:");
     graphics_draw_text(ctx, thirdmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer4text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  }
+  //menu layer for notification pop ups
+  if(menulayernumber == 4){
+    GRect layer5text = GRect(10, 10, 128, 134);
+    graphics_fill_rect(ctx, layer5text, 0, GCornerNone);
+    graphics_draw_text(ctx, gamedata.notificationtext, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer5text, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
   }
 }
 
@@ -370,10 +403,41 @@ static void down_release_handler(ClickRecognizerRef recognizer, void *context) {
   //text_layer_set_text(text_layer, "XDown");
 }
 
+static void select_long_click_handler(ClickRecognizerRef recognizer, void *context){
+  //going to be a "use anywhere" menu for the player, to save the game, or to see info, so on and
+  //so forth
+}
+  
+static void select_long_click_release_handler(ClickRecognizerRef recognizer, void *context){
+  
+}
+
+static void down_long_click_handler(ClickRecognizerRef recognizer, void *context){
+  //I want to make this have the player exit whatever island it is on
+  //to do this I am going to need to make a function that makes the player leave islands and other
+  //menus
+}
+  
+static void down_long_click_release_handler(ClickRecognizerRef recognizer, void *context){
+  
+}
+
+static void up_long_click_handler(ClickRecognizerRef recognizer, void *context){
+  //same as down click, unless I think of another reason to use this
+}
+  
+static void up_long_click_release_handler(ClickRecognizerRef recognizer, void *context){
+  
+}
+  
 static void click_config_provider(void *context) {
   window_raw_click_subscribe(BUTTON_ID_UP, up_click_handler, up_release_handler, NULL);
   window_raw_click_subscribe(BUTTON_ID_DOWN, down_click_handler, down_release_handler, NULL);
   window_raw_click_subscribe(BUTTON_ID_SELECT, select_click_handler, select_release_handler, NULL);
+  // long click config:
+  window_long_click_subscribe(BUTTON_ID_SELECT, 700, select_long_click_handler, select_long_click_release_handler);
+  window_long_click_subscribe(BUTTON_ID_DOWN, 700, down_long_click_handler, down_long_click_release_handler);
+  window_long_click_subscribe(BUTTON_ID_UP, 700, up_long_click_handler, up_long_click_release_handler);
 }
 
 static void window_load(Window *window) {
@@ -423,7 +487,7 @@ static void init(void) {
   initializebattle(&shipbattledata);
   initialize_game(&gamedata);
   load_data(&gamedata);
-  
+  attempt_tutorial(&gamedata, 1);
 
   //start the game loop
   app_timer_register(GAMELOOP_TIMER_INTERVALL, handleTimer, NULL);

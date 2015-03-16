@@ -15,6 +15,7 @@ typedef struct{
   
   int currentmenu[5];
   int menulayer;
+  char notificationtext[100];
   
   int16_t currentcosts;
   

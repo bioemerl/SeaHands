@@ -62,6 +62,8 @@ void update_player_menu(GameData* gamedata){
     menutwoupdate(gamedata);
   if(gamedata->menulayer == 3)
     menuthreeupdate(gamedata);
+  if(gamedata->menulayer == 4)
+    menufourupdate(gamedata);
 }
 
 void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount){
@@ -227,6 +229,16 @@ void menuthreeupdate(GameData* gamedata){
     gamedata->playery += 6;
   }
 }
+
+void menufourupdate(GameData* gamedata){
+  int buttonpress = check_current_button(gamedata);
+  if(buttonpress == 3){
+    gamedata->gamemode = 'p';
+    gamedata->menulayer = 0;
+    gamedata->currentmenu[4] = 0;
+  }
+}
+
 
 void update_player_movement(GameData* gamedata){
   int buttonhit = check_current_button(gamedata);

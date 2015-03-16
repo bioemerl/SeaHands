@@ -113,7 +113,7 @@ void update_islands(GameData* gamedata){
     //later on, update all 10 islands.  However, only one for now
     if(gamedata->islandstypes[i] == 0){
        if(gamedata->islandscargo[i][0] < 100 && gamedata->islandscargo[i][1] > 0){
-        gamedata->islandscargo[i][1]--; //remove one wood
+        gamedata->islandscargo[i][2]--; //remove one stone
         gamedata->islandscargo[i][0] += 2; //add 2 metal
        }
        if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food

@@ -228,3 +228,24 @@ int check_current_button(GameData* gamedata){
     return 3;
   return 0;
 }
+
+//will setup the display of notifications, including the changing gamemode, loading the data in gamedata
+//it should eventually manage data for variables in notifications
+void displaynotification(GameData* gamedata, char notificationtext[100]){
+  //here is where I would process and insert variable values into the string
+  //however, that is a bit fancy and tough to do, and I don't need it right now
+  //so do that later, future me.
+  gamedata->gamemode = 'm';
+  gamedata->menulayer = 4;
+  for(int i = 0; i < 100; i++){
+    gamedata->notificationtext[i] = notificationtext[i];
+  }
+}
+
+//will show a notification for the tutorial
+//if forcetutorial is one, it will always show the tutorial.
+void attempt_tutorial(GameData* gamedata, int8_t forcetutorial){
+  if(!persist_exists(DATA_KEY) || forcetutorial == 1){
+    displaynotification(gamedata, "WELCOME TO SEA HANDS!\nTutorial:\nMt = Metal\nWd = Wood\nSt = Stone\nFd = Food\nSu = Supplies");
+  }
+}
