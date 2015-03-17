@@ -5,6 +5,11 @@
 #include "ship.h"
 
 void initialize_islands(GameData* gamedata){
+  //initialize multipliers for the islands
+  gamedata->metalmultiplier = 1;
+  gamedata->stonemultiplier = 1;
+  gamedata->woodmultiplier = 1;
+  gamedata->foodmultiplier = 1;
   //initialize island positions to a default value
   for(int i = 0; i < 10; i++){
     gamedata->islandsx[i] = -1;
@@ -96,6 +101,17 @@ void initialize_islands(GameData* gamedata){
   gamedata->islandscargo[9][3] = 100; //food
 }
 
+void initialize_island(GameData* gamedata, int islandnumber, int islandtype, int x, int y, int overridemetal, int overridewood,
+                       int overridestone, int overridefood){
+  gamedata->islandsx[9] = -10;
+  gamedata->islandsy[9] = 15;
+  gamedata->islandstypes[9] = 2;
+  gamedata->islandscargo[9][0] = 100; //metal
+  gamedata->islandscargo[9][1] = 100; //wood
+  gamedata->islandscargo[9][2] = 100; //stone
+  gamedata->islandscargo[9][3] = 100; //food
+}
+
 void update_islands(GameData* gamedata){
   
   /*DEBUG CODE
@@ -110,45 +126,18 @@ void update_islands(GameData* gamedata){
   END DEBUG CODE*/
   
   for(int i = 0; i < TOTALISLANDS; i++){
-    //later on, update all 10 islands.  However, only one for now
     if(gamedata->islandstypes[i] == 0){
-       if(gamedata->islandscargo[i][0] < 100 && gamedata->islandscargo[i][1] > 0){
-        gamedata->islandscargo[i][2]--; //remove one stone
-        gamedata->islandscargo[i][0] += 2; //add 2 metal
-       }
-       if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
-         gamedata->islandscargo[i][3]--;
-       }
+      updateislandresource(gamedata, i, 2, 0, -1, -1);
     }
     if(gamedata->islandstypes[i] == 1){
-      if(gamedata->islandscargo[i][1] < 100 && gamedata->islandscargo[i][3] > 0){
-        gamedata->islandscargo[i][3]--; //remove one food
-        gamedata->islandscargo[i][1] += 3; //add 3 wood
-       }
-      if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
-         gamedata->islandscargo[i][3]--;
-       }
+      updateislandresource(gamedata, i, 0, 3, 0, -2);
     }
     if(gamedata->islandstypes[i] == 2){
-      if(gamedata->islandscargo[i][2] < 100 && gamedata->islandscargo[i][1] > 0){
-        gamedata->islandscargo[i][1]--; //remove one wood
-        gamedata->islandscargo[i][2] += 2; //add 2 stone
-       }
-      if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
-         gamedata->islandscargo[i][3]--;
-       }
+      updateislandresource(gamedata, i, 0, -1, 2, -1);
     }
     if(gamedata->islandstypes[i] == 3){
-      if(gamedata->islandscargo[i][3] < 100 && gamedata->islandscargo[i][0] > 0){
-        gamedata->islandscargo[i][0]--; //remove one iron
-        gamedata->islandscargo[i][3] += 5; //add 5 food
-       }
-      if(gamedata->islandscargo[i][3] >= 10){ //if the island still has food
-         gamedata->islandscargo[i][3]--; 
-       }
+      updateislandresource(gamedata, i, -1, 0, 0, 4);
     }
-    //APP_LOG(APP_LOG_LEVEL_INFO, "Metal %i", gamedata->islandscargo[i][0]);
-    //APP_LOG(APP_LOG_LEVEL_INFO, "Wood %i", gamedata->islandscargo[i][1]);
       //based on island type, check if each island has enough of their excess resource
     int searchtype = gamedata->islandstypes[i];
     int possibleislands[10];
@@ -174,4 +163,24 @@ void update_islands(GameData* gamedata){
   
   }
   
+}
+
+//will cause the island to change values, if and only if all value changes are valid (do not go over max, or under 0)
+void updateislandresource(GameData* gamedata, int islandnumber, int res1adjust, int res2adjust, int res3adjust, int res4adjust){
+  int8_t failadjustments = 0;
+  if((gamedata->islandscargo[islandnumber][0] + res1adjust > 100 || gamedata->islandscargo[islandnumber][0] + res1adjust < 0))
+    failadjustments = 1;
+  if((gamedata->islandscargo[islandnumber][1] + res2adjust > 100 || gamedata->islandscargo[islandnumber][1] + res2adjust < 0))
+    failadjustments = 1;
+  if((gamedata->islandscargo[islandnumber][2] + res3adjust > 100 || gamedata->islandscargo[islandnumber][2] + res3adjust < 0))
+    failadjustments = 1;
+  if((gamedata->islandscargo[islandnumber][3] + res4adjust > 100 || gamedata->islandscargo[islandnumber][3] + res4adjust < 0))
+    failadjustments = 1;
+    
+  if(failadjustments == 0){
+    gamedata->islandscargo[islandnumber][0] += res1adjust;
+    gamedata->islandscargo[islandnumber][1] += res2adjust;
+    gamedata->islandscargo[islandnumber][2] += res3adjust;
+    gamedata->islandscargo[islandnumber][3] += res4adjust;
+  }
 }

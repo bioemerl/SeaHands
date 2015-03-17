@@ -12,6 +12,7 @@ extern const int BASE_PRICE_SUPPLIES;
 
 typedef struct{
   char gamemode;
+  char currentevent;
   
   int currentmenu[5];
   int menulayer;
@@ -32,7 +33,12 @@ typedef struct{
   int16_t islandsx[10], islandsy[10];
   int8_t islandstypes[10];
   int8_t islandscargo[10][4]; //max of 128 of any resource at an island, 10 islands, 4 ints per cargo
-
+  //negative values here result in a devision by the multiplier
+  int8_t metalmultiplier;
+  int8_t stonemultiplier;
+  int8_t woodmultiplier;
+  int8_t foodmultiplier;
+  
   
   int8_t playercargo[5]; //the player cargo
   int8_t playerisland;
