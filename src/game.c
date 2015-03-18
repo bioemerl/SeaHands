@@ -286,7 +286,7 @@ void attempt_tutorial(GameData* gamedata, int8_t forcetutorial){
 }
 
 void exitmenus(GameData* gamedata){
-  if(gamedata->gamemode != 'p'){
+  if(gamedata->gamemode == 'm'){
     if((gamedata->menulayer == 0 || gamedata->menulayer == 1 || gamedata->menulayer == 2)){
       exitisland(gamedata);
       gamedata->currentmenu[0] = 0;
