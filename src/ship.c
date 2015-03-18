@@ -17,7 +17,7 @@ void initialize_ships(GameData* gamedata){
 
 void create_ship(GameData* gamedata, int8_t islandnumber, int8_t destinationnumber){
   //add another ship if there is room
-  if(gamedata->totalships < 10){
+  if(gamedata->totalships < 9){
     gamedata->totalships++;
     //APP_LOG(APP_LOG_LEVEL_INFO, "Created Ship %i", gamedata->totalships);
     //APP_LOG(APP_LOG_LEVEL_INFO, "at X =  %i", gamedata->islandsx[islandnumber]);

@@ -371,7 +371,7 @@ int calculatewindspeed(GameData* gamedata){
   //get the current hour here:
   //going to base this on a 12 hour time?
   time_t temp = time(NULL);
-  struct tm *tick_time = localtime(&temp);
+  struct tm *tick_time = localtime(&temp);  
   int hour = 0;
   int currentspeed;
   hour = tick_time->tm_hour;

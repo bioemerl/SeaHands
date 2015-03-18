@@ -4,11 +4,12 @@
 #include "island.h"
 #include "ship.h"
 #include "shipbattle.h"
+#include "worldevent.h"
 
 //main character's name is bill
 //bill because he looks for money all the time.
 
-static int twohundredcountdown = 200;
+static unsigned long long upcounter = 1;
 
 void initialize_game(GameData* gamedata){
   gamedata->playership = -1;
@@ -28,14 +29,26 @@ void initialize_game(GameData* gamedata){
 
 void update_game(GameData* gamedata){
   //set up a timer as to not update everything every frame
-  twohundredcountdown--;
-  if(twohundredcountdown <= 0)
-    twohundredcountdown = 200;
+  upcounter++;
   //what to do on each timer final
-  if(twohundredcountdown == 100){
+  if(upcounter%200 == 0){
     burn_player_cargo(gamedata);
     update_islands(gamedata);
   }
+  if(upcounter%2000 == 0){
+    time_t temp = time(NULL);
+    struct tm *tick_time = localtime(&temp);
+    int currenthour = tick_time->tm_hour;
+    int currentday = tick_time->tm_yday;
+    if(currenthour != gamedata->eventhour || currentday != gamedata->eventday){
+      selectrandomevent(gamedata);
+      gamedata->eventhour = currenthour;
+      gamedata->eventday = currentday;
+    }
+    //always do this on the largest upcounter
+    upcounter = 1;
+  }
+  updateevent(gamedata);
   update_ships(gamedata);
   update_player(gamedata); 
 }
@@ -77,7 +90,7 @@ int finddistance(int x1, int y1, int x2, int y2){
 //currentisland can either be a number 1 - max, or will default to "average" values with -1
 //returns values for all 4 inside of int8_t data
 ResourceValues getmoneyvalue(GameData* gamedata, int currentisland){
-  APP_LOG(APP_LOG_LEVEL_INFO, "CURRENTISLAND IS: %i", currentisland);
+  //APP_LOG(APP_LOG_LEVEL_INFO, "CURRENTISLAND IS: %i", currentisland);
   int totalmetal = 0, totalwood = 0, totalstone = 0, totalfood = 0, average = 0;
   for(int i = 0; i < TOTALISLANDS; i++){
     totalmetal += gamedata->islandscargo[i][0];

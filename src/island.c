@@ -3,6 +3,12 @@
 #include "types.h"
 #include "game.h"
 #include "ship.h"
+  
+const int METALPRODUCTIONVALUE = 2;
+const int WOODPRODUCTIONVALUE = 3;
+const int STONEPRODUCTIONVALUE = 2;
+const int FOODPRODUCTIONVALUE = 4;
+
 
 void initialize_islands(GameData* gamedata){
   //initialize multipliers for the islands
@@ -10,6 +16,10 @@ void initialize_islands(GameData* gamedata){
   gamedata->stonemultiplier = 1;
   gamedata->woodmultiplier = 1;
   gamedata->foodmultiplier = 1;
+  gamedata->metaldivisor = 1;
+  gamedata->stonedivisor = 1;
+  gamedata->wooddivisor = 1;
+  gamedata->fooddivisor = 1;
   //initialize island positions to a default value
   for(int i = 0; i < 10; i++){
     gamedata->islandsx[i] = -1;
@@ -126,17 +136,22 @@ void update_islands(GameData* gamedata){
   END DEBUG CODE*/
   
   for(int i = 0; i < TOTALISLANDS; i++){
+    int resourceincrease = 0;
     if(gamedata->islandstypes[i] == 0){
-      updateislandresource(gamedata, i, 2, 0, -1, -1);
+      resourceincrease = ((METALPRODUCTIONVALUE*gamedata->metalmultiplier) / gamedata->metaldivisor);
+      updateislandresource(gamedata, i, resourceincrease, 0, -1, -1);
     }
     if(gamedata->islandstypes[i] == 1){
-      updateislandresource(gamedata, i, 0, 3, 0, -2);
+      resourceincrease = ((WOODPRODUCTIONVALUE*gamedata->woodmultiplier) / gamedata->stonedivisor);
+      updateislandresource(gamedata, i, 0, resourceincrease, 0, -2);
     }
     if(gamedata->islandstypes[i] == 2){
-      updateislandresource(gamedata, i, 0, -1, 2, -1);
+      resourceincrease = ((STONEPRODUCTIONVALUE*gamedata->stonemultiplier) / gamedata->wooddivisor);
+      updateislandresource(gamedata, i, 0, -1, resourceincrease, -1);
     }
     if(gamedata->islandstypes[i] == 3){
-      updateislandresource(gamedata, i, -1, 0, 0, 4);
+      resourceincrease = ((FOODPRODUCTIONVALUE*gamedata->foodmultiplier) / gamedata->fooddivisor);
+      updateislandresource(gamedata, i, -1, 0, 0, resourceincrease);
     }
       //based on island type, check if each island has enough of their excess resource
     int searchtype = gamedata->islandstypes[i];
@@ -156,13 +171,12 @@ void update_islands(GameData* gamedata){
     //then create a ship for that counter
     if(picounter >= 0){ //if there were any valid targets
       int randomvalue = random(picounter);
+      picounter = 0;
       //APP_LOG(APP_LOG_LEVEL_INFO, "RANDOM INT IS %i PICOUNTER IS %i", randomvalue, picounter);
-      if(gamedata->islandscargo[i][1] >= 10 && gamedata->islandscargo[i][2] >= 10)
+      if(gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 15)
         create_ship(gamedata, i, possibleislands[randomvalue]);
     }
-  
-  }
-  
+  } 
 }
 
 //will cause the island to change values, if and only if all value changes are valid (do not go over max, or under 0)
