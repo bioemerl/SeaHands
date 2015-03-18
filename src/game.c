@@ -295,8 +295,8 @@ void exitmenus(GameData* gamedata){
     }
     if(gamedata->menulayer == 3)
       gamedata->playership = -1;
+    gamedata->currentmenu[gamedata->menulayer] = 0;
+    gamedata->menulayer = 0;
+    gamedata->gamemode = 'p';
   }
-  gamedata->currentmenu[gamedata->menulayer] = 0;
-  gamedata->menulayer = 0;
-  gamedata->gamemode = 'p';
 }
