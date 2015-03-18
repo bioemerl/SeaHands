@@ -10,6 +10,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
 void drawmaingame(Layer *this_layer, GContext *ctx);
 void drawbattle(Layer *this_layer, GContext *ctx);
 void draw_edge_points(Layer *this_layer, GContext *ctx);
+void draw_map(Layer *this_layer, GContext *ctx);
   
 //define a number of constants
 const uint8_t PEBBLEHEIGHT = 168;
@@ -43,6 +44,8 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx){
     drawmaingame(this_layer, ctx);
   if(gamedata.gamemode == 'b')
     drawbattle(this_layer, ctx);
+  if(gamedata.gamemode == 'w')
+    draw_map(this_layer, ctx);
   
 }
 
@@ -105,8 +108,10 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
       draw_menu_layer(this_layer, ctx, 2, 45, 15);
     if(gamedata.menulayer == 3) //the ship pillage menu
       draw_menu_layer(this_layer, ctx, 3, 0, 15);
-    if(gamedata.menulayer == 4)
+    if(gamedata.menulayer == 4)//the notifications menu
       draw_menu_layer(this_layer, ctx, 4, 0, 0);
+    if(gamedata.menulayer == 5) //the player start menu
+      draw_menu_layer(this_layer, ctx, 5, 0, 15);
   }
 }
 
@@ -293,6 +298,14 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     graphics_fill_rect(ctx, layer5text, 0, GCornerNone);
     graphics_draw_text(ctx, gamedata.notificationtext, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer5text, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
   }
+  if(menulayernumber == 5){ //player "start menu"
+    GRect layer6text = GRect(x, y, 54, 65);
+    graphics_fill_rect(ctx, layer6text, 0, GCornerNone); //background box
+    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[5]*15, 54, 15 )); //highlighting box
+    char fifthmenulayer[50];
+    snprintf(fifthmenulayer, sizeof(fifthmenulayer), "Map:\nEvent:\nBuild:\n-Back-");
+    graphics_draw_text(ctx, fifthmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer6text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+  }
 }
 
 void draw_ships(Layer *this_layer, GContext *ctx){
@@ -365,6 +378,94 @@ void draw_gui(Layer *this_layer, GContext *ctx){
   graphics_draw_text(ctx, suppliesGUI, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), suppliestextbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 
+void draw_map(Layer *this_layer, GContext *ctx){
+  int islandcoords[10][2], shipcoords[2], factorycoords[2], storagecoords[2];
+  //want to:
+  //get whole area I can draw in
+  //find the edge points in terms of X and y, by way of which thing is the furthest out.
+  //scale down all X and y coords of islands, player, factory, and storage.
+  //draw all these points on the map.
+  shipcoords[0] = gamedata.playerx; //accidentally used these for comparisons
+  shipcoords[1] = gamedata.playery; //these will be adjusted later.
+  factorycoords[0] = 0;
+  factorycoords[1] = 0;
+  storagecoords[0] = 0;
+  storagecoords[1] = 0;
+  int largestx = 0, largesty = 0, lowestx = 0, lowesty = 0;
+  for(int i = 0; i < 10; i++){ //find the largest/lowest X and Y of the islands
+    if(largestx < gamedata.islandsx[i])
+      largestx = gamedata.islandsx[i];
+    if(lowestx > gamedata.islandsx[i])
+      lowestx = gamedata.islandsx[i];
+    if(largesty < gamedata.islandsy[i])
+      largesty = gamedata.islandsy[i];
+    if(lowesty > gamedata.islandsy[i])
+      lowesty = gamedata.islandsy[i];
+    islandcoords[i][0] = gamedata.islandsx[i];
+    islandcoords[i][1] = gamedata.islandsy[i];
+  }
+  if(largestx < shipcoords[0])
+    largestx = shipcoords[0];
+  if(lowestx > shipcoords[0])
+    lowestx = shipcoords[0];
+  if(largestx < factorycoords[0])
+    largestx = factorycoords[0];
+  if(lowestx > factorycoords[0])
+    lowestx = factorycoords[0];
+  if(largestx < storagecoords[0])
+    largestx = storagecoords[0];
+  if(lowestx > storagecoords[0])
+    lowestx = storagecoords[0];
+  
+  if(largesty < shipcoords[1])
+    largesty = shipcoords[1];
+  if(lowesty > shipcoords[1])
+    lowesty = shipcoords[1];
+  if(largesty < factorycoords[1])
+    largesty = factorycoords[1];
+  if(lowesty > factorycoords[1])
+    lowesty = factorycoords[1];
+  if(largesty < storagecoords[1])
+    largesty = storagecoords[1];
+  if(lowesty > storagecoords[1])
+    lowesty = storagecoords[1];
+  
+  //adjust the coordinates to fit on the pebble screen:
+  //adjustcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty)
+  for(int i = 0; i < 10; i++){
+    adjustcoords(islandcoords[i], largestx, lowestx, largesty, lowesty);
+  }
+  adjustcoords(shipcoords, largestx, lowestx, largesty, lowesty);
+  adjustcoords(factorycoords, largestx, lowestx, largesty, lowesty);
+  adjustcoords(storagecoords, largestx, lowestx, largesty, lowesty);
+  
+  //draw the map on the screen.
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_fill_rect(ctx, GRect(0,0,144,148), 0, GCornerNone);//background
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  for(int i = 0; i < 10; i++){
+    graphics_context_set_fill_color(ctx, GColorBlack);
+    GPoint islandpoint = GPoint(islandcoords[i][0], islandcoords[i][1]);
+    graphics_fill_circle(ctx, islandpoint, 4);
+    graphics_context_set_fill_color(ctx, GColorWhite);
+    if(gamedata.islandstypes[i] == 0)
+      graphics_fill_circle(ctx, islandpoint, 0);
+    if(gamedata.islandstypes[i] == 1)
+      graphics_fill_circle(ctx, islandpoint, 1);
+    if(gamedata.islandstypes[i] == 2)
+      graphics_fill_circle(ctx, islandpoint, 2);
+    if(gamedata.islandstypes[i] == 3)
+      graphics_fill_circle(ctx, islandpoint, 3);
+    graphics_context_set_fill_color(ctx, GColorBlack);
+  }
+  GPoint playerpoint = GPoint(shipcoords[0], shipcoords[1]);
+  GPoint storagepoint = GPoint(storagecoords[0], storagecoords[1]);
+  GPoint factorypoint = GPoint(factorycoords[0], factorycoords[1]);
+  //draw factory and storage later
+  graphics_fill_circle(ctx, playerpoint, 3);
+  graphics_fill_circle(ctx, GPoint(shipcoords[0] + gamedata.playerxvelocity, shipcoords[1] + gamedata.playeryvelocity), 1);
+}
+
 static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
   gamedata.downhit = 1;
   gamedata.uphit = 1;
@@ -406,6 +507,9 @@ static void down_release_handler(ClickRecognizerRef recognizer, void *context) {
 static void select_long_click_handler(ClickRecognizerRef recognizer, void *context){
   //going to be a "use anywhere" menu for the player, to save the game, or to see info, so on and
   //so forth
+  exitmenus(&gamedata);
+  gamedata.gamemode = 'm';
+  gamedata.menulayer = 5;
 }
   
 static void select_long_click_release_handler(ClickRecognizerRef recognizer, void *context){

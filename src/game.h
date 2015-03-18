@@ -20,3 +20,4 @@ int check_current_button(GameData* gamedata);
 void attempt_tutorial(GameData* gamedata, int8_t forcetutorial);
 void displaynotification(GameData* gamedata, char notificationtext[100]);
 void exitmenus(GameData* gamedata);
+void adjustcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty);

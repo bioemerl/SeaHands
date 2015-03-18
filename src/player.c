@@ -48,9 +48,17 @@ void update_player(GameData* gamedata){
   if(gamedata->gamemode == 'p')//if gamemode is overworld play
     update_player_movement(gamedata);
   if(gamedata->gamemode == 'm')//if gamemode is menus
-    update_player_menu(gamedata);    
+    update_player_menu(gamedata);
+  if(gamedata->gamemode == 'w'){//if gamemode is world map
+    update_worldmap(gamedata);
+    update_player_movement(gamedata);
+  }
 }
 
+void update_worldmap(GameData* gamedata){
+  if(gamedata->downhit == 1 && gamedata->uphit == 1 && gamedata->buttonrelease == 1)
+    gamedata->gamemode = 'p';
+}
 
 
 void update_player_menu(GameData* gamedata){
@@ -64,6 +72,8 @@ void update_player_menu(GameData* gamedata){
     menuthreeupdate(gamedata);
   if(gamedata->menulayer == 4)
     menufourupdate(gamedata);
+  if(gamedata->menulayer == 5)
+    menufiveupdate(gamedata);
 }
 
 void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount){
@@ -181,7 +191,7 @@ void menutwoupdate(GameData* gamedata){
     int upgradeprice = check_player_upgrade_price(gamedata, 0);
     if(gamedata->playerwallet >= upgradeprice){
       gamedata->cargolevel++;
-      gamedata->maxplayercargo += 5;
+      gamedata->maxplayercargo += 2;
       gamedata->playerwallet += -upgradeprice;
     } 
   }
@@ -218,13 +228,55 @@ void menuthreeupdate(GameData* gamedata){
   }
 }
 
-void menufourupdate(GameData* gamedata){
+void menufourupdate(GameData* gamedata){ // the notifications menu
   int buttonpress = check_current_button(gamedata);
-  if(buttonpress == 3){
+  if(buttonpress == 3 && gamedata->buttonrelease == 1){
     gamedata->gamemode = 'p';
     gamedata->menulayer = 0;
     gamedata->currentmenu[4] = 0;
   }
+}
+
+void menufiveupdate(GameData* gamedata){
+  updatemenuselection(gamedata, 5, MENU6ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  if(buttonpress == 3 && gamedata->currentmenu[5] == 0 && gamedata->buttonrelease == 1){
+    //open the worldmap
+    gamedata->gamemode = 'w';
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[5] == 1){
+    //show what the current event is
+    gamedata->currentmenu[5] = 0;
+    gamedata->buttonrelease = 0;
+    char eventname[100];
+    char eventtitle[20];
+    //set eventtitle to whatever the current event currently is.
+    if(gamedata->currentevent == 'm')
+      snprintf(eventtitle, sizeof(eventtitle), "metal shortage");
+    if(gamedata->currentevent == 'w')
+      snprintf(eventtitle, sizeof(eventtitle), "wood shortage");
+    if(gamedata->currentevent == 's')
+      snprintf(eventtitle, sizeof(eventtitle), "stone shortage");
+    if(gamedata->currentevent == 'f')
+      snprintf(eventtitle, sizeof(eventtitle), "food shortage");
+    if(gamedata->currentevent == 'n')
+      snprintf(eventtitle, sizeof(eventtitle), "none");
+    //put the event title into the rest of the string that displays to the player
+    snprintf(eventname, sizeof(eventname), "The current event is %s", eventtitle);
+    //trigger a notification
+    displaynotification(gamedata, eventname);
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[5] == 2){
+    
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[5] == 3){
+    gamedata->currentmenu[5] = 0;
+    gamedata->menulayer = 0;
+    gamedata->gamemode = 'p';
+  }
+  
+  
 }
 
 
@@ -409,3 +461,4 @@ void exitisland(GameData* gamedata){
     gamedata->playery = gamedata->islandsy[gamedata->playerisland] - 30;
   }
 }
+

@@ -48,9 +48,9 @@ void update_game(GameData* gamedata){
     //always do this on the largest upcounter
     upcounter = 1;
   }
-  updateevent(gamedata);
-  update_ships(gamedata);
-  update_player(gamedata); 
+    updateevent(gamedata);
+    update_ships(gamedata);
+    update_player(gamedata); 
 }
 
 
@@ -299,4 +299,16 @@ void exitmenus(GameData* gamedata){
     gamedata->menulayer = 0;
     gamedata->gamemode = 'p';
   }
+}
+
+void adjustcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty){
+  int totalxrange = 1050;
+  int totalyrange = 1050;
+  //height of pebble screen: 148
+  //width of pebble screen: 144
+  coords[0] = (coords[0] * 144)/totalxrange;
+  coords[1] = (coords[1] * 148)/totalyrange;
+  //adjust for 0,0 being the top left
+  coords[0] = coords[0] + 72;
+  coords[1] = coords[1] + 74;
 }

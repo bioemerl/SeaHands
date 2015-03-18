@@ -8,6 +8,7 @@ extern const int MENUITEMSCNT;
 extern const int MENU2ITEMSCNT;
 extern const int MENU3ITEMSCNT;
 extern const int MENU4ITEMSCNT;
+extern const int MENU6ITEMSCNT;
 extern const int BASE_PRICE_SUPPLIES;
 
 typedef struct{
@@ -16,7 +17,7 @@ typedef struct{
   int eventhour;
   int eventday;
   
-  int currentmenu[5];
+  int currentmenu[10];
   int menulayer;
   char notificationtext[100];
   
