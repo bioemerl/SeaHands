@@ -23,3 +23,4 @@ void menufourupdate(GameData* gamedata);
 void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount);
 void buysellresources(GameData* gamedata, int8_t buyorsell, int resource, int islandnumber, int resourcecost);
 int calculatewindspeed(GameData* gamedata);
+void exitisland(GameData* gamedata);

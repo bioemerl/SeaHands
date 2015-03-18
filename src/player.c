@@ -95,19 +95,7 @@ void menuzeroupdate(GameData* gamedata){
     }
     //if exit is highlighted leave
     if(gamedata->currentmenu[0] == 5 && buttonpress == 3){
-      if(gamedata->playerx > gamedata->islandsx[gamedata->playerisland]){
-        gamedata->playerx = gamedata->islandsx[gamedata->playerisland] + 30;
-      }
-      else{
-        gamedata->playerx = gamedata->islandsx[gamedata->playerisland] - 30;
-      }
-      if(gamedata->playery > gamedata->islandsy[gamedata->playerisland]){
-        gamedata->playery = gamedata->islandsy[gamedata->playerisland] + 30;
-
-      }
-      else{
-        gamedata->playery = gamedata->islandsy[gamedata->playerisland] - 30;
-      }
+      exitisland(gamedata);
       gamedata->playersailsdeployed = 0;
       gamedata->currentmenu[0] = 0;
       gamedata->gamemode = 'p';
@@ -405,4 +393,19 @@ int calculatewindspeed(GameData* gamedata){
   currentspeed = abs(currentspeed);
   
   return currentspeed;
+}
+
+void exitisland(GameData* gamedata){
+  if(gamedata->playerx > gamedata->islandsx[gamedata->playerisland]){
+    gamedata->playerx = gamedata->islandsx[gamedata->playerisland] + 30;
+  }
+  else{
+    gamedata->playerx = gamedata->islandsx[gamedata->playerisland] - 30;
+  }
+  if(gamedata->playery > gamedata->islandsy[gamedata->playerisland]){
+    gamedata->playery = gamedata->islandsy[gamedata->playerisland] + 30;
+  }
+  else{
+    gamedata->playery = gamedata->islandsy[gamedata->playerisland] - 30;
+  }
 }

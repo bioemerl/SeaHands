@@ -416,6 +416,7 @@ static void down_long_click_handler(ClickRecognizerRef recognizer, void *context
   //I want to make this have the player exit whatever island it is on
   //to do this I am going to need to make a function that makes the player leave islands and other
   //menus
+  exitmenus(&gamedata);
 }
   
 static void down_long_click_release_handler(ClickRecognizerRef recognizer, void *context){

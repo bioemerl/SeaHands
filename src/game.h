@@ -19,3 +19,4 @@ int check_player_upgrade_price(GameData* gamedata, int upgradetype);
 int check_current_button(GameData* gamedata);
 void attempt_tutorial(GameData* gamedata, int8_t forcetutorial);
 void displaynotification(GameData* gamedata, char notificationtext[100]);
+void exitmenus(GameData* gamedata);

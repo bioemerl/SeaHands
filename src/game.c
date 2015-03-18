@@ -284,3 +284,19 @@ void attempt_tutorial(GameData* gamedata, int8_t forcetutorial){
     displaynotification(gamedata, "WELCOME TO SEA HANDS!\nTutorial:\nMt = Metal\nWd = Wood\nSt = Stone\nFd = Food\nSu = Supplies");
   }
 }
+
+void exitmenus(GameData* gamedata){
+  if(gamedata->gamemode != 'p'){
+    if((gamedata->menulayer == 0 || gamedata->menulayer == 1 || gamedata->menulayer == 2)){
+      exitisland(gamedata);
+      gamedata->currentmenu[0] = 0;
+      gamedata->currentmenu[1] = 0;
+      gamedata->currentmenu[2] = 0;
+    }
+    if(gamedata->menulayer == 3)
+      gamedata->playership = -1;
+  }
+  gamedata->currentmenu[gamedata->menulayer] = 0;
+  gamedata->menulayer = 0;
+  gamedata->gamemode = 'p';
+}
