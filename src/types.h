@@ -88,6 +88,19 @@ typedef struct{
   //max 2048 bytes
   int8_t maxplayercargo, currentspeed; 
   int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage;
+  
+  int8_t metalmultiplier;
+  int8_t stonemultiplier;
+  int8_t woodmultiplier;
+  int8_t foodmultiplier;
+  int8_t metaldivisor;
+  int8_t stonedivisor;
+  int8_t wooddivisor;
+  int8_t fooddivisor;
+  char currentevent;
+  int eventhour;
+  int eventday;
+  
 } SaveValues;
 
 typedef struct{

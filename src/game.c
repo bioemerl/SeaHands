@@ -177,6 +177,17 @@ void save_data(GameData* gamedata){
   saving.currentspeed = gamedata->currentspeed;
   saving.cargolevel = gamedata->cargolevel;
   saving.speedlevel = gamedata->speedlevel;
+  saving.metalmultiplier = gamedata->metalmultiplier;
+  saving.stonemultiplier = gamedata->stonemultiplier;
+  saving.woodmultiplier = gamedata->woodmultiplier;
+  saving.foodmultiplier = gamedata->foodmultiplier;
+  saving.metaldivisor = gamedata->metaldivisor;
+  saving.stonedivisor = gamedata->stonedivisor;
+  saving.wooddivisor = gamedata->wooddivisor;
+  saving.fooddivisor = gamedata->fooddivisor;
+  saving.currentevent = gamedata->currentevent;
+  saving.eventhour = gamedata->eventhour;
+  saving.eventday = gamedata->eventday;
   
   //save the object into memory
   persist_write_data(DATA_KEY, &saving, sizeof(saving));
@@ -210,6 +221,17 @@ void load_data(GameData* gamedata){
     gamedata->playeryvelocity = loading.currentspeed;
     gamedata->cargolevel = loading.cargolevel;
     gamedata->speedlevel = loading.speedlevel;
+    gamedata->metalmultiplier = loading.metalmultiplier;
+    gamedata->stonemultiplier = loading.stonemultiplier;
+    gamedata->woodmultiplier = loading.woodmultiplier;
+    gamedata->foodmultiplier = loading.foodmultiplier;
+    gamedata->metaldivisor = loading.metaldivisor;
+    gamedata->stonedivisor = loading.stonedivisor;
+    gamedata->wooddivisor = loading.wooddivisor;
+    gamedata->fooddivisor = loading.fooddivisor;
+    gamedata->currentevent = loading.currentevent;
+    gamedata->eventhour = loading.eventhour;
+    gamedata->eventday = loading.eventday;
   }
   else{
     //if no previous data values, set default values
