@@ -197,7 +197,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //base menu layer
   if(menulayernumber == 0){
     graphics_fill_rect(ctx, GRect(x,y,54,90), 0, GCornerNone); //background box
-    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[0]*15, 54, 15 )); //highlighting box
+    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0], 54, 15 )); //highlighting box
     
     //text prep
     GRect textbox = GRect(x, y, 54, 105);
@@ -213,24 +213,24 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     //draw two white bars to display which resource is being bought or sold
     int producerectpos, consumerectpos;
     //find where the island produce is on the menu
-    producerectpos = gamedata.islandstypes[gamedata.playerisland] * 15;
+    producerectpos = 19 + (gamedata.islandstypes[gamedata.playerisland] * 15) - gamedata.islandstypes[gamedata.playerisland];
     //find where island consumption is on the menu
     if(gamedata.islandstypes[gamedata.playerisland] == 0){
-      consumerectpos = 2 * 15;
+      consumerectpos = 19 + (2 * 15) - 2; //2 + 2 + 15 + (2 * 15) - 2;
     }
     if(gamedata.islandstypes[gamedata.playerisland] == 1){
-      consumerectpos = 3 * 15;
+      consumerectpos = 19 + (3 * 15) - 3; //2 + 2 + 15 + (3 * 15) - 3;
     }
     if(gamedata.islandstypes[gamedata.playerisland] == 2){
-      consumerectpos = 1 * 15;
+      consumerectpos = 19 + (1 * 15) - 1; //2 + 2 + 15 + (1 * 15) - 1;
     }
     if(gamedata.islandstypes[gamedata.playerisland] == 3){
-      consumerectpos = 0 * 15;
+      consumerectpos = 19 + (0 * 15) - 0; //2 + 2 + 15 + (0 * 15) - 0;
     }
     //draw the icons for the two
     graphics_context_set_fill_color(ctx, GColorWhite);
-    GRect producerect = GRect(50, producerectpos + 17, 2, 11);
-    GRect consumerect = GRect(51, consumerectpos + 17, 1, 11);
+    GRect producerect = GRect(50, producerectpos, 2, 11);
+    GRect consumerect = GRect(51, consumerectpos, 1, 11);
     graphics_fill_rect(ctx, producerect, 0, GCornerNone);
     graphics_fill_rect(ctx, consumerect, 0, GCornerNone);
     graphics_context_set_fill_color(ctx, GColorBlack);
@@ -239,7 +239,8 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   if(menulayernumber == 1){
     
     graphics_fill_rect(ctx, GRect(x,y,46,50), 0, GCornerNone);
-    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[1]*15, 46, 15));
+    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[1]*15 - gamedata.currentmenu[1], 46, 15));
+    //2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0]
       
     //needs to be made better later, shouldn't calculate for all at once, should do one at a time
     //this change will increase performance
@@ -265,7 +266,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //menu layer for upgrade purchases
   if(menulayernumber == 2){
     graphics_fill_rect(ctx, GRect(x,y,80,65), 0, GCornerNone);
-    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[2]*15, 80, 15));
+    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[2]*15 - gamedata.currentmenu[2], 80, 15));
     GRect layer3text = GRect(x,y,80, 65);
     //get needed data
     //find current upgrade level, and change the price for that upgrade by a function on the constant
@@ -285,7 +286,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //menu layer for ship interactions
   if(menulayernumber == 3){
     graphics_fill_rect(ctx, GRect(x,y,40,35), 0, GCornerNone);
-    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[3]*15, 40, 15));
+    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[3]*15 - gamedata.currentmenu[3], 40, 15));
     GRect layer4text = GRect(x,y,40, 35);
     
     char thirdmenulayer[17];
@@ -294,16 +295,16 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   }
   //menu layer for notification pop ups
   if(menulayernumber == 4){
-    GRect layer5text = GRect(10, 10, 128, 134);
+    GRect layer5text = GRect(8, 10, 128, 134);
     graphics_fill_rect(ctx, layer5text, 0, GCornerNone);
     graphics_draw_text(ctx, gamedata.notificationtext, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer5text, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
   }
   if(menulayernumber == 5){ //player "start menu"
-    GRect layer6text = GRect(x, y, 54, 65);
+    GRect layer6text = GRect(x, y, 54, 15*MENU6ITEMSCNT);
     graphics_fill_rect(ctx, layer6text, 0, GCornerNone); //background box
-    graphics_draw_rect(ctx, GRect(x, y+gamedata.currentmenu[5]*15, 54, 15 )); //highlighting box
+    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[5]*15 - gamedata.currentmenu[5], 54, 15 )); //highlighting box
     char fifthmenulayer[50];
-    snprintf(fifthmenulayer, sizeof(fifthmenulayer), "Map:\nEvent:\nBuild:\n-Back-");
+    snprintf(fifthmenulayer, sizeof(fifthmenulayer), "Map:\nEvent:\n-Back-"); //"Map:\nEvent:\nBuild:\n-Back-"
     graphics_draw_text(ctx, fifthmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer6text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
 }
@@ -433,11 +434,11 @@ void draw_map(Layer *this_layer, GContext *ctx){
   //adjust the coordinates to fit on the pebble screen:
   //adjustcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty)
   for(int i = 0; i < 10; i++){
-    adjustcoords(islandcoords[i], largestx, lowestx, largesty, lowesty);
+    adjustminimapcoords(islandcoords[i], largestx, lowestx, largesty, lowesty);
   }
-  adjustcoords(shipcoords, largestx, lowestx, largesty, lowesty);
-  adjustcoords(factorycoords, largestx, lowestx, largesty, lowesty);
-  adjustcoords(storagecoords, largestx, lowestx, largesty, lowesty);
+  adjustminimapcoords(shipcoords, largestx, lowestx, largesty, lowesty);
+  adjustminimapcoords(factorycoords, largestx, lowestx, largesty, lowesty);
+  adjustminimapcoords(storagecoords, largestx, lowestx, largesty, lowesty);
   
   //draw the map on the screen.
   graphics_context_set_fill_color(ctx, GColorWhite);
@@ -507,9 +508,11 @@ static void down_release_handler(ClickRecognizerRef recognizer, void *context) {
 static void select_long_click_handler(ClickRecognizerRef recognizer, void *context){
   //going to be a "use anywhere" menu for the player, to save the game, or to see info, so on and
   //so forth
-  exitmenus(&gamedata);
-  gamedata.gamemode = 'm';
-  gamedata.menulayer = 5;
+  if(gamedata.gamemode == 'p'){
+    exitmenus(&gamedata);
+    gamedata.gamemode = 'm';
+    gamedata.menulayer = 5;
+  }
 }
   
 static void select_long_click_release_handler(ClickRecognizerRef recognizer, void *context){
@@ -592,7 +595,7 @@ static void init(void) {
   initializebattle(&shipbattledata);
   initialize_game(&gamedata);
   load_data(&gamedata);
-  attempt_tutorial(&gamedata, 1);
+  attempt_tutorial(&gamedata, 1, 0);
 
   //start the game loop
   app_timer_register(GAMELOOP_TIMER_INTERVALL, handleTimer, NULL);

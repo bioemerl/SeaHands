@@ -279,7 +279,7 @@ void displaynotification(GameData* gamedata, char notificationtext[100]){
 
 //will show a notification for the tutorial
 //if forcetutorial is one, it will always show the tutorial.
-void attempt_tutorial(GameData* gamedata, int8_t forcetutorial){
+void attempt_tutorial(GameData* gamedata, int8_t forcetutorial, int8_t tutorialnumber){
   if(!persist_exists(DATA_KEY) || forcetutorial == 1){
     displaynotification(gamedata, "WELCOME TO SEA HANDS!\nTutorial:\nMt = Metal\nWd = Wood\nSt = Stone\nFd = Food\nSu = Supplies");
   }
@@ -301,7 +301,7 @@ void exitmenus(GameData* gamedata){
   }
 }
 
-void adjustcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty){
+void adjustminimapcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty){
   int totalxrange = 1050;
   int totalyrange = 1050;
   //height of pebble screen: 148

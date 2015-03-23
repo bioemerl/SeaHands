@@ -76,31 +76,22 @@ typedef struct{
 
 typedef struct{
   int16_t shipsx[10], shipsy[10]; // 320 bits
-  //int16_t islandsx[10], islandsy[10]; //320 bits
-  //int8_t islandstypes[10]; //80 bits
   int8_t islandscargo[10][4]; //320 bits
   int8_t shipsisland[10]; //80 bits
   int8_t shipstype[10]; //80 bits
   int8_t playercargo[5]; //32 bits
   int16_t playerwallet; //16 bits
-  //int16_t playerx, playery; //32 bits
-  //int8_t playerxvelocity, playeryvelocity; //16 bits
-  //total: 1296 bytes, less now.
-  //max 2048 bytes
-  int8_t maxplayercargo, currentspeed; 
-  int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage;
   
-  int8_t metalmultiplier;
-  int8_t stonemultiplier;
-  int8_t woodmultiplier;
-  int8_t foodmultiplier;
-  int8_t metaldivisor;
-  int8_t stonedivisor;
-  int8_t wooddivisor;
-  int8_t fooddivisor;
-  char currentevent;
-  int eventhour;
-  int eventday;
+  int8_t maxplayercargo, currentspeed; //16 bits
+  int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage; //56 bits
+  
+  int8_t metalmultiplier, stonemultiplier, woodmultiplier, foodmultiplier; //32 bits
+  int8_t metaldivisor, stonedivisor, wooddivisor, fooddivisor; //32 bits
+  char currentevent; //8 bits
+  int8_t eventhour; //8 bits
+  int16_t eventday;//16 bits
+  //1016 bits total
+  //max 2048 bytes
   
 } SaveValues;
 

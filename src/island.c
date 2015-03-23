@@ -159,7 +159,7 @@ void update_islands(GameData* gamedata){
     int picounter = -1;
     for(int j = 0; j < TOTALISLANDS; j++){ //search through each existing island
       //if the island needs more of the type being sent, and the island sending has more than 10 to send, and the island being checked is not itself
-      if(gamedata->islandscargo[j][searchtype] < 100 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 10 && j != i){
+      if(gamedata->islandscargo[j][searchtype] < 80 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 10 && j != i){
         //add the island to an array to be selected from later  
         ++picounter;
         possibleislands[picounter] = j;
@@ -173,7 +173,7 @@ void update_islands(GameData* gamedata){
       int randomvalue = random(picounter);
       picounter = 0;
       //APP_LOG(APP_LOG_LEVEL_INFO, "RANDOM INT IS %i PICOUNTER IS %i", randomvalue, picounter);
-      if(gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 15)
+      if(gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 15 && gamedata->islandscargo[i][1] >= 2 && gamedata->islandscargo[i][2] >= 2)
         create_ship(gamedata, i, possibleislands[randomvalue]);
     }
   } 

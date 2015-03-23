@@ -8,5 +8,5 @@ const int MENUITEMSCNT = 6;
 const int MENU2ITEMSCNT = 3;
 const int MENU3ITEMSCNT = 4;
 const int MENU4ITEMSCNT = 2;
-const int MENU6ITEMSCNT = 4;
+const int MENU6ITEMSCNT = 3;
 const int BASE_PRICE_SUPPLIES = 10;

@@ -267,10 +267,10 @@ void menufiveupdate(GameData* gamedata){
     //trigger a notification
     displaynotification(gamedata, eventname);
   }
-  if(buttonpress == 3 && gamedata->currentmenu[5] == 2){
+  //if(buttonpress == 3 && gamedata->currentmenu[5] == 2){
     
-  }
-  if(buttonpress == 3 && gamedata->currentmenu[5] == 3){
+  //}
+  if(buttonpress == 3 && gamedata->currentmenu[5] == 2){
     gamedata->currentmenu[5] = 0;
     gamedata->menulayer = 0;
     gamedata->gamemode = 'p';

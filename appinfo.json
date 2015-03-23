@@ -7,10 +7,20 @@
     "longName": "SeaHands",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/SeaHandsMenuImage.png",
+                "menuIcon": true,
+                "name": "MENU_IMAGE",
+                "type": "png"
+            }
+        ]
     },
-    "sdkVersion": "2",
+    "sdkVersion": "3",
     "shortName": "SeaHands",
+    "targetPlatforms": [
+        "aplite"
+    ],
     "uuid": "1bedccdc-b3c1-48e0-88e3-c99ad301643f",
     "versionCode": 1,
     "versionLabel": "1.0",
