@@ -105,7 +105,7 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
     if(gamedata.menulayer == 1)//buysellmenu
       draw_menu_layer(this_layer, ctx, 1, 54, 15);
     if(gamedata.menulayer == 2) // the islands upgrade menu
-      draw_menu_layer(this_layer, ctx, 2, 45, 15);
+      draw_menu_layer(this_layer, ctx, 2, 54, 15);
     if(gamedata.menulayer == 3) //the ship pillage menu
       draw_menu_layer(this_layer, ctx, 3, 0, 15);
     if(gamedata.menulayer == 4)//the notifications menu
@@ -196,14 +196,14 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //any layer: draw the background box, then draw the highlighting box, then draw the text
   //base menu layer
   if(menulayernumber == 0){
-    graphics_fill_rect(ctx, GRect(x,y,54,90), 0, GCornerNone); //background box
+    graphics_fill_rect(ctx, GRect(x,y,54, 4 + y+(MENUITEMSCNT - 1)*15 - MENUITEMSCNT), 0, GCornerNone); //background box
     graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0], 54, 15 )); //highlighting box
     
     //text prep
     GRect textbox = GRect(x, y, 54, 105);
     char totalmenu[60];
     //create the char array for the menu    
-    snprintf(totalmenu, sizeof(totalmenu), "Metal:%d\nWood:%d\nStone:%d\nFood:%d\nIsland:\n-Exit-",
+    snprintf(totalmenu, sizeof(totalmenu), " Metal:%d\n Wood:%d\n Stone:%d\n Food:%d\n Island:\n -Exit-",
            gamedata.islandscargo[gamedata.playerisland][0],
            gamedata.islandscargo[gamedata.playerisland][1],
            gamedata.islandscargo[gamedata.playerisland][2],
@@ -238,7 +238,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //menu layer for buying and selling resources
   if(menulayernumber == 1){
     
-    graphics_fill_rect(ctx, GRect(x,y,46,50), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(x,y,46,4 + y+(MENU2ITEMSCNT - 1)*15 - MENU2ITEMSCNT), 0, GCornerNone);
     graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[1]*15 - gamedata.currentmenu[1], 46, 15));
     //2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0]
       
@@ -259,13 +259,13 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     //prepare the text
     GRect layer2text = GRect(x,y,46, 50);
     char firstmenulayer[30];
-    snprintf(firstmenulayer, sizeof(firstmenulayer), "Back\nBuy:%i\nSell", resourcevalue);
+    snprintf(firstmenulayer, sizeof(firstmenulayer), " -Back-\n Buy:%i\n Sell:", resourcevalue);
     //print the text
     graphics_draw_text(ctx, firstmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer2text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
   //menu layer for upgrade purchases
   if(menulayernumber == 2){
-    graphics_fill_rect(ctx, GRect(x,y,80,65), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(x,y,80,4 + y+(MENU3ITEMSCNT - 1)*15 - MENU3ITEMSCNT), 0, GCornerNone);
     graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[2]*15 - gamedata.currentmenu[2], 80, 15));
     GRect layer3text = GRect(x,y,80, 65);
     //get needed data
@@ -280,17 +280,17 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
       upgradeprices[i] = check_player_upgrade_price(&gamedata, i);
     cargoprice = upgradeprices[0];
     speedprice = upgradeprices[1];
-    snprintf(secondmenulayer, sizeof(secondmenulayer), "BuySu:%i\nUpCrgo:%i\nUpSpd: %i\nBack", BASE_PRICE_SUPPLIES, cargoprice, speedprice);
+    snprintf(secondmenulayer, sizeof(secondmenulayer), " BuySu:%i\n UpCrgo:%i\n UpSpd: %i\n -Back-", BASE_PRICE_SUPPLIES, cargoprice, speedprice);
     graphics_draw_text(ctx, secondmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer3text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
   //menu layer for ship interactions
   if(menulayernumber == 3){
-    graphics_fill_rect(ctx, GRect(x,y,40,35), 0, GCornerNone);
+    graphics_fill_rect(ctx, GRect(x,y,40,4 + y+(MENU4ITEMSCNT - 1)*15 - MENU4ITEMSCNT), 0, GCornerNone);
     graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[3]*15 - gamedata.currentmenu[3], 40, 15));
     GRect layer4text = GRect(x,y,40, 35);
     
     char thirdmenulayer[17];
-    snprintf(thirdmenulayer, sizeof(thirdmenulayer), "Pillage:\nBack:");
+    snprintf(thirdmenulayer, sizeof(thirdmenulayer), " Pillage:\n -Back-");
     graphics_draw_text(ctx, thirdmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer4text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
   //menu layer for notification pop ups
@@ -300,11 +300,11 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     graphics_draw_text(ctx, gamedata.notificationtext, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer5text, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
   }
   if(menulayernumber == 5){ //player "start menu"
-    GRect layer6text = GRect(x, y, 54, 15*MENU6ITEMSCNT);
+    GRect layer6text = GRect(x, y, 54, 4 + y+(MENU6ITEMSCNT - 1)*15 - MENU6ITEMSCNT);
     graphics_fill_rect(ctx, layer6text, 0, GCornerNone); //background box
     graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[5]*15 - gamedata.currentmenu[5], 54, 15 )); //highlighting box
     char fifthmenulayer[50];
-    snprintf(fifthmenulayer, sizeof(fifthmenulayer), "Map:\nEvent:\n-Back-"); //"Map:\nEvent:\nBuild:\n-Back-"
+    snprintf(fifthmenulayer, sizeof(fifthmenulayer), " Map:\n Event:\n -Back-"); //"Map:\nEvent:\nBuild:\n-Back-"
     graphics_draw_text(ctx, fifthmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer6text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
 }
