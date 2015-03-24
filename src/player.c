@@ -188,7 +188,7 @@ void menutwoupdate(GameData* gamedata){
   if(gamedata->currentmenu[2] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
    gamedata->buttonrelease = 0;
     int upgradeprice = check_player_upgrade_price(gamedata, 0);
-    if(gamedata->playerwallet >= upgradeprice){
+    if(gamedata->playerwallet >= upgradeprice && gamedata->cargolevel < 98){
       gamedata->cargolevel++;
       gamedata->maxplayercargo += 2;
       gamedata->playerwallet += -upgradeprice;
