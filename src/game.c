@@ -302,7 +302,7 @@ void attempt_tutorial(GameData* gamedata){
     if(gamedata->tutorialcounter == 0)
       displaynotification(gamedata, "WELCOME TO SEA HANDS!\nTutorial:\nMt = Metal\nWd = Wood\nSt = Stone\nFd = Food\nSu = Supplies");
     if(gamedata->tutorialcounter == 1)
-      displaynotification(gamedata, "Bottom right corner\nshows your supplies.\nrestock at any island.\n\nSupplies cost $10\nand one wood\nand one food.");
+      displaynotification(gamedata, "Bottom right corner\nshows your supplies.\nrestock at any island.\nSupplies are used over time.\n\nSupplies cost $10\nand one wood\nand one food.");
     if(gamedata->tutorialcounter == 2)
       displaynotification(gamedata, "Up/Down keys to turn.\n\nRun into islands\nor ships\nto bring up menu.\n\nRemember to use\n-exit- instead of\nthe back button.");
     if(gamedata->tutorialcounter == 3)
