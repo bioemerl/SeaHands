@@ -103,9 +103,9 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
     if(gamedata.menulayer == 0 || gamedata.menulayer == 1 || gamedata.menulayer == 2)
       draw_menu_layer(this_layer, ctx, 0, 0, 15); //the base menu layer
     if(gamedata.menulayer == 1)//buysellmenu
-      draw_menu_layer(this_layer, ctx, 1, 54, 15);
+      draw_menu_layer(this_layer, ctx, 1, 57, 15);
     if(gamedata.menulayer == 2) // the islands upgrade menu
-      draw_menu_layer(this_layer, ctx, 2, 54, 15);
+      draw_menu_layer(this_layer, ctx, 2, 57, 15);
     if(gamedata.menulayer == 3) //the ship pillage menu
       draw_menu_layer(this_layer, ctx, 3, 0, 15);
     if(gamedata.menulayer == 4)//the notifications menu
@@ -196,11 +196,11 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //any layer: draw the background box, then draw the highlighting box, then draw the text
   //base menu layer
   if(menulayernumber == 0){
-    graphics_fill_rect(ctx, GRect(x,y,54, 4 + y+(MENUITEMSCNT - 1)*15 - MENUITEMSCNT), 0, GCornerNone); //background box
-    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0], 54, 15 )); //highlighting box
+    graphics_fill_rect(ctx, GRect(x,y,57, 4 + y+(MENUITEMSCNT - 1)*15 - MENUITEMSCNT), 0, GCornerNone); //background box
+    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0], 57, 15 )); //highlighting box
     
     //text prep
-    GRect textbox = GRect(x, y, 54, 105);
+    GRect textbox = GRect(x, y, 57, 105);
     char totalmenu[60];
     //create the char array for the menu    
     snprintf(totalmenu, sizeof(totalmenu), " Metal:%d\n Wood:%d\n Stone:%d\n Food:%d\n Island:\n -Exit-",
@@ -229,8 +229,8 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     }
     //draw the icons for the two
     graphics_context_set_fill_color(ctx, GColorWhite);
-    GRect producerect = GRect(50, producerectpos, 2, 11);
-    GRect consumerect = GRect(51, consumerectpos, 1, 11);
+    GRect producerect = GRect(53, producerectpos, 2, 11);
+    GRect consumerect = GRect(54, consumerectpos, 1, 11);
     graphics_fill_rect(ctx, producerect, 0, GCornerNone);
     graphics_fill_rect(ctx, consumerect, 0, GCornerNone);
     graphics_context_set_fill_color(ctx, GColorBlack);
@@ -285,18 +285,32 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   }
   //menu layer for ship interactions
   if(menulayernumber == 3){
-    graphics_fill_rect(ctx, GRect(x,y,40,4 + y+(MENU4ITEMSCNT - 1)*15 - MENU4ITEMSCNT), 0, GCornerNone);
-    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[3]*15 - gamedata.currentmenu[3], 40, 15));
-    GRect layer4text = GRect(x,y,40, 35);
+    graphics_fill_rect(ctx, GRect(x,y,50,4 + y+(MENU4ITEMSCNT)*15 - MENU4ITEMSCNT), 0, GCornerNone);
+    graphics_draw_rect(ctx, GRect(x, 2 + y+(gamedata.currentmenu[3]+1)*15 - gamedata.currentmenu[3], 50, 15));
+    GRect layer4text = GRect(x,y,50, 35);
     
-    char thirdmenulayer[17];
-    snprintf(thirdmenulayer, sizeof(thirdmenulayer), " Pillage:\n -Back-");
+    char thirdmenulayer[25];
+    char shipcontents[10] = "none";
+    
+    //check what the ship has in it's cargo hold
+    if(gamedata.shipstype[gamedata.playership] == 0)
+      snprintf(shipcontents, sizeof(shipcontents), "Metal");
+    if(gamedata.shipstype[gamedata.playership] == 1)
+      snprintf(shipcontents, sizeof(shipcontents), "Wood");
+    if(gamedata.shipstype[gamedata.playership] == 2)
+      snprintf(shipcontents, sizeof(shipcontents), "Stone");
+    if(gamedata.shipstype[gamedata.playership] == 3)
+      snprintf(shipcontents, sizeof(shipcontents), "Food");
+      
+    
+    snprintf(thirdmenulayer, sizeof(thirdmenulayer), " %s\n Pillage:\n -Back-", shipcontents);
     graphics_draw_text(ctx, thirdmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer4text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
   //menu layer for notification pop ups
   if(menulayernumber == 4){
-    GRect layer5text = GRect(8, 10, 128, 134);
-    graphics_fill_rect(ctx, layer5text, 0, GCornerNone);
+    GRect layer5area = GRect(8, 10, 128, 134);
+    graphics_fill_rect(ctx, layer5area, 0, GCornerNone);
+    GRect layer5text = GRect(8, 10, 128, 180);
     graphics_draw_text(ctx, gamedata.notificationtext, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer5text, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
   }
   if(menulayernumber == 5){ //player "start menu"
@@ -304,7 +318,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     graphics_fill_rect(ctx, layer6text, 0, GCornerNone); //background box
     graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[5]*15 - gamedata.currentmenu[5], 54, 15 )); //highlighting box
     char fifthmenulayer[50];
-    snprintf(fifthmenulayer, sizeof(fifthmenulayer), " Map:\n Event:\n -Back-"); //"Map:\nEvent:\nBuild:\n-Back-"
+    snprintf(fifthmenulayer, sizeof(fifthmenulayer), " Map:\n Event:\n Tutorial\n -Back-"); //"Map:\nEvent:\nBuild:\n-Back-"
     graphics_draw_text(ctx, fifthmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer6text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
 }
@@ -591,11 +605,9 @@ static void init(void) {
   });
   const bool animated = true;
   window_stack_push(window, animated);
-  
   initializebattle(&shipbattledata);
   initialize_game(&gamedata);
   load_data(&gamedata);
-  attempt_tutorial(&gamedata, 1, 0);
 
   //start the game loop
   app_timer_register(GAMELOOP_TIMER_INTERVALL, handleTimer, NULL);

@@ -1,6 +1,6 @@
 #pragma once
 
-#define GAMELOOP_TIMER_INTERVALL 45
+extern const int GAMELOOP_TIMER_INTERVALL;
 extern const int DATA_KEY;
 extern const int VERSION_KEY;
 extern const int TOTALISLANDS;
@@ -16,10 +16,11 @@ typedef struct{
   char currentevent;
   int eventhour;
   int eventday;
+  int8_t tutorialcounter;
   
   int currentmenu[10];
   int menulayer;
-  char notificationtext[100];
+  char notificationtext[150];
   
   int16_t currentcosts;
   
@@ -81,6 +82,7 @@ typedef struct{
   int8_t shipstype[10]; //80 bits
   int8_t playercargo[5]; //32 bits
   int16_t playerwallet; //16 bits
+  int8_t totalships; //8 bits
   
   int8_t maxplayercargo, currentspeed; //16 bits
   int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage; //56 bits
@@ -90,7 +92,7 @@ typedef struct{
   char currentevent; //8 bits
   int8_t eventhour; //8 bits
   int16_t eventday;//16 bits
-  //1016 bits total
+  //1024 bits total
   //max 2048 bytes
   
 } SaveValues;

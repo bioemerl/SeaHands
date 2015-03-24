@@ -25,9 +25,18 @@ void initialize_game(GameData* gamedata){
   initialize_islands(gamedata);
   initialize_player(gamedata);
   initialize_ships(gamedata);
+  gamedata->buttonrelease = 1;
+  //set up the tutorial
+  gamedata->tutorialcounter = -1;
+  if(persist_exists(DATA_KEY))
+     gamedata->tutorialcounter = 6;
 }
 
 void update_game(GameData* gamedata){
+  
+  if(gamedata->tutorialcounter <= 5)
+      attempt_tutorial(gamedata);
+  
   //set up a timer as to not update everything every frame
   upcounter++;
   //what to do on each timer final
@@ -51,6 +60,8 @@ void update_game(GameData* gamedata){
     updateevent(gamedata);
     update_ships(gamedata);
     update_player(gamedata); 
+  
+    
 }
 
 
@@ -188,6 +199,7 @@ void save_data(GameData* gamedata){
   saving.currentevent = gamedata->currentevent;
   saving.eventhour = gamedata->eventhour;
   saving.eventday = gamedata->eventday;
+  saving.totalships = gamedata->totalships;
   
   //save the object into memory
   persist_write_data(DATA_KEY, &saving, sizeof(saving));
@@ -232,6 +244,7 @@ void load_data(GameData* gamedata){
     gamedata->currentevent = loading.currentevent;
     gamedata->eventhour = loading.eventhour;
     gamedata->eventday = loading.eventday;
+    gamedata->totalships = loading.totalships;
   }
   else{
     //if no previous data values, set default values
@@ -266,22 +279,38 @@ int check_current_button(GameData* gamedata){
 
 //will setup the display of notifications, including the changing gamemode, loading the data in gamedata
 //it should eventually manage data for variables in notifications
-void displaynotification(GameData* gamedata, char notificationtext[100]){
+void displaynotification(GameData* gamedata, char notificationtext[150]){
   //here is where I would process and insert variable values into the string
   //however, that is a bit fancy and tough to do, and I don't need it right now
   //so do that later, future me.
   gamedata->gamemode = 'm';
   gamedata->menulayer = 4;
-  for(int i = 0; i < 100; i++){
+  for(int i = 0; i < 150; i++){
     gamedata->notificationtext[i] = notificationtext[i];
   }
 }
 
 //will show a notification for the tutorial
 //if forcetutorial is one, it will always show the tutorial.
-void attempt_tutorial(GameData* gamedata, int8_t forcetutorial, int8_t tutorialnumber){
-  if(!persist_exists(DATA_KEY) || forcetutorial == 1){
-    displaynotification(gamedata, "WELCOME TO SEA HANDS!\nTutorial:\nMt = Metal\nWd = Wood\nSt = Stone\nFd = Food\nSu = Supplies");
+void attempt_tutorial(GameData* gamedata){
+  if(gamedata->buttonrelease == 1){
+    if(gamedata->gamemode != 'm'){
+      gamedata->tutorialcounter++;
+      gamedata->buttonrelease = 0;
+    }
+    if(gamedata->tutorialcounter == 0)
+      displaynotification(gamedata, "WELCOME TO SEA HANDS!\nTutorial:\nMt = Metal\nWd = Wood\nSt = Stone\nFd = Food\nSu = Supplies");
+    if(gamedata->tutorialcounter == 1)
+      displaynotification(gamedata, "Bottom right corner\nshows your supplies.\nrestock at any island.\n\nSupplies cost $10\nand one wood\nand one food.");
+    if(gamedata->tutorialcounter == 2)
+      displaynotification(gamedata, "Up/Down keys to turn.\n\nRun into islands\nor ships\nto bring up menu.\n\nRemember to use\n-exit- instead of\nthe back button.");
+    if(gamedata->tutorialcounter == 3)
+      displaynotification(gamedata, "Long press select\nwhen not at an island\nto bring up the player menu.\n\nLong press down\nto leave menus\nat any time.");
+    if(gamedata->tutorialcounter == 4)
+      displaynotification(gamedata, "Make money by\npillaging ships\nor by\nselling resources high\nand buying them low");
+    if(gamedata->tutorialcounter == 5)
+      displaynotification(gamedata, "Wind effects\nyour ship.\nPay attention\nto the time.\n\nGood Luck!");
+    
   }
 }
 
@@ -293,8 +322,11 @@ void exitmenus(GameData* gamedata){
       gamedata->currentmenu[1] = 0;
       gamedata->currentmenu[2] = 0;
     }
-    if(gamedata->menulayer == 3)
+    if(gamedata->menulayer == 3){
+      gamedata->playerisland = gamedata->shipsisland[gamedata->playership];
+      exitisland(gamedata);
       gamedata->playership = -1;
+    }
     gamedata->currentmenu[gamedata->menulayer] = 0;
     gamedata->menulayer = 0;
     gamedata->gamemode = 'p';

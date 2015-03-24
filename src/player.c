@@ -12,9 +12,8 @@ const int WIND_SPEED_SECTOR_SIZE = 100;
 
 void initialize_player(GameData* gamedata){
   //kill all layers
-  for(int i = 0; i < 4; i++){
-    gamedata->currentmenu[i] = 0;
-  }
+  exitmenus(gamedata);
+  
   gamedata->menulayer = 0;
   gamedata->gamemode = 'p';
   //initiate player values
@@ -220,11 +219,7 @@ void menuthreeupdate(GameData* gamedata){
   }
   if(gamedata->currentmenu[3] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
     //exit menu
-    gamedata->playership = -1;
-    gamedata->currentmenu[3] = 0;
-    gamedata->gamemode = 'p';
-    gamedata->playerx += 6;
-    gamedata->playery += 6;
+    exitmenus(gamedata);
   }
 }
 
@@ -267,10 +262,12 @@ void menufiveupdate(GameData* gamedata){
     //trigger a notification
     displaynotification(gamedata, eventname);
   }
-  //if(buttonpress == 3 && gamedata->currentmenu[5] == 2){
-    
-  //}
   if(buttonpress == 3 && gamedata->currentmenu[5] == 2){
+    gamedata->tutorialcounter = -1;
+    exitmenus(gamedata);
+    
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[5] == 3){
     gamedata->currentmenu[5] = 0;
     gamedata->menulayer = 0;
     gamedata->gamemode = 'p';
@@ -449,16 +446,16 @@ int calculatewindspeed(GameData* gamedata){
 
 void exitisland(GameData* gamedata){
   if(gamedata->playerx > gamedata->islandsx[gamedata->playerisland]){
-    gamedata->playerx = gamedata->islandsx[gamedata->playerisland] + 30;
+    gamedata->playerx = gamedata->playerx + 10;
   }
   else{
-    gamedata->playerx = gamedata->islandsx[gamedata->playerisland] - 30;
+    gamedata->playerx = gamedata->playerx - 10;
   }
   if(gamedata->playery > gamedata->islandsy[gamedata->playerisland]){
-    gamedata->playery = gamedata->islandsy[gamedata->playerisland] + 30;
+    gamedata->playery = gamedata->playery + 10;
   }
   else{
-    gamedata->playery = gamedata->islandsy[gamedata->playerisland] - 30;
+    gamedata->playery = gamedata->playery - 10;
   }
 }
 
