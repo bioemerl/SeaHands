@@ -10,6 +10,7 @@ extern const int MENU3ITEMSCNT;
 extern const int MENU4ITEMSCNT;
 extern const int MENU6ITEMSCNT;
 extern const int BASE_PRICE_SUPPLIES;
+extern const int CURRENT_SAVE_VERSION;
 
 typedef struct{
   char gamemode;
@@ -76,6 +77,7 @@ typedef struct{
 } ResourceValues;
 
 typedef struct{
+  int8_t saveversionnumber;
   int16_t shipsx[10], shipsy[10]; // 320 bits
   int8_t islandscargo[10][4]; //320 bits
   int8_t shipsisland[10]; //80 bits

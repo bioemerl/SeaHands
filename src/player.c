@@ -203,6 +203,14 @@ void menutwoupdate(GameData* gamedata){
     }
   }
   if(gamedata->currentmenu[2] == 3 && buttonpress == 3){
+    int upgradeprice = check_player_upgrade_price(gamedata, 1);
+    if(gamedata->playerwallet >= upgradeprice && gamedata->currentspeed > 4){
+      gamedata->currentspeed--;
+      gamedata->speedlevel--;
+      gamedata->playerwallet += -upgradeprice;
+    }
+  }
+  if(gamedata->currentmenu[2] == 4 && buttonpress == 3){
     gamedata->menulayer = 0;
     gamedata->currentmenu[2] = 0;
     gamedata->buttonrelease = 0;

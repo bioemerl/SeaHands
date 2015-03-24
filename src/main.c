@@ -274,13 +274,13 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     int cargoprice = 1;
     int speedprice = 1;
     
-    char secondmenulayer[45];
+    char secondmenulayer[55];
     int upgradeprices[3];
     for(int i = 0; i < 2; i++)
       upgradeprices[i] = check_player_upgrade_price(&gamedata, i);
     cargoprice = upgradeprices[0];
     speedprice = upgradeprices[1];
-    snprintf(secondmenulayer, sizeof(secondmenulayer), " BuySu:%i\n UpCrgo:%i\n UpSpd: %i\n -Back-", BASE_PRICE_SUPPLIES, cargoprice, speedprice);
+    snprintf(secondmenulayer, sizeof(secondmenulayer), " BuySu:%i\n UpCrgo:%i\n UpSpd: %i\n DnSpd: %i -Back-", BASE_PRICE_SUPPLIES, cargoprice, speedprice, speedprice);
     graphics_draw_text(ctx, secondmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer3text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
   //menu layer for ship interactions

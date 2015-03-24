@@ -200,6 +200,7 @@ void save_data(GameData* gamedata){
   saving.eventhour = gamedata->eventhour;
   saving.eventday = gamedata->eventday;
   saving.totalships = gamedata->totalships;
+  saving.saveversionnumber = CURRENT_SAVE_VERSION;
   
   //save the object into memory
   persist_write_data(DATA_KEY, &saving, sizeof(saving));

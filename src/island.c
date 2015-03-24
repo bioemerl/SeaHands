@@ -151,7 +151,7 @@ void update_islands(GameData* gamedata){
     }
     if(gamedata->islandstypes[i] == 3){
       resourceincrease = ((FOODPRODUCTIONVALUE*gamedata->foodmultiplier) / gamedata->fooddivisor);
-      updateislandresource(gamedata, i, -1, 0, 0, resourceincrease);
+      updateislandresource(gamedata, i, -2, 0, 0, resourceincrease);
     }
       //based on island type, check if each island has enough of their excess resource
     int searchtype = gamedata->islandstypes[i];
@@ -159,7 +159,7 @@ void update_islands(GameData* gamedata){
     int picounter = -1;
     for(int j = 0; j < TOTALISLANDS; j++){ //search through each existing island
       //if the island needs more of the type being sent, and the island sending has more than 10 to send, and the island being checked is not itself
-      if(gamedata->islandscargo[j][searchtype] < 80 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 10 && j != i){
+      if(gamedata->islandscargo[j][searchtype] < 80 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 10 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= gamedata->islandscargo[j][searchtype] && j != i){
         //add the island to an array to be selected from later  
         ++picounter;
         possibleislands[picounter] = j;
