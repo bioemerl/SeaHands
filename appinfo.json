@@ -19,7 +19,8 @@
     "sdkVersion": "3",
     "shortName": "SeaHands",
     "targetPlatforms": [
-        "aplite"
+        "aplite",
+        "basalt"
     ],
     "uuid": "1bedccdc-b3c1-48e0-88e3-c99ad301643f",
     "versionCode": 1,

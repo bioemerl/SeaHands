@@ -11,6 +11,7 @@ void drawmaingame(Layer *this_layer, GContext *ctx);
 void drawbattle(Layer *this_layer, GContext *ctx);
 void draw_edge_points(Layer *this_layer, GContext *ctx);
 void draw_map(Layer *this_layer, GContext *ctx);
+void draw_wind_arrow(Layer *this_layer, GContext *ctx);
   
 //define a number of constants
 const uint8_t PEBBLEHEIGHT = 168;
@@ -78,16 +79,42 @@ void drawbattle(Layer *this_layer, GContext *ctx){
 }
 
 void drawmaingame(Layer *this_layer, GContext *ctx){
+  //draw the ocean
+  #ifdef PBL_COLOR
+    graphics_context_set_fill_color(ctx, GColorBlueMoon);
+  #else
+    graphics_context_set_fill_color(ctx, GColorWhite);
+  #endif
+  graphics_fill_rect(ctx, GRect(0,0,200,200), 0, GCornerNone);
+    
   //draw the player
+  
+  #ifdef PBL_COLOR
+    graphics_context_set_fill_color(ctx, GColorWindsorTan);
+  #else
+    graphics_context_set_fill_color(ctx, GColorBlack);
+  #endif
+    
   GPoint player = GPoint(72, 82);
-  graphics_context_set_fill_color(ctx, GColorBlack);
   //draw the player
   graphics_fill_circle(ctx, player, 5);
   
   //draw the direction, if it is not zero
+  
+  #ifdef PBL_COLOR
+    graphics_context_set_fill_color(ctx, GColorArmyGreen);
+  #else
+    graphics_context_set_fill_color(ctx, GColorBlack);
+  #endif
+    
   if((gamedata.playerxvelocity != 0) || (gamedata.playeryvelocity !=0)){
-    if( (abs(gamedata.playerxvelocity) <= 5) && (abs(gamedata.playeryvelocity) <= 5 ))
-      graphics_context_set_fill_color(ctx, GColorWhite);
+    if( (abs(gamedata.playerxvelocity) <= 5) && (abs(gamedata.playeryvelocity) <= 5 )){
+      #ifdef PBL_COLOR
+        graphics_context_set_fill_color(ctx, GColorArmyGreen);
+      #else
+        graphics_context_set_fill_color(ctx, GColorWhite);
+      #endif
+    }
     //72 and 82 are the center of pebble's screen.
     GPoint playervector = GPoint((72 + gamedata.playerxvelocity), (82 + gamedata.playeryvelocity));
     graphics_fill_circle(ctx, playervector, 2);
@@ -113,6 +140,74 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
     if(gamedata.menulayer == 5) //the player start menu
       draw_menu_layer(this_layer, ctx, 5, 0, 15);
   }
+  
+  draw_wind_arrow(this_layer, ctx);
+}
+
+void draw_wind_arrow(Layer *this_layer, GContext *ctx){
+  //is a number 0 through 8
+  //want to put the icon next to this: GRect(0, PEBBLEHEIGHT - 29, 55, 15);
+  //so, about at point -29 -> -19
+  //so at Y = PEBBLEHEIGHT - 24 X = 60
+  uint8_t linestartx = 62, linestarty = PEBBLEHEIGHT - 24;
+  uint8_t lineendx = 62, lineendy = PEBBLEHEIGHT - 24;
+  int8_t multiplier = 2;
+  
+  if(gamedata.currentwindspeed == 1){
+    lineendx += 0 * multiplier;
+    lineendy += 2 * multiplier;
+    linestartx -= 0 * multiplier;
+    linestarty -= 2 * multiplier;
+  }
+  if(gamedata.currentwindspeed == 2){
+    lineendx += 1 * multiplier;
+    lineendy += 1 * multiplier;
+    linestartx -= 1 * multiplier;
+    linestarty -= 1 * multiplier;
+  }
+  if(gamedata.currentwindspeed == 3){
+    lineendx += 2 * multiplier;
+    lineendy += 0 * multiplier;
+    linestartx -= 2 * multiplier;
+    linestarty -= 0 * multiplier;
+  }
+  if(gamedata.currentwindspeed == 4){
+    lineendx += 1 * multiplier;
+    lineendy += -1 * multiplier;
+    linestartx -= 1 * multiplier;
+    linestarty -= -1 * multiplier;
+  }
+  if(gamedata.currentwindspeed == 5){
+    lineendx += 0 * multiplier;
+    lineendy += -2 * multiplier;
+    linestartx -= 0 * multiplier;
+    linestarty -= -2 * multiplier;
+  }
+  if(gamedata.currentwindspeed == 6){
+    lineendx += -1 * multiplier;
+    lineendy += -1 * multiplier;
+    linestartx -= -1 * multiplier;
+    linestarty -= -1 * multiplier;
+  }
+  if(gamedata.currentwindspeed == 7){
+    lineendx += -2 * multiplier;
+    lineendy += 0 * multiplier;
+    linestartx -= -2 * multiplier;
+    linestarty -= 0 * multiplier;
+  }
+  if(gamedata.currentwindspeed == 8){
+    lineendx += -1 * multiplier;
+    lineendy += 1 * multiplier;
+    linestartx -= -1 * multiplier;
+    linestarty -= 1 * multiplier;
+  }
+  //draw the arrow end point as a dot at the end point, and the line from start to end
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_fill_rect(ctx, GRect(56, PEBBLEHEIGHT - 29, 12, 12), 0, GCornerNone);
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_draw_rect(ctx, GRect(56, PEBBLEHEIGHT - 29, 12, 12));
+  graphics_draw_line(ctx, GPoint(lineendx, lineendy), GPoint(linestartx, linestarty));
+  graphics_fill_circle(ctx, GPoint(lineendx, lineendy), 1);
 }
 
 void draw_edge_points(Layer *this_layer, GContext *ctx){
@@ -325,10 +420,15 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
 
 void draw_ships(Layer *this_layer, GContext *ctx){
   //draw any ships that exist, and are on screen
+  
+  #ifdef PBL_COLOR
+    graphics_context_set_fill_color(ctx, GColorWindsorTan);
+  #else
+    graphics_context_set_fill_color(ctx, GColorBlack);
+  #endif
+    
   if(gamedata.totalships >= 0){
     for(int i = 0; i <= gamedata.totalships; i++){
-      if(abs(gamedata.shipsx[i]-gamedata.playerx) < 146 && abs(gamedata.shipsy[i] - gamedata.playery) < 165)
-      graphics_context_set_fill_color(ctx, GColorBlack);
       GPoint shippoint = GPoint(gamedata.shipsx[i] - gamedata.playerx + 72, gamedata.shipsy[i] - gamedata.playery + 84);
       graphics_fill_circle(ctx, shippoint, 3);
     }
@@ -342,20 +442,33 @@ void draw_islands(Layer *this_layer, GContext *ctx){
       //do nothing, island does not exist
     }
     else{ //if(abs(gamedata.islandsx[i]-gamedata.playerx) < 146 && abs(gamedata.islandsy[i] - gamedata.playery) < 165){
-      graphics_context_set_fill_color(ctx, GColorBlack);
+      
+      #ifdef PBL_COLOR
+        graphics_context_set_fill_color(ctx, GColorLimerick);
+      #else
+        graphics_context_set_fill_color(ctx, GColorBlack);
+      #endif
+    
       GPoint islandpoint = GPoint(gamedata.islandsx[i] - gamedata.playerx + 72, gamedata.islandsy[i] - gamedata.playery + 84);
       graphics_fill_circle(ctx, islandpoint, 25);
+      graphics_context_set_fill_color(ctx, GColorWhite);
       if(gamedata.islandstypes[i] == 1){
-        graphics_context_set_fill_color(ctx, GColorWhite);
-        graphics_fill_circle(ctx, islandpoint, 3);
-      }
-      if(gamedata.islandstypes[i] == 2){
-        graphics_context_set_fill_color(ctx, GColorWhite);
+        #ifdef PBL_COLOR
+          graphics_context_set_fill_color(ctx, GColorDarkGreen);
+        #endif
         graphics_fill_circle(ctx, islandpoint, 8);
       }
+      if(gamedata.islandstypes[i] == 2){
+        #ifdef PBL_COLOR
+          graphics_context_set_fill_color(ctx, GColorLightGray);
+        #endif
+        graphics_fill_circle(ctx, islandpoint, 13);
+      }
       if(gamedata.islandstypes[i] == 3){
-        graphics_context_set_fill_color(ctx, GColorWhite);
-        graphics_fill_circle(ctx, islandpoint, 15);
+        #ifdef PBL_COLOR
+          graphics_context_set_fill_color(ctx, GColorYellow);
+        #endif
+        graphics_fill_circle(ctx, islandpoint, 18);
       }
     }
   }
