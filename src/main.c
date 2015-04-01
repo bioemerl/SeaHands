@@ -153,6 +153,7 @@ void draw_wind_arrow(Layer *this_layer, GContext *ctx){
   uint8_t lineendx = 62, lineendy = PEBBLEHEIGHT - 24;
   int8_t multiplier = 2;
   
+  //determine the start and end points for the arrow, depending on the wind direction
   if(gamedata.currentwindspeed == 1){
     lineendx += 0 * multiplier;
     lineendy += 2 * multiplier;
@@ -202,12 +203,13 @@ void draw_wind_arrow(Layer *this_layer, GContext *ctx){
     linestarty -= 1 * multiplier;
   }
   //draw the arrow end point as a dot at the end point, and the line from start to end
+  //draw the background
   graphics_context_set_fill_color(ctx, GColorWhite);
   graphics_fill_rect(ctx, GRect(56, PEBBLEHEIGHT - 29, 12, 12), 0, GCornerNone);
-  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_fill_color(ctx, GColorBlack); //draw the box
   graphics_draw_rect(ctx, GRect(56, PEBBLEHEIGHT - 29, 12, 12));
-  graphics_draw_line(ctx, GPoint(lineendx, lineendy), GPoint(linestartx, linestarty));
-  graphics_fill_circle(ctx, GPoint(lineendx, lineendy), 1);
+  graphics_draw_line(ctx, GPoint(lineendx, lineendy), GPoint(linestartx, linestarty)); //draw arrow
+  graphics_fill_circle(ctx, GPoint(lineendx, lineendy), 1); //draw point
 }
 
 void draw_edge_points(Layer *this_layer, GContext *ctx){
