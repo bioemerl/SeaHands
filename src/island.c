@@ -134,7 +134,6 @@ void update_islands(GameData* gamedata){
   foodval = currentvalues.foodvalue;
   APP_LOG(APP_LOG_LEVEL_INFO, "\nMETAL VALUE: %i\nWOOD VALUE: %i\nSTONE VALUE: %i\nFOOD VALUE: %i\n", metalval, woodval, stoneval, foodval);
   END DEBUG CODE*/
-  
   for(int i = 0; i < TOTALISLANDS; i++){
     int resourceincrease = 0;
     if(gamedata->islandstypes[i] == 0){
@@ -189,9 +188,7 @@ void update_islands(GameData* gamedata){
         give_ship_order(gamedata, i, currentship, 'd', ordervalues);
       }
       
-      
-    }
-    
+    }    
     
     
     

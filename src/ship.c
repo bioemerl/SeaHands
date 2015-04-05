@@ -32,6 +32,7 @@ void create_ship(GameData* gamedata, int8_t ownernumber){
     //set new ship x and y coords to coords of spawning island
     gamedata->shipsx[gamedata->totalships] = gamedata->islandsx[ownernumber];
     gamedata->shipsy[gamedata->totalships] = gamedata->islandsy[ownernumber];
+    gamedata->shipsowner[gamedata->totalships] = ownernumber;
     gamedata->shipsorderinfo[gamedata->totalships][0] = -1;
     gamedata->shipsorderinfo[gamedata->totalships][1] = -1;
     gamedata->shipsorderinfo[gamedata->totalships][2] = -1;
@@ -92,17 +93,21 @@ void update_ships(GameData* gamedata){
         if(gamedata->shipscargo[i] > 0){ //if there is something in the cargo
           //move to second island in array, offload cargo
           //if the ship is at the island, move cargo onto the island
+          APP_LOG(APP_LOG_LEVEL_INFO, "updaing for D, moving to %i", gamedata->shipsorderinfo[i][1]);
           int8_t arrived = move_ship(gamedata, gamedata->shipsorderinfo[i][1], i);
           if(arrived == 1){
-            ship_give_cargo(gamedata, i, gamedata->shipsorderinfo[i][1], gamedata->shipsorderinfo[i][2], gamedata->shipscargo[i]);
+            APP_LOG(APP_LOG_LEVEL_INFO, "trying to give cargo");
+            ship_give_cargo(gamedata, i, gamedata->shipsorderinfo[i][1], gamedata->shipscargo[i], gamedata->shipsorderinfo[i][2]);
           }
         }
         if(gamedata->shipscargo[i] <= 0){ //if cargo is empty
           //move to the first island in array
           //if the ship is at the island, take cargo from the island
+          APP_LOG(APP_LOG_LEVEL_INFO, "Attempting to deliver to %i", gamedata->shipsorderinfo[i][0]);
           int8_t arrived = move_ship(gamedata, gamedata->shipsorderinfo[i][0], i);
           if(arrived == 1){
-            ship_take_cargo(gamedata, i, gamedata->shipsorderinfo[i][0], gamedata->shipsorderinfo[i][2], MAX_SHIP_CARGO);
+            APP_LOG(APP_LOG_LEVEL_INFO, "Attempting to take cargo from %i", gamedata->shipsorderinfo[i][0]);
+            ship_take_cargo(gamedata, i, gamedata->shipsorderinfo[i][0], MAX_SHIP_CARGO, gamedata->shipsorderinfo[i][2]);
           }
         }
       }
@@ -113,6 +118,7 @@ void update_ships(GameData* gamedata){
       if(gamedata->shipsorder[i] == 'n'){ //nothing
         //move to the host island.  Stay there
         //offload any held cargo
+        int8_t arrived = move_ship(gamedata, gamedata->shipsowner[i], i);
       }
     }
   }//end for
@@ -183,24 +189,30 @@ void destroy_ship(GameData* gamedata, int shipnumber){
 
 void ship_take_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
   //if the ship either has no resources, or the ship type is the same as the type it is picking up:
-  if((gamedata->shipscargo[shipnumber] + amount) > MAX_SHIP_CARGO && (gamedata->shipscargo[shipnumber] <= 0 || gamedata->shipstype[shipnumber] == resource)){ //if the ship can hold this cargo
+  if((gamedata->shipscargo[shipnumber] + amount) <= MAX_SHIP_CARGO && (gamedata->shipscargo[shipnumber] <= 0 || gamedata->shipstype[shipnumber] == resource)){ //if the ship can hold this cargo
+    
     if(gamedata->islandscargo[target][resource] <= amount) //if there is not enough, take what is left
       amount = gamedata->islandscargo[target][resource];
+    
     gamedata->islandscargo[target][resource] += -amount; //take resource from island
     gamedata->shipscargo[shipnumber] = gamedata->shipscargo[shipnumber] + amount; //add cargo to ship
     gamedata->shipstype[shipnumber] = resource; //set ship resource to be what resource it took
+  
   }
 }
+
 void ship_give_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
   //if the ship has cargo, and is putting the correct resource to the island
+  APP_LOG(APP_LOG_LEVEL_INFO, "Cargo: %i.  Type: %i.  ExpType: %i", gamedata->shipscargo[shipnumber], gamedata->shipstype[shipnumber], resource );
   if(gamedata->shipscargo[shipnumber] > 0 && gamedata->shipstype[shipnumber] == resource){
     if(gamedata->islandscargo[target][resource] + amount <= MAX_ISLAND_CARGO){ //if the island cannot hold the amount
       amount = MAX_ISLAND_CARGO - gamedata->islandscargo[target][resource]; //put what can fit
       if(amount < 0) //always be secure.  If island somehow had more than the max, be sure not to get negative numbers
         amount = 0;
     }
-    gamedata->islandscargo[target][resource] += +amount; //take resource from island
-    gamedata->shipscargo[shipnumber] = gamedata->shipscargo[shipnumber] - amount; //add cargo to ship
+    APP_LOG(APP_LOG_LEVEL_INFO, "GOT HERE!");
+    gamedata->islandscargo[target][resource] += +amount; //add resource to island
+    gamedata->shipscargo[shipnumber] = gamedata->shipscargo[shipnumber] - amount; //add cargo from ship
   }
 }
 void ship_buy_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
@@ -213,7 +225,7 @@ void ship_sell_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_
 int8_t find_owned_ship(GameData* gamedata, int8_t owner){
   //if a ship with the given owner exists, return said index
   //otherwise, return -1;
-  for(int i = 0; i < gamedata->totalships; i++){
+  for(int i = 0; i <= gamedata->totalships; i++){
     if(gamedata->shipsowner[i] == owner){
       return i;
     }
