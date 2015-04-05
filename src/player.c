@@ -35,7 +35,9 @@ void initialize_player(GameData* gamedata){
 void burn_player_cargo(GameData* gamedata){
   //APP_LOG(APP_LOG_LEVEL_INFO, "Speed = %i: X: %i Y: %i", calculatewindspeed(gamedata), gamedata->playerx, gamedata->playery);
   if(random(5) == 2){
-    gamedata->playercargo[4] += -1; //burn supplies
+    gamedata->playercargo[4] += -1;//burn supplies
+    if(gamedata->playercargo[4] == 1)
+      displaynotification(gamedata, "\n\nSupplies are low!");
   }
   if(gamedata->playercargo[4] <= 0){
     initialize_player(gamedata);

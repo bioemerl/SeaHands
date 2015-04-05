@@ -137,7 +137,7 @@ void endgame(ShipBattleData* shipbattledata, GameData* gamedata, char winner){
       gamedata->playercargo[gamedata->shipstype[gamedata->playership]] += 10;
     if(gamedata->playercargo[4] < gamedata->maxplayercargo)
       gamedata->playercargo[4]++;
-    destroy_ship(gamedata, gamedata->playership, 0);
+    destroy_ship(gamedata, gamedata->playership);
   }
   if(gamedata->gamemodeswitchflag1 == 'h'){ //if h for hijack
      

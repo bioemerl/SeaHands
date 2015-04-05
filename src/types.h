@@ -2,6 +2,7 @@
 
 extern const int GAMELOOP_TIMER_INTERVALL;
 extern const int DATA_KEY;
+extern const int DATA_VERSION_KEY;
 extern const int VERSION_KEY;
 extern const int TOTALISLANDS;
 extern const int MENUITEMSCNT;
@@ -11,6 +12,8 @@ extern const int MENU4ITEMSCNT;
 extern const int MENU6ITEMSCNT;
 extern const int BASE_PRICE_SUPPLIES;
 extern const int CURRENT_SAVE_VERSION;
+extern const int MAX_SHIP_CARGO;
+extern const int MAX_ISLAND_CARGO;
 
 typedef struct{
   char gamemode;
@@ -31,9 +34,11 @@ typedef struct{
   
   int16_t shipsx[10], shipsy[10];
   int8_t totalships;
-  int8_t shipscargo[10]; //[the amount]
-  int8_t shipsisland[10];
-  int8_t shipstype[10]; //the boat cargo type
+  int8_t shipscargo[10], shipstype[10]; //[the amount]  //the boat cargo type 
+  int8_t shipsowner[10];
+  char shipsorder[10];
+  int8_t shipsorderinfo[10][3];
+  
   
   int16_t islandsx[10], islandsy[10];
   int8_t islandstypes[10];
@@ -78,13 +83,16 @@ typedef struct{
 
 typedef struct{
   int8_t saveversionnumber;
+  
   int16_t shipsx[10], shipsy[10]; // 320 bits
-  int8_t islandscargo[10][4]; //320 bits
+  int8_t totalships; //8 bits
   int8_t shipsisland[10]; //80 bits
   int8_t shipstype[10]; //80 bits
+  
   int8_t playercargo[5]; //32 bits
   int16_t playerwallet; //16 bits
-  int8_t totalships; //8 bits
+  
+  int8_t islandscargo[10][4]; //320 bits
   
   int8_t maxplayercargo, currentspeed; //16 bits
   int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage; //56 bits
@@ -95,6 +103,33 @@ typedef struct{
   int8_t eventhour; //8 bits
   int16_t eventday;//16 bits
   //1024 bits total
+  //max 2048 bytes
+  
+} OldSaveValues;
+
+typedef struct{
+  int16_t shipsx[10], shipsy[10]; // 320 bits
+  int8_t totalships; //8 bits
+  int8_t shipscargo[10], shipstype[10]; //160 bits
+  int8_t shipsowner[10]; //80 bits
+  char shipsorder[10]; //80 bits
+  int8_t shipsorderinfo[10][3]; //240 bits
+  
+  
+  int8_t playercargo[5]; //32 bits
+  int16_t playerwallet; //16 bits
+  
+  int8_t islandscargo[10][4]; //320 bits
+  
+  int8_t maxplayercargo, currentspeed; //16 bits
+  int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage; //56 bits
+  
+  int8_t metalmultiplier, stonemultiplier, woodmultiplier, foodmultiplier; //32 bits
+  int8_t metaldivisor, stonedivisor, wooddivisor, fooddivisor; //32 bits
+  char currentevent; //8 bits
+  int8_t eventhour; //8 bits
+  int16_t eventday;//16 bits
+  //1416 bits total
   //max 2048 bytes
   
 } SaveValues;

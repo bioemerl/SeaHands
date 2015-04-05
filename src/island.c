@@ -153,30 +153,54 @@ void update_islands(GameData* gamedata){
       resourceincrease = ((FOODPRODUCTIONVALUE*gamedata->foodmultiplier) / gamedata->fooddivisor);
       updateislandresource(gamedata, i, -2, 0, 0, resourceincrease);
     }
-      //based on island type, check if each island has enough of their excess resource
-    int searchtype = gamedata->islandstypes[i];
-    int possibleislands[10];
-    int picounter = -1;
-    for(int j = 0; j < TOTALISLANDS; j++){ //search through each existing island
-      //if the island needs more of the type being sent, and the island sending has more than 10 to send, and the island being checked is not itself
-      if(gamedata->islandscargo[j][searchtype] < 80 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 10 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= gamedata->islandscargo[j][searchtype] && j != i){
-        //add the island to an array to be selected from later  
-        ++picounter;
-        possibleislands[picounter] = j;
-        //create_ship(gamedata, i, j);
-      }  
-    }  
-    //pi counter is the total number of islands that are valid
-    //need to randomly select a number between 0 and picounter
-    //then create a ship for that counter
-    if(picounter >= 0){ //if there were any valid targets
-      int randomvalue = random(picounter);
-      picounter = 0;
-      //APP_LOG(APP_LOG_LEVEL_INFO, "RANDOM INT IS %i PICOUNTER IS %i", randomvalue, picounter);
-      if(gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 15 && gamedata->islandscargo[i][1] >= 2 && gamedata->islandscargo[i][2] >= 2)
-        create_ship(gamedata, i, possibleislands[randomvalue]);
+    
+    //check if the island has a ship
+    int currentship = find_owned_ship(gamedata, i);
+    if(currentship == -1){ //if no ship is found
+      create_ship(gamedata, i); //make a ship for the island
+      currentship = find_owned_ship(gamedata, i); //set the value again to the ship
     }
-  } 
+    if(gamedata->shipsorderinfo[currentship][1] == -1 || (gamedata->islandscargo[gamedata->islandstypes[i]][gamedata->shipsorderinfo[currentship][1]] < gamedata->islandscargo[i][gamedata->islandstypes[i]])){
+      //if the current island has fewer of it's resource than the island it is delivering to
+      int8_t ordervalues[3] = {-1, -1, -1};
+      give_ship_order(gamedata, i, currentship, 'n', ordervalues); //set the ship to do nothing
+      
+      //search for a valid island
+      int searchtype = gamedata->islandstypes[i];
+      int possibleislands[10];
+      int picounter = -1;
+      for(int j = 0; j < TOTALISLANDS; j++){ //search through each existing island
+        //if the island needs more of the type being sent, and the island sending has more than 10 to send, and the island being checked is not itself
+        if(gamedata->islandscargo[j][searchtype] < 80 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= 10 && gamedata->islandscargo[i][gamedata->islandstypes[i]] >= gamedata->islandscargo[j][searchtype] && j != i){
+          //add the island to an array to be selected from later  
+          ++picounter;
+          possibleislands[picounter] = j;
+        }  
+      }
+      //pi counter is the total number of islands that are valid
+      //need to randomly select a number between 0 and picounter
+      //then create a ship for that counter
+      if(picounter >= 0){ //if there were any valid targets
+        int randomvalue = random(picounter);
+        picounter = 0;
+        //APP_LOG(APP_LOG_LEVEL_INFO, "RANDOM INT IS %i PICOUNTER IS %i", randomvalue, picounter);
+        //create_ship(gamedata, i, possibleislands[randomvalue]);
+        int8_t ordervalues[3] = {i, possibleislands[randomvalue], gamedata->islandstypes[i]};
+        give_ship_order(gamedata, i, currentship, 'd', ordervalues);
+      }
+      
+      
+    }
+    
+    
+    
+    
+    //based on island type, check if each island has enough of their excess resource
+      
+    
+  
+  
+  }
 }
 
 //will cause the island to change values, if and only if all value changes are valid (do not go over max, or under 0)
