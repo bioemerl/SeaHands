@@ -205,12 +205,13 @@ void ship_give_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_
   //if the ship has cargo, and is putting the correct resource to the island
   //APP_LOG(APP_LOG_LEVEL_INFO, "Cargo: %i.  Type: %i.  ExpType: %i", gamedata->shipscargo[shipnumber], gamedata->shipstype[shipnumber], resource );
   if(gamedata->shipscargo[shipnumber] > 0 && gamedata->shipstype[shipnumber] == resource){
-    if(gamedata->islandscargo[target][resource] + amount <= MAX_ISLAND_CARGO){ //if the island cannot hold the amount
+    if(gamedata->islandscargo[target][resource] + amount > MAX_ISLAND_CARGO){ //if the island cannot hold the amount
+      APP_LOG(APP_LOG_LEVEL_INFO, "island amount is: %i: Attempting to place %i", gamedata->islandscargo[target][resource], amount);
       amount = MAX_ISLAND_CARGO - gamedata->islandscargo[target][resource]; //put what can fit
       if(amount < 0) //always be secure.  If island somehow had more than the max, be sure not to get negative numbers
         amount = 0;
+      APP_LOG(APP_LOG_LEVEL_INFO, "New amount: %i", amount);
     }
-    //APP_LOG(APP_LOG_LEVEL_INFO, "GOT HERE!");
     gamedata->islandscargo[target][resource] += +amount; //add resource to island
     gamedata->shipscargo[shipnumber] = gamedata->shipscargo[shipnumber] - amount; //add cargo from ship
   }

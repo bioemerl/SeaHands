@@ -14,4 +14,4 @@ const int BASE_PRICE_SUPPLIES = 10;
 const int GAMELOOP_TIMER_INTERVALL = 50;
 const int CURRENT_SAVE_VERSION = 2;
 const int MAX_SHIP_CARGO = 10;
-const int MAX_ISLAND_CARGO = 10;
+const int MAX_ISLAND_CARGO = 100;
