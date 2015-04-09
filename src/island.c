@@ -159,7 +159,7 @@ void update_islands(GameData* gamedata){
       create_ship(gamedata, i); //make a ship for the island
       currentship = find_owned_ship(gamedata, i); //set the value again to the ship
     }
-    if(gamedata->shipsorderinfo[currentship][1] == -1 || (gamedata->islandscargo[gamedata->islandstypes[i]][gamedata->shipsorderinfo[currentship][1]] < gamedata->islandscargo[i][gamedata->islandstypes[i]])){
+    if(gamedata->shipsorderinfo[currentship][1] == -1 || (gamedata->islandscargo[gamedata->shipsorderinfo[currentship][1]][gamedata->islandstypes[i]] >= gamedata->islandscargo[i][gamedata->islandstypes[i]])){
       //if the current island has fewer of it's resource than the island it is delivering to
       int8_t ordervalues[3] = {-1, -1, -1};
       give_ship_order(gamedata, i, currentship, 'n', ordervalues); //set the ship to do nothing
