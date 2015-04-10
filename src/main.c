@@ -123,6 +123,7 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
   draw_islands(this_layer, ctx);
   draw_ships(this_layer, ctx);
   draw_gui(this_layer, ctx);
+  draw_wind_arrow(this_layer, ctx);
   
   //draw the menus
   if(gamedata.gamemode == 'm'){
@@ -141,7 +142,7 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
       draw_menu_layer(this_layer, ctx, 5, 0, 15);
   }
   
-  draw_wind_arrow(this_layer, ctx);
+  
 }
 
 void draw_wind_arrow(Layer *this_layer, GContext *ctx){

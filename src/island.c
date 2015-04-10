@@ -24,6 +24,7 @@ void initialize_islands(GameData* gamedata){
   for(int i = 0; i < 10; i++){
     gamedata->islandsx[i] = -1;
     gamedata->islandsy[i] = -1;
+    gamedata->islandsallegiance[i] = 0;
   }
   //now initialize them to actual island positions
   gamedata->islandsx[0] = -200;
@@ -153,14 +154,86 @@ void update_islands(GameData* gamedata){
       updateislandresource(gamedata, i, -2, 0, 0, resourceincrease);
     }
     
-    //check if the island has a ship
+    //for each resource the current island has zero of, check each island that makes that resource
+    //if the island has that resource, go towards the opposite affinity of that island
+    //one in three chance to do so
+    int8_t randomnumber = 0;
+    for(int j = 0; j < TOTALISLANDS; j++){
+      if(j != i){
+        if(gamedata->islandstypes[j] == 0 && gamedata->islandscargo[i][0] == 0 && gamedata->islandscargo[j][0] > 0){
+          
+          randomnumber = random(3);
+          if(randomnumber == 2){
+            int8_t enemyalliegence = manageislandallegiance(gamedata, j, 0);
+            if(enemyalliegence > 0){
+              enemyalliegence = manageislandallegiance(gamedata, j, -1);
+            }
+            if(enemyalliegence < 0){
+              enemyalliegence = manageislandallegiance(gamedata, j, 1);
+            }
+          }
+          
+        }
+        if(gamedata->islandstypes[j] == 1 && gamedata->islandscargo[i][1] == 0 && gamedata->islandscargo[j][1] > 0){
+          randomnumber = random(3);
+          if(randomnumber == 2){
+            int8_t enemyalliegence = manageislandallegiance(gamedata, j, 0);
+            if(enemyalliegence > 0){
+              enemyalliegence = manageislandallegiance(gamedata, j, -1);
+            }
+            if(enemyalliegence < 0){
+              enemyalliegence = manageislandallegiance(gamedata, j, 1);
+            }
+          }
+        }
+        if(gamedata->islandstypes[j] == 2 && gamedata->islandscargo[i][2] == 0 && gamedata->islandscargo[j][2] > 0){
+          randomnumber = random(3);
+          if(randomnumber == 2){
+            int8_t enemyalliegence = manageislandallegiance(gamedata, j, 0);
+            if(enemyalliegence > 0){
+              enemyalliegence = manageislandallegiance(gamedata, j, -1);
+            }
+            if(enemyalliegence < 0){
+              enemyalliegence = manageislandallegiance(gamedata, j, 1);
+            }
+          }
+        }
+        if(gamedata->islandstypes[j] == 3 && gamedata->islandscargo[i][3] == 0 && gamedata->islandscargo[j][3] > 0){
+          randomnumber = random(3);
+          if(randomnumber == 2){
+            int8_t enemyalliegence = manageislandallegiance(gamedata, j, 0);
+            if(enemyalliegence > 0){
+              enemyalliegence = manageislandallegiance(gamedata, j, -1);
+            }
+            if(enemyalliegence < 0){
+              enemyalliegence = manageislandallegiance(gamedata, j, 1);
+            }
+          }
+        }
+      }
+    }
+    
+    
+    
+    //check if the island has a ship.  If not, make a ship for it
+    //NOTE: could optimize here by making create ship return the index of it's created ship
+    //that way I wouldn't have to do find owned ship after making one
     int currentship = find_owned_ship(gamedata, i);
-    if(currentship == -1){ //if no ship is found
+    if(currentship == -1 && gamedata->islandscargo[i][1] >= 20 && gamedata->islandscargo[i][2] >= 20){ //if no ship is found, and island has enough resources
       create_ship(gamedata, i); //make a ship for the island
       currentship = find_owned_ship(gamedata, i); //set the value again to the ship
     }
-    if(gamedata->shipsorderinfo[currentship][1] == -1 || (gamedata->islandscargo[gamedata->shipsorderinfo[currentship][1]][gamedata->islandstypes[i]] >= gamedata->islandscargo[i][gamedata->islandstypes[i]])){
-      //if the current island has fewer of it's resource than the island it is delivering to
+    
+    //check faction, and if it is extreme enough, order the creation of an attack ship:
+    randomnumber = random(30);
+    if(randomnumber == 25 && manageislandallegiance(gamedata, i, 0) <= -30){
+      int8_t ordervalues[3] = {0, 0, 0};
+      give_ship_order(gamedata, i, currentship, 'a', ordervalues);
+    }
+    
+    //check orders for standard shipping
+    if(gamedata->shipsorder[currentship] != 'a' && currentship != -1 && (gamedata->shipsorderinfo[currentship][1] == -1 || (gamedata->islandscargo[gamedata->shipsorderinfo[currentship][1]][gamedata->islandstypes[i]] >= gamedata->islandscargo[i][gamedata->islandstypes[i]]))){
+      //if the current island has fewer of it's resource than the island it is delivering to, and has a ship
       int8_t ordervalues[3] = {-1, -1, -1};
       give_ship_order(gamedata, i, currentship, 'n', ordervalues); //set the ship to do nothing
       
@@ -219,3 +292,4 @@ void updateislandresource(GameData* gamedata, int islandnumber, int res1adjust, 
     gamedata->islandscargo[islandnumber][3] += res4adjust;
   }
 }
+

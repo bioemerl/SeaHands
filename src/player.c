@@ -94,15 +94,22 @@ void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount)
 void menuzeroupdate(GameData* gamedata){
   int buttonpress = check_current_button(gamedata);
   updatemenuselection(gamedata, 0, MENUITEMSCNT);
-  //IF SELECT IS HIT AND MENULAYER IS 0
-    if(gamedata->currentmenu[0] >=0 && gamedata->currentmenu[0] <= 3 && gamedata->menulayer == 0
-       && gamedata->uphit == 1 && gamedata->downhit == 1 && gamedata->buttonrelease == 1){
-      gamedata->menulayer = 1;
-      gamedata->buttonrelease = 0;
-    }
-    if(gamedata->currentmenu[0] == 4 && buttonpress == 3 && gamedata->buttonrelease == 1){
-      gamedata->menulayer = 2;
-      gamedata->buttonrelease = 0;
+    
+    //if the island does not like the player, do not allow trade to happen.
+    
+    if(manageislandallegiance(gamedata, gamedata->playerisland, 0) > -10){
+      //IF SELECT IS HIT AND MENULAYER IS 0 go into the second menu layer
+      //the second menu layer checks which layer this menu is currently on.  Menu 0 and 1 are tied
+      //together
+      if(gamedata->currentmenu[0] >=0 && gamedata->currentmenu[0] <= 3 && gamedata->menulayer == 0
+         && gamedata->uphit == 1 && gamedata->downhit == 1 && gamedata->buttonrelease == 1){
+        gamedata->menulayer = 1;
+        gamedata->buttonrelease = 0;
+       }
+      if(gamedata->currentmenu[0] == 4 && buttonpress == 3 && gamedata->buttonrelease == 1){
+        gamedata->menulayer = 2;
+        gamedata->buttonrelease = 0;
+      }
     }
     //if exit is highlighted leave
     if(gamedata->currentmenu[0] == 5 && buttonpress == 3){
@@ -114,7 +121,7 @@ void menuzeroupdate(GameData* gamedata){
     }
 }
 
-void menuoneupdate(GameData* gamedata){
+void menuoneupdate(GameData* gamedata){ //buy sell metal wood stone food from islands
   int buttonpress = check_current_button(gamedata);
   updatemenuselection(gamedata, 1, MENU2ITEMSCNT);
   
@@ -163,6 +170,8 @@ void buysellresources(GameData* gamedata, int8_t buyorsell, int resource, int is
       gamedata->islandscargo[gamedata->playerisland][resource] += -1;
       gamedata->playercargo[resource] += 1;
       gamedata->playerwallet = gamedata->playerwallet - resourcecost;
+      if(random(6) == 3)
+        manageislandallegiance(gamedata, gamedata->playerisland, 1);
     }
   }
   if(buyorsell == 1){
@@ -170,11 +179,13 @@ void buysellresources(GameData* gamedata, int8_t buyorsell, int resource, int is
       gamedata->islandscargo[gamedata->playerisland][resource] += 1;
       gamedata->playercargo[resource] += -1;
       gamedata->playerwallet = gamedata->playerwallet + resourcecost;
+      if(random(6) == 3)
+        manageislandallegiance(gamedata, gamedata->playerisland, 1);
     }
   }
 }
 
-void menutwoupdate(GameData* gamedata){
+void menutwoupdate(GameData* gamedata){ //the update menu layer
   int buttonpress = check_current_button(gamedata);
   updatemenuselection(gamedata, 2, MENU3ITEMSCNT);
   if(gamedata->currentmenu[2] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
@@ -185,6 +196,8 @@ void menutwoupdate(GameData* gamedata){
       gamedata->playerwallet += -BASE_PRICE_SUPPLIES;
       gamedata->playercargo[3]--;
       gamedata->playercargo[1]--;
+      if(random(6) == 3)
+        manageislandallegiance(gamedata, gamedata->playerisland, 1);
     }
   }
   if(gamedata->currentmenu[2] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
@@ -194,6 +207,7 @@ void menutwoupdate(GameData* gamedata){
       gamedata->cargolevel++;
       gamedata->maxplayercargo += 2;
       gamedata->playerwallet += -upgradeprice;
+      manageislandallegiance(gamedata, gamedata->playerisland, 1);
     } 
   }
   if(gamedata->currentmenu[2] == 2 && buttonpress == 3){
@@ -202,6 +216,7 @@ void menutwoupdate(GameData* gamedata){
       gamedata->currentspeed++;
       gamedata->speedlevel++;
       gamedata->playerwallet += -upgradeprice;
+      manageislandallegiance(gamedata, gamedata->playerisland, 1);
     }
   }
   if(gamedata->currentmenu[2] == 3 && buttonpress == 3){
@@ -210,6 +225,7 @@ void menutwoupdate(GameData* gamedata){
       gamedata->currentspeed--;
       gamedata->speedlevel--;
       gamedata->playerwallet += -upgradeprice;
+      manageislandallegiance(gamedata, gamedata->playerisland, 1);
     }
   }
   if(gamedata->currentmenu[2] == 4 && buttonpress == 3){
@@ -219,7 +235,7 @@ void menutwoupdate(GameData* gamedata){
   }
 }
 
-void menuthreeupdate(GameData* gamedata){
+void menuthreeupdate(GameData* gamedata){ //the pillage menu
   int buttonpress = check_current_button(gamedata);
   updatemenuselection(gamedata, 3, MENU4ITEMSCNT);
   if(gamedata->currentmenu[3] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
@@ -397,17 +413,19 @@ void update_player_movement(GameData* gamedata){
       break;
     }
   }
-  //APP_LOG(APP_LOG_LEVEL_INFO, "NUMBEROFSHIPS %i", gamedata->totalships);
+  //if player collides with a ship, initialize ship menu menu, unless it is an attack ship
   for(int i = 0; i <= gamedata->totalships; i++){
     //APP_LOG(APP_LOG_LEVEL_INFO, "TEST: %i", (finddistance(gamedata->playerx, gamedata->playery, gamedata->shipsx[i], gamedata->shipsy[i]) <= 8*8));
     if(finddistance(gamedata->playerx, gamedata->playery, gamedata->shipsx[i], gamedata->shipsy[i]) <= 8*8){
       //open up a menu
-      gamedata->playership = i;
-      APP_LOG(APP_LOG_LEVEL_INFO, "HIT SHIP");
-      gamedata->gamemode = 'm';
-      gamedata->menulayer = 3;
+      if(gamedata->shipsorder[i] != 'a'){ //if ship is not attacking initialize the menu
+        gamedata->playership = i;
+        gamedata->gamemode = 'm';
+        gamedata->menulayer = 3;
+      }
     }
   }
+  
 }
 
 //returns a value 1 to 8 depending on the players position and so on

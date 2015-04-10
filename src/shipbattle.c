@@ -131,16 +131,20 @@ void endgame(ShipBattleData* shipbattledata, GameData* gamedata, char winner){
     //if player lost, punish the player
     initialize_player(gamedata);
     gamedata->playerwallet = (gamedata->playerwallet -(gamedata->playerwallet/5));
+    //adjust the island hatred a bit less
+    manageislandallegiance(gamedata, gamedata->shipsowner[gamedata->playership], -3);
+    gamedata->shipsorder[gamedata->playership] = 'n';
   }
-  if(gamedata->gamemodeswitchflag1 == 'p'){ //if p for pillage
+  if(gamedata->gamemodeswitchflag1 == 'p' && winner == 'p'){ //if p for pillage
+    manageislandallegiance(gamedata, gamedata->shipsowner[gamedata->playership], -5);
     if(gamedata->playercargo[gamedata->shipstype[gamedata->playership]] + 10 <= gamedata->maxplayercargo)
       gamedata->playercargo[gamedata->shipstype[gamedata->playership]] += 10;
     if(gamedata->playercargo[4] < gamedata->maxplayercargo)
       gamedata->playercargo[4]++;
     destroy_ship(gamedata, gamedata->playership);
   }
-  if(gamedata->gamemodeswitchflag1 == 'h'){ //if h for hijack
-     
+  if(gamedata->gamemodeswitchflag1 == 'h' && winner == 'p'){ //if h for hijack
+     manageislandallegiance(gamedata, gamedata->shipsowner[gamedata->playership], -5);
   }
   gamedata->gamemode = 'p';
   gamedata->playership = -1;

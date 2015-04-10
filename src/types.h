@@ -22,15 +22,15 @@ typedef struct{
   int eventday;
   int8_t tutorialcounter;
   
-  int currentmenu[10];
-  int menulayer;
+  int8_t currentmenu[20];
+  int8_t menulayer;
   char notificationtext[150];
   
   int16_t currentcosts;
   
-  int downhit;
-  int uphit;
-  int buttonrelease;
+  int8_t downhit;
+  int8_t uphit;
+  int8_t buttonrelease;
   
   int16_t shipsx[10], shipsy[10];
   int8_t totalships;
@@ -43,6 +43,7 @@ typedef struct{
   int16_t islandsx[10], islandsy[10];
   int8_t islandstypes[10];
   int8_t islandscargo[10][4]; //max of 128 of any resource at an island, 10 islands, 4 ints per cargo
+  int8_t islandsallegiance[10];
   //these adjust how much stuff an island produces, names should be self-descriptive.
   int8_t metalmultiplier;
   int8_t stonemultiplier;
@@ -120,6 +121,7 @@ typedef struct{
   int16_t playerwallet; //16 bits
   
   int8_t islandscargo[10][4]; //320 bits
+  int8_t islandsallegiance[10]; //80 bits
   
   int8_t maxplayercargo, currentspeed; //16 bits
   int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage; //56 bits
@@ -129,7 +131,7 @@ typedef struct{
   char currentevent; //8 bits
   int8_t eventhour; //8 bits
   int16_t eventday;//16 bits
-  //1416 bits total
+  //1496 bits total
   //max 2048 bytes
   
 } SaveValues;

@@ -395,3 +395,14 @@ void adjustminimapcoords(int coords[2], int largestx, int lowestx, int largesty,
   coords[0] = coords[0] + 72;
   coords[1] = coords[1] + 74;
 }
+
+int manageislandallegiance(GameData* gamedata, int8_t islandnumber, int8_t adjustnumber){
+  if(adjustnumber != 0 && (gamedata->islandsallegiance[islandnumber] < 100 && gamedata->islandsallegiance[islandnumber] > -100)){
+    gamedata->islandsallegiance[islandnumber] += adjustnumber;
+    if(gamedata->islandsallegiance[islandnumber] > 100)
+      gamedata->islandsallegiance[islandnumber] = 100;
+    if(gamedata->islandsallegiance[islandnumber] < -100)
+      gamedata->islandsallegiance[islandnumber] = -100;
+  }
+  return gamedata->islandsallegiance[islandnumber];
+}
