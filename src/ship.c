@@ -13,9 +13,9 @@ void initialize_ships(GameData* gamedata){
     gamedata->shipstype[i] = 0;
     gamedata->shipsowner[i] = 0;
     gamedata->shipsorder[i] = 'n'; //no order
-    gamedata->shipsorderinfo[i][0] = 0;
-    gamedata->shipsorderinfo[i][1] = 0;
-    gamedata->shipsorderinfo[i][2] = 0;
+    gamedata->shipsorderinfo[i][0] = -1;
+    gamedata->shipsorderinfo[i][1] = -1;
+    gamedata->shipsorderinfo[i][2] = -1;
     gamedata->totalships = 0;
     
   }
@@ -68,6 +68,10 @@ void update_ships(GameData* gamedata){
         //move to target(currently, only the player)
         //initiate attack on the target, force the attack.
         //first offload cargo
+        //if the base island cannot hold cargo, dump it.
+        if(gamedata->islandscargo[gamedata->shipsowner[i]][gamedata->shipstype[i]] >= 100){
+          gamedata->shipscargo[i] = 0;
+        }
         if(gamedata->shipscargo[i] > 0){
           //move to island to offload cargo
           int8_t arrived = move_ship(gamedata, gamedata->shipsowner[i], i);
@@ -75,12 +79,29 @@ void update_ships(GameData* gamedata){
             ship_give_cargo(gamedata, i, gamedata->shipsowner[i], gamedata->shipscargo[i], gamedata->shipstype[i]); //offload whole inventory
           }
         }
-        if(gamedata->shipscargo[i] == 0){
+        if(gamedata->shipscargo[i] == 0 && gamedata->shipsorderinfo[i][0] == 0){
           //move to the player
           int8_t arrived = move_ship(gamedata, 11 /*the player*/, i);
           if(arrived == 1){ //once the ship has arrived, force the player to enter the pillage minigame
             gamedata->gamemodeswitchflag1 = 'p';
             gamedata->gamemode = 'b';
+          }
+        }
+        if(gamedata->shipscargo[i] == 0 && gamedata->shipsorderinfo[i][0] != 0){ //if attacking an island
+          int8_t attackisland = gamedata->shipsorderinfo[i][0] - 1; //find actual island number
+          int8_t arrived = move_ship(gamedata, attackisland, i); //move to island
+          if(arrived == 1){ 
+            //when arrived, take cargo away, change ship to none, adjust hatred levels
+            //fifty percent chance for island to win or lose, if loses, destroy ship, make attacker more angry
+            //if wins, make defender angry, and attacker less so.
+            if(random(2) <= 1){
+              ship_take_cargo(gamedata, i,  attackisland, 10, gamedata->shipsorderinfo[i][1]);
+              gamedata->shipsorderinfo[i][0] = -1; gamedata->shipsorderinfo[i][1] = -1; gamedata->shipsorderinfo[i][0] = -1; 
+              gamedata->shipsorder[i] = 'n';
+            }
+            else{
+              destroy_ship(gamedata, i);
+            }
           }
         }
       }
@@ -96,6 +117,9 @@ void update_ships(GameData* gamedata){
           //APP_LOG(APP_LOG_LEVEL_INFO, "updaing for D, moving to %i", gamedata->shipsorderinfo[i][1]);
           int8_t arrived = move_ship(gamedata, gamedata->shipsorderinfo[i][1], i);
           if(arrived == 1){
+            if(gamedata->islandscargo[gamedata->shipsorderinfo[i][1]][gamedata->shipsorderinfo[i][2]] >= 100){
+              gamedata->shipscargo[i] = 0;
+            }
             //APP_LOG(APP_LOG_LEVEL_INFO, "trying to give cargo");
             ship_give_cargo(gamedata, i, gamedata->shipsorderinfo[i][1], gamedata->shipscargo[i], gamedata->shipsorderinfo[i][2]);
           }
@@ -110,6 +134,7 @@ void update_ships(GameData* gamedata){
             ship_take_cargo(gamedata, i, gamedata->shipsorderinfo[i][0], MAX_SHIP_CARGO, gamedata->shipsorderinfo[i][2]);
           }
         }
+        
       }
       if(gamedata->shipsorder[i] == 's'){ //shop
         //same as 'd', but instead, also deduct funds.  No need for this until later with the storage 
@@ -118,7 +143,12 @@ void update_ships(GameData* gamedata){
       if(gamedata->shipsorder[i] == 'n'){ //nothing
         //move to the host island.  Stay there
         //offload any held cargo
+        if(gamedata->islandscargo[gamedata->shipsowner[i]][gamedata->shipstype[i]] >= 100){
+          gamedata->shipscargo[i] = 0;
+        }
         int8_t arrived = move_ship(gamedata, gamedata->shipsowner[i], i);
+        if(arrived == 1 && gamedata->shipscargo != 0)
+          ship_give_cargo(gamedata, i, gamedata->shipsowner[i], gamedata->shipscargo[i], gamedata->shipstype[i]); //offload whole inventory
       }
     }
   }//end for
@@ -132,7 +162,7 @@ int8_t move_ship(GameData* gamedata, int8_t destination, int8_t shipnumber){
     desty = gamedata->islandsy[destination];
   }
   if(destination == 11){ //the player
-    APP_LOG(APP_LOG_LEVEL_INFO, "MOVING!");
+    //APP_LOG(APP_LOG_LEVEL_INFO, "MOVING!");
     destx = gamedata->playerx;
     desty = gamedata->playery;
   }

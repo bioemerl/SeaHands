@@ -154,60 +154,73 @@ void update_islands(GameData* gamedata){
       updateislandresource(gamedata, i, -2, 0, 0, resourceincrease);
     }
     
+    //increase negative islands affinity by one occasionally
+    int8_t rand = random(4);
+    if(rand > 3 && manageislandallegiance(gamedata, i, 0) < 0){
+      manageislandallegiance(gamedata, i, 1);
+    }
+    
+    
     //for each resource the current island has zero of, check each island that makes that resource
     //if the island has that resource, go towards the opposite affinity of that island
     //one in three chance to do so
     int8_t randomnumber = 0;
+    int8_t attackislandnumber = -1;
     for(int j = 0; j < TOTALISLANDS; j++){
       if(j != i){
+        int8_t islandallegiance = manageislandallegiance(gamedata, i, 0);
+        int8_t enemyallegiance = manageislandallegiance(gamedata, j, 0);
         if(gamedata->islandstypes[j] == 0 && gamedata->islandscargo[i][0] == 0 && gamedata->islandscargo[j][0] > 0){
-          
           randomnumber = random(3);
           if(randomnumber == 2){
-            int8_t enemyalliegence = manageislandallegiance(gamedata, j, 0);
-            if(enemyalliegence > 0){
-              enemyalliegence = manageislandallegiance(gamedata, j, -1);
+            if(enemyallegiance > 0){
+              enemyallegiance = manageislandallegiance(gamedata, i, -1);
             }
-            if(enemyalliegence < 0){
-              enemyalliegence = manageislandallegiance(gamedata, j, 1);
+            if(enemyallegiance < 0){
+              enemyallegiance = manageislandallegiance(gamedata, i, 1);
             }
+            if(abs(enemyallegiance + islandallegiance) != (abs(enemyallegiance) + abs(islandallegiance))) //if the two values are the same + or -
+              attackislandnumber = j;
           }
           
         }
         if(gamedata->islandstypes[j] == 1 && gamedata->islandscargo[i][1] == 0 && gamedata->islandscargo[j][1] > 0){
           randomnumber = random(3);
           if(randomnumber == 2){
-            int8_t enemyalliegence = manageislandallegiance(gamedata, j, 0);
-            if(enemyalliegence > 0){
-              enemyalliegence = manageislandallegiance(gamedata, j, -1);
+            if(enemyallegiance > 0){
+              enemyallegiance = manageislandallegiance(gamedata, i, -1);
             }
-            if(enemyalliegence < 0){
-              enemyalliegence = manageislandallegiance(gamedata, j, 1);
+            if(enemyallegiance < 0){
+              enemyallegiance = manageislandallegiance(gamedata, i, 1);
             }
+            if(abs(enemyallegiance + islandallegiance) != (abs(enemyallegiance) + abs(islandallegiance))) //if the two values are the same + or -
+              attackislandnumber = j;
           }
         }
         if(gamedata->islandstypes[j] == 2 && gamedata->islandscargo[i][2] == 0 && gamedata->islandscargo[j][2] > 0){
           randomnumber = random(3);
           if(randomnumber == 2){
-            int8_t enemyalliegence = manageislandallegiance(gamedata, j, 0);
-            if(enemyalliegence > 0){
-              enemyalliegence = manageislandallegiance(gamedata, j, -1);
+            if(enemyallegiance > 0){
+              enemyallegiance = manageislandallegiance(gamedata, i, -1);
             }
-            if(enemyalliegence < 0){
-              enemyalliegence = manageislandallegiance(gamedata, j, 1);
+            if(enemyallegiance < 0){
+              enemyallegiance = manageislandallegiance(gamedata, i, 1);
             }
+            if(abs(enemyallegiance + islandallegiance) != (abs(enemyallegiance) + abs(islandallegiance))) //if the two values are the same + or -
+              attackislandnumber = j;
           }
         }
         if(gamedata->islandstypes[j] == 3 && gamedata->islandscargo[i][3] == 0 && gamedata->islandscargo[j][3] > 0){
           randomnumber = random(3);
           if(randomnumber == 2){
-            int8_t enemyalliegence = manageislandallegiance(gamedata, j, 0);
-            if(enemyalliegence > 0){
-              enemyalliegence = manageislandallegiance(gamedata, j, -1);
+            if(enemyallegiance > 0){
+              enemyallegiance = manageislandallegiance(gamedata, i, -1);
             }
-            if(enemyalliegence < 0){
-              enemyalliegence = manageislandallegiance(gamedata, j, 1);
+            if(enemyallegiance < 0){
+              enemyallegiance = manageislandallegiance(gamedata, i, 1);
             }
+            if(abs(enemyallegiance + islandallegiance) != (abs(enemyallegiance) + abs(islandallegiance))) //if the two values are the same + or -
+              attackislandnumber = j;
           }
         }
       }
@@ -225,14 +238,23 @@ void update_islands(GameData* gamedata){
     }
     
     //check faction, and if it is extreme enough, order the creation of an attack ship:
+    //then figure out where that attack ship should attack.  First choose an island, then have a 1 in 4
+    //chance to instead attack the player
     randomnumber = random(30);
+    int8_t ordervalues[3] = {0, 0, 0};
     if(randomnumber == 25 && manageislandallegiance(gamedata, i, 0) <= -30){
-      int8_t ordervalues[3] = {0, 0, 0};
       give_ship_order(gamedata, i, currentship, 'a', ordervalues);
+    }
+    if(randomnumber == 25){
+      if(attackislandnumber != -1){ //if there is an island the current one hates, attack that one instead
+        ordervalues[0] = attackislandnumber + 1;
+        ordervalues[1] = gamedata->islandstypes[attackislandnumber];
+        give_ship_order(gamedata, i, currentship, 'a', ordervalues);
+      }
     }
     
     //check orders for standard shipping
-    if(gamedata->shipsorder[currentship] != 'a' && currentship != -1 && (gamedata->shipsorderinfo[currentship][1] == -1 || (gamedata->islandscargo[gamedata->shipsorderinfo[currentship][1]][gamedata->islandstypes[i]] >= gamedata->islandscargo[i][gamedata->islandstypes[i]]))){
+    if(gamedata->shipsorder[currentship] != 'a' && currentship != -1 && (gamedata->shipsorderinfo[currentship][1] == -1 || (gamedata->islandscargo[gamedata->shipsorderinfo[currentship][1]][gamedata->islandstypes[i]] - 10 > gamedata->islandscargo[i][gamedata->islandstypes[i]] + 10))){
       //if the current island has fewer of it's resource than the island it is delivering to, and has a ship
       int8_t ordervalues[3] = {-1, -1, -1};
       give_ship_order(gamedata, i, currentship, 'n', ordervalues); //set the ship to do nothing
@@ -259,8 +281,7 @@ void update_islands(GameData* gamedata){
         //create_ship(gamedata, i, possibleislands[randomvalue]);
         int8_t ordervalues[3] = {i, possibleislands[randomvalue], gamedata->islandstypes[i]};
         give_ship_order(gamedata, i, currentship, 'd', ordervalues);
-      }
-      
+      } 
     }    
     
     
