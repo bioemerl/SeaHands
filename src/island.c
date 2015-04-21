@@ -155,7 +155,7 @@ void update_islands(GameData* gamedata){
     }
     
     //increase negative islands affinity by one occasionally
-    int8_t rand = random(4);
+    int8_t rand = random(7);
     if(rand > 3 && manageislandallegiance(gamedata, i, 0) < 0){
       manageislandallegiance(gamedata, i, 1);
     }

@@ -106,11 +106,12 @@ void menuzeroupdate(GameData* gamedata){
         gamedata->menulayer = 1;
         gamedata->buttonrelease = 0;
        }
-      if(gamedata->currentmenu[0] == 4 && buttonpress == 3 && gamedata->buttonrelease == 1){
-        gamedata->menulayer = 2;
-        gamedata->buttonrelease = 0;
-      }
     }
+    if(gamedata->currentmenu[0] == 4 && buttonpress == 3 && gamedata->buttonrelease == 1){
+      gamedata->menulayer = 2;
+      gamedata->buttonrelease = 0;
+    }
+    
     //if exit is highlighted leave
     if(gamedata->currentmenu[0] == 5 && buttonpress == 3){
       exitisland(gamedata);
@@ -188,44 +189,48 @@ void buysellresources(GameData* gamedata, int8_t buyorsell, int resource, int is
 void menutwoupdate(GameData* gamedata){ //the update menu layer
   int buttonpress = check_current_button(gamedata);
   updatemenuselection(gamedata, 2, MENU3ITEMSCNT);
-  if(gamedata->currentmenu[2] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
-    gamedata->buttonrelease = 0;
-    if(gamedata->playerwallet >= BASE_PRICE_SUPPLIES && gamedata->playercargo[4] < 10 
-       && gamedata->playercargo[3] > 0 && gamedata->playercargo[1] > 0){
-      gamedata->playercargo[4]++;
-      gamedata->playerwallet += -BASE_PRICE_SUPPLIES;
-      gamedata->playercargo[3]--;
-      gamedata->playercargo[1]--;
-      if(random(6) == 3)
+  //if the island does not like the player, do not allow trade to happen.
+    
+  if(manageislandallegiance(gamedata, gamedata->playerisland, 0) > -10){
+    if(gamedata->currentmenu[2] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
+      gamedata->buttonrelease = 0;
+      if(gamedata->playerwallet >= BASE_PRICE_SUPPLIES && gamedata->playercargo[4] < 10 
+         && gamedata->playercargo[3] > 0 && gamedata->playercargo[1] > 0){
+        gamedata->playercargo[4]++;
+        gamedata->playerwallet += -BASE_PRICE_SUPPLIES;
+        gamedata->playercargo[3]--;
+        gamedata->playercargo[1]--;
+        if(random(6) == 3)
+          manageislandallegiance(gamedata, gamedata->playerisland, 1);
+      }
+    }
+    if(gamedata->currentmenu[2] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
+     gamedata->buttonrelease = 0;
+      int upgradeprice = check_player_upgrade_price(gamedata, 0);
+      if(gamedata->playerwallet >= upgradeprice && gamedata->cargolevel < 98){
+        gamedata->cargolevel++;
+        gamedata->maxplayercargo += 2;
+        gamedata->playerwallet += -upgradeprice;
         manageislandallegiance(gamedata, gamedata->playerisland, 1);
+      } 
     }
-  }
-  if(gamedata->currentmenu[2] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
-   gamedata->buttonrelease = 0;
-    int upgradeprice = check_player_upgrade_price(gamedata, 0);
-    if(gamedata->playerwallet >= upgradeprice && gamedata->cargolevel < 98){
-      gamedata->cargolevel++;
-      gamedata->maxplayercargo += 2;
-      gamedata->playerwallet += -upgradeprice;
-      manageislandallegiance(gamedata, gamedata->playerisland, 1);
-    } 
-  }
-  if(gamedata->currentmenu[2] == 2 && buttonpress == 3){
-    int upgradeprice = check_player_upgrade_price(gamedata, 1);
-    if(gamedata->playerwallet >= upgradeprice){
-      gamedata->currentspeed++;
-      gamedata->speedlevel++;
-      gamedata->playerwallet += -upgradeprice;
-      manageislandallegiance(gamedata, gamedata->playerisland, 1);
+    if(gamedata->currentmenu[2] == 2 && buttonpress == 3){
+      int upgradeprice = check_player_upgrade_price(gamedata, 1);
+      if(gamedata->playerwallet >= upgradeprice){
+        gamedata->currentspeed++;
+        gamedata->speedlevel++;
+        gamedata->playerwallet += -upgradeprice;
+        manageislandallegiance(gamedata, gamedata->playerisland, 1);
+      }
     }
-  }
-  if(gamedata->currentmenu[2] == 3 && buttonpress == 3){
-    int upgradeprice = check_player_upgrade_price(gamedata, 1);
-    if(gamedata->playerwallet >= upgradeprice && gamedata->currentspeed > 4){
-      gamedata->currentspeed--;
-      gamedata->speedlevel--;
-      gamedata->playerwallet += -upgradeprice;
-      manageislandallegiance(gamedata, gamedata->playerisland, 1);
+    if(gamedata->currentmenu[2] == 3 && buttonpress == 3){
+      int upgradeprice = check_player_upgrade_price(gamedata, 1);
+      if(gamedata->playerwallet >= upgradeprice && gamedata->currentspeed > 4){
+        gamedata->currentspeed--;
+        gamedata->speedlevel--;
+        gamedata->playerwallet += -upgradeprice;
+        manageislandallegiance(gamedata, gamedata->playerisland, 1);
+      }
     }
   }
   if(gamedata->currentmenu[2] == 4 && buttonpress == 3){
@@ -239,13 +244,13 @@ void menuthreeupdate(GameData* gamedata){ //the pillage menu
   int buttonpress = check_current_button(gamedata);
   updatemenuselection(gamedata, 3, MENU4ITEMSCNT);
   if(gamedata->currentmenu[3] == 0 && buttonpress == 3 && gamedata->buttonrelease == 1){
+    //exit menu
+    exitmenus(gamedata);
+  }
+  if(gamedata->currentmenu[3] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
     //pillage
     gamedata->gamemodeswitchflag1 = 'p';
     gamedata->gamemode = 'b';
-  }
-  if(gamedata->currentmenu[3] == 1 && buttonpress == 3 && gamedata->buttonrelease == 1){
-    //exit menu
-    exitmenus(gamedata);
   }
 }
 

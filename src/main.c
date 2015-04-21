@@ -399,9 +399,11 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
       snprintf(shipcontents, sizeof(shipcontents), "Stone");
     if(gamedata.shipstype[gamedata.playership] == 3)
       snprintf(shipcontents, sizeof(shipcontents), "Food");
+    if(gamedata.shipscargo[gamedata.playership] == 0)
+      snprintf(shipcontents, sizeof(shipcontents), "None");
       
     
-    snprintf(thirdmenulayer, sizeof(thirdmenulayer), " %s\n Pillage:\n -Back-", shipcontents);
+    snprintf(thirdmenulayer, sizeof(thirdmenulayer), " %s\n -Back-:\n Pillage", shipcontents);
     graphics_draw_text(ctx, thirdmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer4text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
   }
   //menu layer for notification pop ups

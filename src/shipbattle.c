@@ -137,8 +137,8 @@ void endgame(ShipBattleData* shipbattledata, GameData* gamedata, char winner){
   }
   if(gamedata->gamemodeswitchflag1 == 'p' && winner == 'p'){ //if p for pillage
     manageislandallegiance(gamedata, gamedata->shipsowner[gamedata->playership], -5);
-    if(gamedata->playercargo[gamedata->shipstype[gamedata->playership]] + 10 <= gamedata->maxplayercargo)
-      gamedata->playercargo[gamedata->shipstype[gamedata->playership]] += 10;
+    if(gamedata->playercargo[gamedata->shipstype[gamedata->playership]] + gamedata->shipscargo[gamedata->playership] <= gamedata->maxplayercargo)
+      gamedata->playercargo[gamedata->shipstype[gamedata->playership]] += gamedata->shipscargo[gamedata->playership];
     if(gamedata->playercargo[4] < gamedata->maxplayercargo)
       gamedata->playercargo[4]++;
     destroy_ship(gamedata, gamedata->playership);

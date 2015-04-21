@@ -169,6 +169,7 @@ void save_data(GameData* gamedata){
   for(int i = 0; i < 10; i++){
     saving.shipsx[i] = gamedata->shipsx[i];
     saving.shipsy[i] = gamedata->shipsy[i];
+    saving.islandsallegiance[i] = gamedata->islandsallegiance[i];
     
     
     
@@ -222,6 +223,7 @@ void load_data(GameData* gamedata){
       for(int i = 0; i < 10; i++){
         gamedata->shipsx[i] = realloading.shipsx[i];
         gamedata->shipsy[i] = realloading.shipsy[i];
+        gamedata->islandsallegiance[i] = realloading.islandsallegiance[i];
         //these are hardcoded... for now.
         //islandsx[i] = gamedata->islandsx[i];
         //islandsy[i] =  = gamedata->islandsy[i];
@@ -385,8 +387,8 @@ void exitmenus(GameData* gamedata){
 }
 
 void adjustminimapcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty){
-  int totalxrange = 1050;
-  int totalyrange = 1050;
+  int totalxrange = 1170;
+  int totalyrange = 1170;
   //height of pebble screen: 148
   //width of pebble screen: 144
   coords[0] = (coords[0] * 144)/totalxrange;
