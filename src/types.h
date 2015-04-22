@@ -84,16 +84,13 @@ typedef struct{
 
 typedef struct{
   int8_t saveversionnumber;
-  
   int16_t shipsx[10], shipsy[10]; // 320 bits
-  int8_t totalships; //8 bits
+  int8_t islandscargo[10][4]; //320 bits
   int8_t shipsisland[10]; //80 bits
   int8_t shipstype[10]; //80 bits
-  
   int8_t playercargo[5]; //32 bits
   int16_t playerwallet; //16 bits
-  
-  int8_t islandscargo[10][4]; //320 bits
+  int8_t totalships; //8 bits
   
   int8_t maxplayercargo, currentspeed; //16 bits
   int8_t cargolevel, speedlevel, hascompass, hasmap, hascannons, canbuild, canpillage; //56 bits

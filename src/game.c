@@ -213,7 +213,6 @@ void save_data(GameData* gamedata){
 }
 
 void load_data(GameData* gamedata){
-  
   if(persist_exists(DATA_VERSION_KEY)){
     if(persist_exists(DATA_KEY)){
       SaveValues realloading;
@@ -264,6 +263,7 @@ void load_data(GameData* gamedata){
     }
   }
   else{
+    APP_LOG(APP_LOG_LEVEL_INFO, "USING OLD SYSTEM");
     OldSaveValues loading;
     //Object read_object;
     //persist_read_data(OBJECT_KEY, &read_object, sizeof(read_object));
@@ -271,35 +271,43 @@ void load_data(GameData* gamedata){
     if(persist_exists(DATA_KEY)){
       persist_read_data(DATA_KEY, &loading, sizeof(loading));
         //load the values into gamedata
-        for(int i = 0; i < 10; i++){
-          for(int j = 0; j < 4; j++)
-            gamedata->islandscargo[i][j] = loading.islandscargo[i][j];
-        }
-        for(int i = 0; i < 5; i++)
-          gamedata->playercargo[i] = loading.playercargo[i];
-        gamedata->playerwallet = loading.playerwallet;
-        gamedata->maxplayercargo = loading.maxplayercargo;
-        gamedata->currentspeed = loading.currentspeed;
-        gamedata->playeryvelocity = loading.currentspeed;
-        gamedata->cargolevel = loading.cargolevel;
-        gamedata->speedlevel = loading.speedlevel;
-        gamedata->metalmultiplier = loading.metalmultiplier;
-        gamedata->stonemultiplier = loading.stonemultiplier;
-        gamedata->woodmultiplier = loading.woodmultiplier;
-        gamedata->foodmultiplier = loading.foodmultiplier;
-        gamedata->metaldivisor = loading.metaldivisor;
-        gamedata->stonedivisor = loading.stonedivisor;
-        gamedata->wooddivisor = loading.wooddivisor;
-        gamedata->fooddivisor = loading.fooddivisor;
-        gamedata->currentevent = loading.currentevent;
-        gamedata->eventhour = loading.eventhour;
-        gamedata->eventday = loading.eventday;
-        persist_delete(DATA_KEY);
-      }
-      else{
-        //if no previous data values, set default values
-        gamedata->playerwallet = 500;
-      }
+       for(int i = 0; i < 10; i++){
+      gamedata->shipsx[i] = loading.shipsx[i];
+      gamedata->shipsy[i] = loading.shipsy[i];
+      //these are hardcoded... for now.
+      //islandsx[i] = gamedata->islandsx[i];
+      //islandsy[i] =  = gamedata->islandsy[i];
+      //islandstypes[i];
+      for(int j = 0; j < 4; j++)
+        gamedata->islandscargo[i][j] = loading.islandscargo[i][j];
+      //gamedata->shipsowner[i] = loading.shipsisland[i];
+      //gamedata->shipstype[i] = loading.shipstype[i];
+    }
+    for(int i = 0; i < 5; i++)
+      gamedata->playercargo[i] = loading.playercargo[i];
+    gamedata->playerwallet = loading.playerwallet;
+    gamedata->maxplayercargo = loading.maxplayercargo;
+    gamedata->currentspeed = loading.currentspeed;
+    gamedata->playeryvelocity = loading.currentspeed;
+    gamedata->cargolevel = loading.cargolevel;
+    gamedata->speedlevel = loading.speedlevel;
+    gamedata->metalmultiplier = loading.metalmultiplier;
+    gamedata->stonemultiplier = loading.stonemultiplier;
+    gamedata->woodmultiplier = loading.woodmultiplier;
+    gamedata->foodmultiplier = loading.foodmultiplier;
+    gamedata->metaldivisor = loading.metaldivisor;
+    gamedata->stonedivisor = loading.stonedivisor;
+    gamedata->wooddivisor = loading.wooddivisor;
+    gamedata->fooddivisor = loading.fooddivisor;
+    gamedata->currentevent = loading.currentevent;
+    gamedata->eventhour = loading.eventhour;
+    gamedata->eventday = loading.eventday;
+    gamedata->totalships = 0;
+  }
+  else{
+    //if no previous data values, set default values
+    gamedata->playerwallet = 500;
+  }
   }
   
     
