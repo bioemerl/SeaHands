@@ -26,6 +26,16 @@ void initialize_islands(GameData* gamedata){
     gamedata->islandsy[i] = -1;
     gamedata->islandsallegiance[i] = 0;
   }
+  
+  //initialize the storage island
+  gamedata->islandsx[10] = MAX16BITVALUE;
+  gamedata->islandsy[10] = MAX16BITVALUE;
+  gamedata->islandscargo[10][0] = 0;
+  gamedata->islandscargo[10][1] = 0;
+  gamedata->islandscargo[10][2] = 0;
+  gamedata->islandscargo[10][3] = 0;
+  gamedata->storageexists = 0;
+  
   //now initialize them to actual island positions
   gamedata->islandsx[0] = -200;
   gamedata->islandsy[0] = 200;
@@ -291,6 +301,9 @@ void update_islands(GameData* gamedata){
     
   
   
+  }
+  if(gamedata->islandsx[10] != MAX16BITVALUE && gamedata->islandsy[10] != MAX16BITVALUE){ //update the storage island
+        
   }
 }
 

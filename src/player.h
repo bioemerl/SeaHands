@@ -20,6 +20,9 @@ void menutwoupdate(GameData* gamedata);
 void menuthreeupdate(GameData* gamedata);
 void menufourupdate(GameData* gamedata);
 void menufiveupdate(GameData* gamedata);
+void menusixupdate(GameData* gamedata);
+void menusevenupdate(GameData* gamedata);
+void menueightupdate(GameData* gamedata);
 
 void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount);
 void buysellresources(GameData* gamedata, int8_t buyorsell, int resource, int islandnumber, int resourcecost);

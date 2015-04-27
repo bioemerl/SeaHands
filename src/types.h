@@ -10,10 +10,19 @@ extern const int MENU2ITEMSCNT;
 extern const int MENU3ITEMSCNT;
 extern const int MENU4ITEMSCNT;
 extern const int MENU6ITEMSCNT;
+extern const int MENU7ITEMSCNT;
+extern const int MENU8ITEMSCNT;
+extern const int MENU9ITEMSCNT;
+extern const int MENU10ITEMSCNT;
+extern const int MENU11ITEMSCNT;
+extern const int MENU12ITEMSCNT;
+extern const int MENU13ITEMSCNT;
+extern const int MENU14ITEMSCNT;
 extern const int BASE_PRICE_SUPPLIES;
 extern const int CURRENT_SAVE_VERSION;
 extern const int MAX_SHIP_CARGO;
 extern const int MAX_ISLAND_CARGO;
+extern const int MAX16BITVALUE;
 
 typedef struct{
   char gamemode;
@@ -40,10 +49,12 @@ typedef struct{
   int8_t shipsorderinfo[10][3];
   
   
-  int16_t islandsx[10], islandsy[10];
+  int16_t islandsx[11], islandsy[11];
   int8_t islandstypes[10];
-  int8_t islandscargo[10][4]; //max of 128 of any resource at an island, 10 islands, 4 ints per cargo
+  int8_t islandscargo[11][4]; //max of 128 of any resource at an island, 10 islands, 4 ints per cargo
   int8_t islandsallegiance[10];
+  int8_t storageexists;
+  
   //these adjust how much stuff an island produces, names should be self-descriptive.
   int8_t metalmultiplier;
   int8_t stonemultiplier;

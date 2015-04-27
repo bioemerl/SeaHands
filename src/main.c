@@ -12,6 +12,7 @@ void drawbattle(Layer *this_layer, GContext *ctx);
 void draw_edge_points(Layer *this_layer, GContext *ctx);
 void draw_map(Layer *this_layer, GContext *ctx);
 void draw_wind_arrow(Layer *this_layer, GContext *ctx);
+void drawmenuandbox(Layer *this_layer, GContext *ctx, int layernumber, int itemscount, int x, int y, int xdiff, int offset, char text[100]);
   
 //define a number of constants
 const uint8_t PEBBLEHEIGHT = 168;
@@ -140,6 +141,12 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
       draw_menu_layer(this_layer, ctx, 4, 0, 0);
     if(gamedata.menulayer == 5) //the player start menu
       draw_menu_layer(this_layer, ctx, 5, 0, 15);
+    if(gamedata.menulayer == 6 || gamedata.menulayer == 7)
+      draw_menu_layer(this_layer, ctx, 6, 0, 15);
+    if(gamedata.menulayer == 7 || gamedata.menulayer == 8)
+      draw_menu_layer(this_layer, ctx, 7, 0, 15);
+    if(gamedata.menulayer == 8)
+      draw_menu_layer(this_layer, ctx, 8, 57, 15);
   }
   
   
@@ -294,6 +301,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //any layer: draw the background box, then draw the highlighting box, then draw the text
   //base menu layer
   if(menulayernumber == 0){
+    
     graphics_fill_rect(ctx, GRect(x,y,57, 4 + y+(MENUITEMSCNT - 1)*15 - MENUITEMSCNT), 0, GCornerNone); //background box
     graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0], 57, 15 )); //highlighting box
     
@@ -308,6 +316,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
            gamedata.islandscargo[gamedata.playerisland][3]);
     //draw text
     graphics_draw_text(ctx, totalmenu, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), textbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    
     //draw two white bars to display which resource is being bought or sold
     int producerectpos, consumerectpos;
     //find where the island produce is on the menu
@@ -383,13 +392,8 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   }
   //menu layer for ship interactions
   if(menulayernumber == 3){
-    graphics_fill_rect(ctx, GRect(x,y,50,4 + y+(MENU4ITEMSCNT)*15 - MENU4ITEMSCNT), 0, GCornerNone);
-    graphics_draw_rect(ctx, GRect(x, 2 + y+(gamedata.currentmenu[3]+1)*15 - gamedata.currentmenu[3], 50, 15));
-    GRect layer4text = GRect(x,y,50, 35);
-    
     char thirdmenulayer[25];
     char shipcontents[10] = "none";
-    
     //check what the ship has in it's cargo hold
     if(gamedata.shipstype[gamedata.playership] == 0)
       snprintf(shipcontents, sizeof(shipcontents), "Metal");
@@ -401,10 +405,8 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
       snprintf(shipcontents, sizeof(shipcontents), "Food");
     if(gamedata.shipscargo[gamedata.playership] == 0)
       snprintf(shipcontents, sizeof(shipcontents), "None");
-      
-    
     snprintf(thirdmenulayer, sizeof(thirdmenulayer), " %s\n -Back-:\n Pillage", shipcontents);
-    graphics_draw_text(ctx, thirdmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer4text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    drawmenuandbox(this_layer, ctx, 3, MENU4ITEMSCNT, x, y, 50, 1, thirdmenulayer);
   }
   //menu layer for notification pop ups
   if(menulayernumber == 4){
@@ -414,13 +416,43 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     graphics_draw_text(ctx, gamedata.notificationtext, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer5text, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
   }
   if(menulayernumber == 5){ //player "start menu"
-    GRect layer6text = GRect(x, y, 54, 4 + y+(MENU6ITEMSCNT - 1)*15 - MENU6ITEMSCNT);
-    graphics_fill_rect(ctx, layer6text, 0, GCornerNone); //background box
-    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[5]*15 - gamedata.currentmenu[5], 54, 15 )); //highlighting box
-    char fifthmenulayer[50];
-    snprintf(fifthmenulayer, sizeof(fifthmenulayer), " Map:\n Event:\n Tutorial\n -Back-"); //"Map:\nEvent:\nBuild:\n-Back-"
-    graphics_draw_text(ctx, fifthmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer6text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    drawmenuandbox(this_layer, ctx, 5, MENU6ITEMSCNT, x, y, 54, 0, " Map:\n Event:\n Tutorial\n Build\n -Back-");
   }
+  if(menulayernumber == 6){
+    drawmenuandbox(this_layer, ctx, 6, MENU7ITEMSCNT, x, y, 54, 0, " Resource:\n Ships:\n -Back-");
+  }
+  if(menulayernumber == 7){
+    char menu7text[100];
+    snprintf(menu7text, sizeof(menu7text), " Metal: %i\n Wood: %i\n Stone%i\n Food %i\n -Back-", gamedata.islandscargo[10][0], gamedata.islandscargo[10][1], gamedata.islandscargo[10][2], gamedata.islandscargo[10][3]);
+    drawmenuandbox(this_layer, ctx, 7, MENU8ITEMSCNT, x, y, 54, 0, menu7text);
+  }
+  if(menulayernumber == 8){
+    drawmenuandbox(this_layer, ctx, 8, MENU9ITEMSCNT, x, y, 54, 0, " -Back-\n Store:\n Take\n");
+  }
+  if(menulayernumber == 9){
+    
+    
+  }
+  if(menulayernumber == 10){
+    
+  }
+  if(menulayernumber == 11){
+    
+  }
+  if(menulayernumber == 12){
+    
+  }
+  if(menulayernumber == 13){
+    
+  }
+}
+
+void drawmenuandbox(Layer *this_layer, GContext *ctx, int layernumber, int itemscount, int x, int y, int xdiff, int offset, char text[100]){
+  itemscount = itemscount + offset;
+  GRect layertext = GRect(x, y, xdiff, 4 + y+(itemscount - 1)*15 - itemscount);
+  graphics_fill_rect(ctx, layertext, 0, GCornerNone); //background box
+  graphics_draw_rect(ctx, GRect(x, 2 + y+(gamedata.currentmenu[layernumber] + offset)*15 - gamedata.currentmenu[layernumber], xdiff, 15 )); //highlighting box
+  graphics_draw_text(ctx, text, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layertext, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 
 void draw_ships(Layer *this_layer, GContext *ctx){
@@ -448,6 +480,11 @@ void draw_ships(Layer *this_layer, GContext *ctx){
 void draw_islands(Layer *this_layer, GContext *ctx){
   //draw any islands that are currently on screen.
   for(int i = 0; i < 10; i++){
+    if(gamedata.islandsx[10] != MAX16BITVALUE && gamedata.islandsy[10] != MAX16BITVALUE){
+      graphics_context_set_fill_color(ctx, GColorBlack);
+      GPoint storagepoint = GPoint(gamedata.islandsx[10] - gamedata.playerx + 72, gamedata.islandsy[10] - gamedata.playery + 84);
+      graphics_fill_circle(ctx, storagepoint, 10);
+    }
     if(gamedata.islandsx[i] == -1 && gamedata.islandsy[i] == -1){
       //do nothing, island does not exist
     }

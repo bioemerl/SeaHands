@@ -75,6 +75,13 @@ void update_player_menu(GameData* gamedata){
     menufourupdate(gamedata);
   if(gamedata->menulayer == 5)
     menufiveupdate(gamedata);
+  if(gamedata->menulayer == 6)
+    menusixupdate(gamedata);
+  if(gamedata->menulayer == 7)
+    menusevenupdate(gamedata);
+  if(gamedata->menulayer == 8)
+    menueightupdate(gamedata);
+     
 }
 
 void updatemenuselection(GameData* gamedata, int menulayer, int layeritemscount){
@@ -263,7 +270,7 @@ void menufourupdate(GameData* gamedata){ // the notifications menu
   }
 }
 
-void menufiveupdate(GameData* gamedata){
+void menufiveupdate(GameData* gamedata){ //player menu that can be accessed anywhere
   updatemenuselection(gamedata, 5, MENU6ITEMSCNT);
   int buttonpress = check_current_button(gamedata);
   if(buttonpress == 3 && gamedata->currentmenu[5] == 0 && gamedata->buttonrelease == 1){
@@ -298,7 +305,29 @@ void menufiveupdate(GameData* gamedata){
     exitmenus(gamedata);
     
   }
-  if(buttonpress == 3 && gamedata->currentmenu[5] == 3){
+  if(buttonpress == 3 && gamedata->currentmenu[5] == 3){ //the build menu, use to build storage island
+    //want to:
+    //place 11'th island
+    //if the island created flag exists, then do nothing
+    //if the island created flag does not exist, than set the island x and y to something other than MAX16BITNUMBER 
+    //when updating islands at first, check for collisions with the 11'th island if the x and y are not
+    //the max values. 
+    //if the player collides with the 11'th island, go into a different menu than with normal islands
+    //otherwise the island shouldn't be counted as a regular one at all
+    //when the island flag isn't set, the island will only allow you to put resources into it
+    //once the island reaches X amount of wood/stone/metal/food it will set the flag to that the isalnd exists
+    //and all menu options will be avalible.
+    
+    //this function should:
+    //set the X and Y to non-max values
+    //move the player outside of island collision zones.
+    gamedata->islandsx[10] = gamedata->playerx;
+    gamedata->islandsy[10] = gamedata->playery;
+    gamedata->playerx = gamedata->playerx + 25;
+    
+    
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[5] == 4){
     gamedata->currentmenu[5] = 0;
     gamedata->menulayer = 0;
     gamedata->gamemode = 'p';
@@ -306,6 +335,161 @@ void menufiveupdate(GameData* gamedata){
   
   
 }
+
+void menusixupdate(GameData* gamedata){ //the storage core layer
+  updatemenuselection(gamedata, 6, MENU7ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  if(buttonpress == 3 && gamedata->currentmenu[6] == 0 && gamedata->buttonrelease == 1){ //resources
+    gamedata->menulayer = 7; //go to resources menu
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[6] == 1 && gamedata->storageexists == 1){ //ships
+    //go to ships menu
+    gamedata->menulayer = 9; 
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[6] == 2){ //exit
+    gamedata->currentmenu[6] = 0;
+    gamedata->menulayer = 0;
+    gamedata->gamemode = 'p';
+    exitisland(gamedata);
+  }
+  
+  
+}
+  
+void menusevenupdate(GameData* gamedata){ //the resource selection for storage and removal
+  updatemenuselection(gamedata, 7, MENU8ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  if(buttonpress == 3 && gamedata->currentmenu[7] == 0 && gamedata->buttonrelease == 1){
+    gamedata->menulayer = 8; //go to store/drop menu
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[7] >= 1 && gamedata->currentmenu[7] <= 3  && gamedata->buttonrelease == 1){
+    gamedata->menulayer = 8; //go to store/drop menu
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[7] == 4){
+    gamedata->currentmenu[7] = 0;
+    gamedata->buttonrelease = 0;
+    gamedata->menulayer = 6; //go to previous menu
+  }
+}
+
+  
+void menueightupdate(GameData* gamedata){ //the store/drop menu layer
+  updatemenuselection(gamedata, 8, MENU9ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  if(buttonpress == 3 && gamedata->currentmenu[8] == 0 && gamedata->buttonrelease == 1){
+    gamedata->currentmenu[8] = 0; //exit
+    gamedata->menulayer = 7;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[8] == 1){ //store
+    if(gamedata->currentmenu[7] == 0){ //store resources based on previous menu
+      //store 1 metal
+      if(gamedata->playercargo[0] > 0 && gamedata->islandscargo[10][0] < 100){
+        gamedata->islandscargo[10][0] += 1;
+        gamedata->playercargo[0] -= 1;
+      }
+
+    }
+    if(gamedata->currentmenu[7] == 1){
+      //store 1 wood
+      if(gamedata->playercargo[1] > 0 && gamedata->islandscargo[10][1] < 100){
+        gamedata->islandscargo[10][1] += 1;
+        gamedata->playercargo[1] -= 1;
+      }
+    }
+    if(gamedata->currentmenu[7] == 2){
+      //store 1 stone
+      if(gamedata->playercargo[2] > 0 && gamedata->islandscargo[10][2] < 100){
+        gamedata->islandscargo[10][2] += 1;
+        gamedata->playercargo[2] -= 1;
+      }
+    }
+    if(gamedata->currentmenu[7] == 3){
+      //store 1 food
+      if(gamedata->playercargo[3] > 0 && gamedata->islandscargo[10][3] < 100){
+        gamedata->islandscargo[10][3] += 1;
+        gamedata->playercargo[3] -= 1;
+      }
+    }
+    //check to see if the resources total to an amount that allows the island to unlock
+    if(gamedata->storageexists == 0){ //if island isn't yet built
+      if(gamedata->islandscargo[10][0] >= 40 && gamedata->islandscargo[10][0] >= 40 &&
+        gamedata->islandscargo[10][0] >= 40 && gamedata->islandscargo[10][0] >= 40){
+        gamedata->storageexists = 1;
+        for(int i = 0; i < 4; i++) //remove appropriate amount of resources
+          gamedata->islandscargo[10][i] -= 40;
+      }
+              
+    }
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[8] == 2){ //take
+    if(gamedata->currentmenu[7] == 0){ //take resource based on state of previous menu
+      //take 1 metal
+      if(gamedata->playercargo[0] < gamedata->maxplayercargo && gamedata->islandscargo[10][0] > 0){
+        gamedata->islandscargo[10][0] -= 1;
+        gamedata->playercargo[0] += 1;
+      }
+    }
+    if(gamedata->currentmenu[7] == 1){
+      //take 1 wood
+      if(gamedata->playercargo[1] < gamedata->maxplayercargo && gamedata->islandscargo[10][1] > 0){
+        gamedata->islandscargo[10][1] -= 1;
+        gamedata->playercargo[1] += 1;
+      }
+    }
+    if(gamedata->currentmenu[7] == 2){
+      //take 1 stone
+      if(gamedata->playercargo[2] < gamedata->maxplayercargo && gamedata->islandscargo[10][2] > 0){
+        gamedata->islandscargo[10][2] -= 1;
+        gamedata->playercargo[2] += 1;
+      }
+    }
+    if(gamedata->currentmenu[7] == 3){
+      //take 1 food
+      if(gamedata->playercargo[3] < gamedata->maxplayercargo && gamedata->islandscargo[10][3] > 0){
+        gamedata->islandscargo[10][3] -= 1;
+        gamedata->playercargo[3] += 1;
+      }
+    }
+  }
+  
+}
+  
+void menunineupdate(GameData* gamedata){ //order buy sell menu for ships
+  updatemenuselection(gamedata, 9, MENU10ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  
+}
+  
+void menutenupdate(GameData* gamedata){ //ship selection
+  updatemenuselection(gamedata, 10, MENU11ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  
+}
+  
+void menuellevenupdate(GameData* gamedata){ //select island
+  updatemenuselection(gamedata, 11, MENU12ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  
+}
+  
+void menutwelveupdate(GameData* gamedata){ //select the resource
+  updatemenuselection(gamedata, 12, MENU13ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  
+}
+  
+void menuthirteenupdate(GameData* gamedata){ //select to buy or sell ships 
+  updatemenuselection(gamedata, 13, MENU14ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  
+}
+
+
 
 
 void update_player_movement(GameData* gamedata){
@@ -409,13 +593,22 @@ void update_player_movement(GameData* gamedata){
   
   //if player colides with an island, set the game-mode to showing the menu
   for(int i = 0; i < TOTALISLANDS; i++){
-    if(finddistance(gamedata->playerx, gamedata->playery, gamedata->islandsx[i], gamedata->islandsy[i]) <= 25*25){ //(size of island)
+    if(finddistance(gamedata->playerx, gamedata->playery, gamedata->islandsx[i], gamedata->islandsy[i]) <= 27*27){ //(size of island)
       gamedata->playerisland = i;
       gamedata->buttonrelease = 0;
       if(gamedata->gamemode == 'p')
       gamedata->menulayer = 0;
       gamedata->gamemode = 'm';
       break;
+    }
+  }
+  if(gamedata->islandsx[10] != MAX16BITVALUE && gamedata->islandsy[10] != MAX16BITVALUE){ //update the storage island
+    if(finddistance(gamedata->playerx, gamedata->playery, gamedata->islandsx[10], gamedata->islandsy[10]) <= 12*12){ //(size of island)
+      gamedata->playerisland = 10;
+      gamedata->buttonrelease = 0;
+      if(gamedata->gamemode == 'p')
+      gamedata->menulayer = 6; //set the menu layer to the base menu for the storage island
+      gamedata->gamemode = 'm';
     }
   }
   //if player collides with a ship, initialize ship menu menu, unless it is an attack ship
