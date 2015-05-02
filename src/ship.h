@@ -21,4 +21,3 @@ void ship_give_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_
 void ship_buy_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource);
 void ship_sell_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource);
 int8_t move_ship(GameData* gamedata, int8_t destination, int8_t shipnumber);
-int8_t find_owned_ship(GameData* gamedata, int8_t owner);

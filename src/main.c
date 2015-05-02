@@ -12,7 +12,7 @@ void drawbattle(Layer *this_layer, GContext *ctx);
 void draw_edge_points(Layer *this_layer, GContext *ctx);
 void draw_map(Layer *this_layer, GContext *ctx);
 void draw_wind_arrow(Layer *this_layer, GContext *ctx);
-void drawmenuandbox(Layer *this_layer, GContext *ctx, int layernumber, int itemscount, int x, int y, int xdiff, int offset, char text[100]);
+void drawmenuandbox(Layer *this_layer, GContext *ctx, int issquarelayer, int layernumber, int itemscount, int x, int y, int xdiff, int offset, char text[100]);
   
 //define a number of constants
 const uint8_t PEBBLEHEIGHT = 168;
@@ -147,6 +147,16 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
       draw_menu_layer(this_layer, ctx, 7, 0, 15);
     if(gamedata.menulayer == 8)
       draw_menu_layer(this_layer, ctx, 8, 57, 15);
+    if(gamedata.menulayer == 9)
+      draw_menu_layer(this_layer, ctx, 9, 0, 15);
+    if(gamedata.menulayer == 10)
+      draw_menu_layer(this_layer, ctx, 10, 0, 15);
+    if(gamedata.menulayer == 11)
+      draw_menu_layer(this_layer, ctx, 11, 57, 15);
+    if(gamedata.menulayer == 12)
+      draw_menu_layer(this_layer, ctx, 12, 57, 15);
+    if(gamedata.menulayer == 13)
+      draw_menu_layer(this_layer, ctx, 13, 57, 15);
   }
   
   
@@ -406,7 +416,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     if(gamedata.shipscargo[gamedata.playership] == 0)
       snprintf(shipcontents, sizeof(shipcontents), "None");
     snprintf(thirdmenulayer, sizeof(thirdmenulayer), " %s\n -Back-:\n Pillage", shipcontents);
-    drawmenuandbox(this_layer, ctx, 3, MENU4ITEMSCNT, x, y, 50, 1, thirdmenulayer);
+    drawmenuandbox(this_layer, ctx, 0, 3, MENU4ITEMSCNT, x, y, 50, 1, thirdmenulayer);
   }
   //menu layer for notification pop ups
   if(menulayernumber == 4){
@@ -416,42 +426,57 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     graphics_draw_text(ctx, gamedata.notificationtext, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer5text, GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
   }
   if(menulayernumber == 5){ //player "start menu"
-    drawmenuandbox(this_layer, ctx, 5, MENU6ITEMSCNT, x, y, 54, 0, " Map:\n Event:\n Tutorial\n Build\n -Back-");
+    drawmenuandbox(this_layer, ctx, 0, 5, MENU6ITEMSCNT, x, y, 54, 0, " Map:\n Event:\n Tutorial\n Build\n -Back-");
   }
   if(menulayernumber == 6){
-    drawmenuandbox(this_layer, ctx, 6, MENU7ITEMSCNT, x, y, 54, 0, " Resource:\n Ships:\n -Back-");
+    drawmenuandbox(this_layer, ctx, 0, 6, MENU7ITEMSCNT, x, y, 54, 0, " Resource:\n Ships:\n -Back-");
   }
   if(menulayernumber == 7){
     char menu7text[100];
     snprintf(menu7text, sizeof(menu7text), " Metal: %i\n Wood: %i\n Stone%i\n Food %i\n -Back-", gamedata.islandscargo[10][0], gamedata.islandscargo[10][1], gamedata.islandscargo[10][2], gamedata.islandscargo[10][3]);
-    drawmenuandbox(this_layer, ctx, 7, MENU8ITEMSCNT, x, y, 54, 0, menu7text);
+    drawmenuandbox(this_layer, ctx, 0, 7, MENU8ITEMSCNT, x, y, 54, 0, menu7text);
   }
   if(menulayernumber == 8){
-    drawmenuandbox(this_layer, ctx, 8, MENU9ITEMSCNT, x, y, 54, 0, " -Back-\n Store:\n Take\n");
+    drawmenuandbox(this_layer, ctx, 0, 8, MENU9ITEMSCNT, x, y, 54, 0, " -Back-\n Store:\n Take");
   }
   if(menulayernumber == 9){
-    
-    
+    drawmenuandbox(this_layer, ctx, 0, 9, MENU10ITEMSCNT, x, y, 54, 0, " Order:\n Buy:\n Sell:\n -Back-");
   }
   if(menulayernumber == 10){
-    
+    int numberofitems = gamedata.numberofplayerships + 1; //only draw the number of slots necessary based on how many player ships there are
+    drawmenuandbox(this_layer, ctx, 0, 10, numberofitems, x, y, 54, 0, " -Back-\n Ship1:\n Ship2:\n Ship3:\n Ship4:\n");
   }
   if(menulayernumber == 11){
-    
+    drawmenuandbox(this_layer, ctx, 1, 11, MENU12ITEMSCNT, x, y, 46, 0, " 1      2\n 3      4\n 5      6 \n 7      8\n 9      10\n -Back-");
   }
   if(menulayernumber == 12){
-    
+    drawmenuandbox(this_layer, ctx, 0, 12, MENU13ITEMSCNT, x, y, 54, 0, " Metal:\n Stone:\n Wood:\n Food:\n -Back-");
   }
   if(menulayernumber == 13){
-    
+    drawmenuandbox(this_layer, ctx, 0, 13, MENU14ITEMSCNT, x, y, 54, 0, " Buy:\n Sell:\n -Back-");
   }
 }
 
-void drawmenuandbox(Layer *this_layer, GContext *ctx, int layernumber, int itemscount, int x, int y, int xdiff, int offset, char text[100]){
+void drawmenuandbox(Layer *this_layer, GContext *ctx, int issquarelayer, int layernumber, int itemscount, int x, int y, int xdiff, int offset, char text[100]){
   itemscount = itemscount + offset;
-  GRect layertext = GRect(x, y, xdiff, 4 + y+(itemscount - 1)*15 - itemscount);
+  GRect layertext;
+  GRect highlightbox;
+  if(issquarelayer == 0){
+    highlightbox = (GRect(x, 2 + y+(gamedata.currentmenu[layernumber] + offset)*15 - gamedata.currentmenu[layernumber], xdiff, 15 )); //highlighting box
+    layertext = GRect(x, y, xdiff, 4 + y+(itemscount - 1)*15 - itemscount);
+  }
+  else if(issquarelayer == 1){ //if you want to draw a number of boxes
+    if((gamedata.currentmenu[layernumber]%2) == 0 && gamedata.currentmenu[layernumber] == itemscount - 1){ //draw the last box as large, if number of items is odd
+      highlightbox = (GRect(x, 2 + y+((gamedata.currentmenu[layernumber] + offset)/ 2)*15 - (gamedata.currentmenu[layernumber]/2), xdiff, 15 )); //highlighting box
+    }
+    else if(((gamedata.currentmenu[layernumber] + 1)%2) == 0) //draw box around the second colm of entries
+      highlightbox = (GRect(x  + (xdiff/2), 2 + y+((gamedata.currentmenu[layernumber] + offset) / 2)*15 - (gamedata.currentmenu[layernumber]/2), (xdiff / 2), 15 ));
+    else if(((gamedata.currentmenu[layernumber] + 1)%2 != 0)) //draw box around the first colm of entires
+      highlightbox = (GRect(x, 2 + y+((gamedata.currentmenu[layernumber] + offset) / 2)*15 - (gamedata.currentmenu[layernumber]/2), (xdiff / 2), 15 ));
+    layertext = GRect(x, y, xdiff, 4 + y+((itemscount/2 + 1) - 1)*15 - (itemscount/2));
+  }
   graphics_fill_rect(ctx, layertext, 0, GCornerNone); //background box
-  graphics_draw_rect(ctx, GRect(x, 2 + y+(gamedata.currentmenu[layernumber] + offset)*15 - gamedata.currentmenu[layernumber], xdiff, 15 )); //highlighting box
+  graphics_draw_rect(ctx, highlightbox); //the box around selected area
   graphics_draw_text(ctx, text, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layertext, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
 }
 

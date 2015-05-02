@@ -6,7 +6,7 @@
 
 void initialize_ships(GameData* gamedata){
   gamedata->totalships = -1;
-  for(int i = 0; i < 10; i++){ //from 0 to max size of ship array
+  for(int i = 0; i < 15; i++){ //from 0 to max size of ship array
     gamedata->shipsx[i] = 0;
     gamedata->shipsy[i] = 0;
     gamedata->shipscargo[i] = 0;
@@ -17,29 +17,38 @@ void initialize_ships(GameData* gamedata){
     gamedata->shipsorderinfo[i][1] = -1;
     gamedata->shipsorderinfo[i][2] = -1;
     gamedata->totalships = 0;
+    gamedata->numberofplayerships = 0;
     
   }
 }
 
 void create_ship(GameData* gamedata, int8_t ownernumber){
   //add another ship if there is room
-  if(gamedata->totalships < 9){
+  if(gamedata->totalships < 15){
     gamedata->totalships++;
     //APP_LOG(APP_LOG_LEVEL_INFO, "Created Ship %i", gamedata->totalships);
     //APP_LOG(APP_LOG_LEVEL_INFO, "at X =  %i", gamedata->islandsx[islandnumber]);
     //APP_LOG(APP_LOG_LEVEL_INFO, "at Y =  %i", gamedata->islandsy[islandnumber]);
     //APP_LOG(APP_LOG_LEVEL_INFO, "Destination being at island: %i", destinationnumber);
     //set new ship x and y coords to coords of spawning island
-    gamedata->shipsx[gamedata->totalships] = gamedata->islandsx[ownernumber];
-    gamedata->shipsy[gamedata->totalships] = gamedata->islandsy[ownernumber];
+    if(ownernumber < 10){
+      gamedata->shipsx[gamedata->totalships] = gamedata->islandsx[ownernumber];
+      gamedata->shipsy[gamedata->totalships] = gamedata->islandsy[ownernumber];
+    }
+    if(ownernumber >= 10){
+      gamedata->shipsx[gamedata->totalships] = gamedata->islandsx[10];
+      gamedata->shipsy[gamedata->totalships] = gamedata->islandsy[10];
+    }
     gamedata->shipsowner[gamedata->totalships] = ownernumber;
     gamedata->shipsorderinfo[gamedata->totalships][0] = -1;
     gamedata->shipsorderinfo[gamedata->totalships][1] = -1;
     gamedata->shipsorderinfo[gamedata->totalships][2] = -1;
     //APP_LOG(APP_LOG_LEVEL_INFO, "Destination Stored at index %i: %i", gamedata->totalships, gamedata->shipsisland[gamedata->totalships]);
     //remove building resources from the island
-    gamedata->islandscargo[ownernumber][2] += -20; //remove 20 wood
-    gamedata->islandscargo[ownernumber][1] += -20; //remove 20 stone
+    if(ownernumber < 10){
+      gamedata->islandscargo[ownernumber][2] += -20; //remove 20 wood
+      gamedata->islandscargo[ownernumber][1] += -20; //remove 20 stone
+    }
     //set cargo, and remove cargo from spawning island
   }
 }
@@ -81,7 +90,7 @@ void update_ships(GameData* gamedata){
         }
         if(gamedata->shipscargo[i] == 0 && gamedata->shipsorderinfo[i][0] == 0){
           //move to the player
-          int8_t arrived = move_ship(gamedata, 11 /*the player*/, i);
+          int8_t arrived = move_ship(gamedata, 10 /*the player*/, i);
           if(arrived == 1){ //once the ship has arrived, force the player to enter the pillage minigame
             gamedata->gamemodeswitchflag1 = 'p';
             gamedata->gamemode = 'b';
@@ -146,7 +155,13 @@ void update_ships(GameData* gamedata){
         if(gamedata->islandscargo[gamedata->shipsowner[i]][gamedata->shipstype[i]] >= 100){
           gamedata->shipscargo[i] = 0;
         }
-        int8_t arrived = move_ship(gamedata, gamedata->shipsowner[i], i);
+        int8_t arrived;
+        if(gamedata->shipsowner[i] <= 10){
+          arrived = move_ship(gamedata, gamedata->shipsowner[i], i);
+        }
+        else if(gamedata->shipsowner[i] > 10){
+          arrived = move_ship(gamedata, 11, i);
+        }
         if(arrived == 1 && gamedata->shipscargo != 0)
           ship_give_cargo(gamedata, i, gamedata->shipsowner[i], gamedata->shipscargo[i], gamedata->shipstype[i]); //offload whole inventory
       }
@@ -161,10 +176,14 @@ int8_t move_ship(GameData* gamedata, int8_t destination, int8_t shipnumber){
     destx = gamedata->islandsx[destination];
     desty = gamedata->islandsy[destination];
   }
-  if(destination == 11){ //the player
+  if(destination == 10){ //the player
     //APP_LOG(APP_LOG_LEVEL_INFO, "MOVING!");
     destx = gamedata->playerx;
     desty = gamedata->playery;
+  }
+  if(destination > 10){ //the player island/storage building
+    destx = gamedata->islandsx[10];
+    desty = gamedata->islandsy[10];
   }
   
   //update the ship to move to said destinations
@@ -199,6 +218,9 @@ void destroy_ship(GameData* gamedata, int shipnumber){
   gamedata->shipscargo[shipnumber] = 0;
   gamedata->shipstype[shipnumber] = 0;
   gamedata->shipsorder[shipnumber] = 'n';
+  gamedata->shipsorderinfo[shipnumber][0] = -1;
+  gamedata->shipsorderinfo[shipnumber][1] = -1;
+  gamedata->shipsorderinfo[shipnumber][2] = -1;
   //adjust all the ships back one unit in the array to make sure the array has no gaps
   for(int i = shipnumber; i < gamedata->totalships; i++){
     gamedata->shipsx[i] = gamedata->shipsx[i+1];
@@ -253,15 +275,4 @@ void ship_buy_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t
 }
 void ship_sell_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
   
-}
-
-int8_t find_owned_ship(GameData* gamedata, int8_t owner){
-  //if a ship with the given owner exists, return said index
-  //otherwise, return -1;
-  for(int i = 0; i <= gamedata->totalships; i++){
-    if(gamedata->shipsowner[i] == owner){
-      return i;
-    }
-  }
-  return -1;
 }

@@ -2,6 +2,7 @@
 #include "player.h"
 #include "types.h"
 #include "game.h"
+#include "ship.h"
   
 const int BASE_VALUE_UPGRADESPEED = 100;
 const int BASE_VALUE_UPGRADECARGO = 10;
@@ -81,6 +82,16 @@ void update_player_menu(GameData* gamedata){
     menusevenupdate(gamedata);
   if(gamedata->menulayer == 8)
     menueightupdate(gamedata);
+  if(gamedata->menulayer == 9)
+    menunineupdate(gamedata);
+  if(gamedata->menulayer == 10)
+    menutenupdate(gamedata);
+  if(gamedata->menulayer == 11)
+    menuelevenupdate(gamedata);
+  if(gamedata->menulayer == 12)
+    menutwelveupdate(gamedata);
+  if(gamedata->menulayer == 13)
+    menuthirteenupdate(gamedata);
      
 }
 
@@ -343,7 +354,7 @@ void menusixupdate(GameData* gamedata){ //the storage core layer
     gamedata->menulayer = 7; //go to resources menu
     gamedata->buttonrelease = 0;
   }
-  if(buttonpress == 3 && gamedata->currentmenu[6] == 1 && gamedata->storageexists == 1){ //ships
+  if(buttonpress == 3 && gamedata->currentmenu[6] == 1  && gamedata->buttonrelease == 1 /*&& gamedata->storageexists == 1*/){ //ships
     //go to ships menu
     gamedata->menulayer = 9; 
     gamedata->buttonrelease = 0;
@@ -462,31 +473,113 @@ void menueightupdate(GameData* gamedata){ //the store/drop menu layer
 void menunineupdate(GameData* gamedata){ //order buy sell menu for ships
   updatemenuselection(gamedata, 9, MENU10ITEMSCNT);
   int buttonpress = check_current_button(gamedata);
+  if(buttonpress == 3 && gamedata->currentmenu[9] == 0 && gamedata->buttonrelease == 1){ //order a ship to buy resources
+    gamedata->menulayer = 13;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[9] == 1 && gamedata->buttonrelease == 1){ //order a ship to sell resources
+    gamedata->menulayer = 10;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[9] == 2 && gamedata->buttonrelease == 1){ //go to order new ship menu
+    gamedata->menulayer = 10;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[9] == 3){ //back
+    gamedata->menulayer = 6; //go back a menu
+    gamedata->currentmenu[9] = 0; //reset this menu
+    gamedata->buttonrelease = 0; //ensure no accidental presses occur
+  }
   
 }
   
 void menutenupdate(GameData* gamedata){ //ship selection
-  updatemenuselection(gamedata, 10, MENU11ITEMSCNT);
+  updatemenuselection(gamedata, 10, gamedata->numberofplayerships + 1); //only as many items as there are ships
   int buttonpress = check_current_button(gamedata);
+  if(buttonpress == 3 && gamedata->currentmenu[10] == 0  && gamedata->buttonrelease == 1){
+    gamedata->menulayer = 9; //go back a layer
+    gamedata->currentmenu[10] = 0;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[10] == 1){ //select ship 1
+    gamedata->currentplayership = find_owned_ship(gamedata, 11);
+    gamedata->menulayer = 11; //go to island selection menu
+    gamedata->currentmenu[10] = 0;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[10] == 2){ //select ship 2
+    gamedata->currentplayership = find_owned_ship(gamedata, 12);
+    gamedata->menulayer = 11;
+    gamedata->currentmenu[10] = 0;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[10] == 3){ //select ship 3
+    gamedata->currentplayership = find_owned_ship(gamedata, 13);
+    gamedata->menulayer = 11;
+    gamedata->currentmenu[10] = 0;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[10] == 4){ //select ship 4
+    gamedata->currentplayership = find_owned_ship(gamedata, 14);
+    gamedata->menulayer = 11;
+    gamedata->currentmenu[10] = 0;
+    gamedata->buttonrelease = 0;
+  }
   
 }
   
-void menuellevenupdate(GameData* gamedata){ //select island
+void menuelevenupdate(GameData* gamedata){ //select island
   updatemenuselection(gamedata, 11, MENU12ITEMSCNT);
   int buttonpress = check_current_button(gamedata);
-  
+  if(buttonpress == 3 && gamedata->currentmenu[11] < 10 && gamedata->buttonrelease == 1){
+    gamedata->menulayer = 12; //progress to resource selection menu
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[11] == 10){
+    gamedata->menulayer = 10; //go back a layer
+    gamedata->currentmenu[11] = 0;
+    gamedata->buttonrelease = 0;
+  }
 }
   
 void menutwelveupdate(GameData* gamedata){ //select the resource
   updatemenuselection(gamedata, 12, MENU13ITEMSCNT);
   int buttonpress = check_current_button(gamedata);
+  //order buy sell
+  //ship
+  //island
+  //the three bits of info that have to be considered
+  //buy and sell are number 1 and 2
+  //ships are 1 2 3 4
+  //island are 0 1 2 3 4 5 6 7 8 9
+  //metal stone food wood is 0 1 2 3 
   
 }
   
 void menuthirteenupdate(GameData* gamedata){ //select to buy or sell ships 
   updatemenuselection(gamedata, 13, MENU14ITEMSCNT);
   int buttonpress = check_current_button(gamedata);
-  
+  if(buttonpress == 3 && gamedata->currentmenu[13] == 0 && gamedata->buttonrelease == 1){
+    gamedata->buttonrelease = 0;
+    if(gamedata->numberofplayerships < 4){
+      //create a ship
+      gamedata->numberofplayerships += 1;
+      create_ship(gamedata, 10 + gamedata->numberofplayerships);
+    }
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[13] == 1 && gamedata->buttonrelease == 1){
+    gamedata->buttonrelease = 0;
+    if(gamedata->numberofplayerships > 0){
+      int shipnumber = find_owned_ship(gamedata, 10 + gamedata->numberofplayerships);
+      destroy_ship(gamedata, shipnumber);
+      gamedata->numberofplayerships -= 1;
+    }
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[13] == 2){
+    gamedata->menulayer = 9;
+    gamedata->currentmenu[13] = 0;
+    gamedata->buttonrelease = 0;
+  }
 }
 
 

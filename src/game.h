@@ -22,3 +22,4 @@ void displaynotification(GameData* gamedata, char notificationtext[150]);
 void exitmenus(GameData* gamedata);
 void adjustminimapcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty);
 int manageislandallegiance(GameData* gamedata, int8_t islandnumber, int8_t adjustnumber);
+int8_t find_owned_ship(GameData* gamedata, int8_t owner);

@@ -181,7 +181,7 @@ void update_islands(GameData* gamedata){
         int8_t islandallegiance = manageislandallegiance(gamedata, i, 0);
         int8_t enemyallegiance = manageislandallegiance(gamedata, j, 0);
         if(gamedata->islandstypes[j] == 0 && gamedata->islandscargo[i][0] == 0 && gamedata->islandscargo[j][0] > 0){
-          randomnumber = random(3);
+          randomnumber = random(15);
           if(randomnumber == 2){
             if(enemyallegiance > 0){
               enemyallegiance = manageislandallegiance(gamedata, i, -1);

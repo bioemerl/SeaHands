@@ -377,7 +377,7 @@ void attempt_tutorial(GameData* gamedata){
 
 void exitmenus(GameData* gamedata){
   if(gamedata->gamemode == 'm'){
-    if((gamedata->menulayer == 0 || gamedata->menulayer == 1 || gamedata->menulayer == 2)){
+    if((gamedata->menulayer == 0 || gamedata->menulayer == 1 || gamedata->menulayer == 2 || gamedata->menulayer == 6)){
       exitisland(gamedata);
       gamedata->currentmenu[0] = 0;
       gamedata->currentmenu[1] = 0;
@@ -415,4 +415,15 @@ int manageislandallegiance(GameData* gamedata, int8_t islandnumber, int8_t adjus
       gamedata->islandsallegiance[islandnumber] = -100;
   }
   return gamedata->islandsallegiance[islandnumber];
+}
+
+int8_t find_owned_ship(GameData* gamedata, int8_t owner){
+  //if a ship with the given owner exists, return said index
+  //otherwise, return -1;
+  for(int i = 0; i <= gamedata->totalships; i++){
+    if(gamedata->shipsowner[i] == owner){
+      return i;
+    }
+  }
+  return -1;
 }

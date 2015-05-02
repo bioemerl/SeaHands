@@ -41,18 +41,20 @@ typedef struct{
   int8_t uphit;
   int8_t buttonrelease;
   
-  int16_t shipsx[10], shipsy[10];
+  int16_t shipsx[15], shipsy[15];
   int8_t totalships;
-  int8_t shipscargo[10], shipstype[10]; //[the amount]  //the boat cargo type 
-  int8_t shipsowner[10];
-  char shipsorder[10];
-  int8_t shipsorderinfo[10][3];
+  int8_t shipscargo[15], shipstype[15]; //[the amount]  //the boat cargo type 
+  int8_t shipsowner[15];
+  char shipsorder[15];
+  int8_t shipsorderinfo[15][3];
+  int8_t numberofplayerships;
+  int8_t currentplayership;
   
   
   int16_t islandsx[11], islandsy[11];
-  int8_t islandstypes[10];
+  int8_t islandstypes[11];
   int8_t islandscargo[11][4]; //max of 128 of any resource at an island, 10 islands, 4 ints per cargo
-  int8_t islandsallegiance[10];
+  int8_t islandsallegiance[11];
   int8_t storageexists;
   
   //these adjust how much stuff an island produces, names should be self-descriptive.
@@ -117,12 +119,12 @@ typedef struct{
 } OldSaveValues;
 
 typedef struct{
-  int16_t shipsx[10], shipsy[10]; // 320 bits
+  int16_t shipsx[15], shipsy[15]; // 320 bits
   int8_t totalships; //8 bits
-  int8_t shipscargo[10], shipstype[10]; //160 bits
-  int8_t shipsowner[10]; //80 bits
-  char shipsorder[10]; //80 bits
-  int8_t shipsorderinfo[10][3]; //240 bits
+  int8_t shipscargo[15], shipstype[15]; //160 bits
+  int8_t shipsowner[15]; //80 bits
+  char shipsorder[15]; //80 bits
+  int8_t shipsorderinfo[15][3]; //240 bits
   
   
   int8_t playercargo[5]; //32 bits
