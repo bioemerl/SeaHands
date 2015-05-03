@@ -90,7 +90,7 @@ void update_ships(GameData* gamedata){
         }
         if(gamedata->shipscargo[i] == 0 && gamedata->shipsorderinfo[i][0] == 0){
           //move to the player
-          int8_t arrived = move_ship(gamedata, 10 /*the player*/, i);
+          int8_t arrived = move_ship(gamedata, -1 /*the player*/, i);
           if(arrived == 1){ //once the ship has arrived, force the player to enter the pillage minigame
             gamedata->gamemodeswitchflag1 = 'p';
             gamedata->gamemode = 'b';
@@ -149,6 +149,10 @@ void update_ships(GameData* gamedata){
         //same as 'd', but instead, also deduct funds.  No need for this until later with the storage 
         //building the player can build
       }
+      if(gamedata->shipsorder[i] == 'b'){ //shop
+        //same as 'd', but instead, also deduct funds.  No need for this until later with the storage 
+        //building the player can build
+      }
       if(gamedata->shipsorder[i] == 'n'){ //nothing
         //move to the host island.  Stay there
         //offload any held cargo
@@ -176,7 +180,7 @@ int8_t move_ship(GameData* gamedata, int8_t destination, int8_t shipnumber){
     destx = gamedata->islandsx[destination];
     desty = gamedata->islandsy[destination];
   }
-  if(destination == 10){ //the player
+  if(destination == -1){ //the player
     //APP_LOG(APP_LOG_LEVEL_INFO, "MOVING!");
     destx = gamedata->playerx;
     desty = gamedata->playery;

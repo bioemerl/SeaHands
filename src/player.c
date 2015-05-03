@@ -553,7 +553,46 @@ void menutwelveupdate(GameData* gamedata){ //select the resource
   //ships are 1 2 3 4
   //island are 0 1 2 3 4 5 6 7 8 9
   //metal stone food wood is 0 1 2 3 
-  
+  //void give_ship_order(GameData* gamedata, int8_t ownernumber, int8_t shipnumber, char ordercharacter, int8_t orderinfo[3]);
+  char shiporder;
+  if(gamedata->currentmenu[9] == 1)
+    shiporder = 'b';
+  if(gamedata->currentmenu[9] == 2)
+    shiporder = 's';
+  shiporder = 'd'; //set order to deliver, for testing, remove later on.
+  if(buttonpress == 3 && gamedata->currentmenu[12] == 0 && gamedata->buttonrelease == 1){ //metal
+    int8_t orderinfo[3];
+    orderinfo[0] = gamedata->currentmenu[11]; //buy from where
+    orderinfo[1] = 10; //delivery to where
+    orderinfo[2] = gamedata->currentmenu[12]; //which resources
+    give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[12] == 1){ //stone
+    int8_t orderinfo[3];
+    orderinfo[0] = gamedata->currentmenu[11]; //buy from where
+    orderinfo[1] = 10; //delivery to where
+    orderinfo[2] = gamedata->currentmenu[12]; //which resources
+    give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[12] == 2){ //wood
+    int8_t orderinfo[3];
+    orderinfo[0] = gamedata->currentmenu[11]; //buy from where
+    orderinfo[1] = 10; //delivery to where
+    orderinfo[2] = gamedata->currentmenu[12]; //which resources
+    give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[12] == 3){ //food
+    int8_t orderinfo[3];
+    orderinfo[0] = gamedata->currentmenu[11]; //buy from where
+    orderinfo[1] = 10; //delivery to where
+    orderinfo[2] = gamedata->currentmenu[12]; //which resources
+    give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[12] == 4){ //back
+    gamedata->menulayer = 11;
+    gamedata->currentmenu[12] = 0;
+    gamedata->buttonrelease = 0;
+  }
 }
   
 void menuthirteenupdate(GameData* gamedata){ //select to buy or sell ships 
