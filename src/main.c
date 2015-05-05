@@ -141,7 +141,7 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
       draw_menu_layer(this_layer, ctx, 4, 0, 0);
     if(gamedata.menulayer == 5) //the player start menu
       draw_menu_layer(this_layer, ctx, 5, 0, 15);
-    if(gamedata.menulayer == 6 || gamedata.menulayer == 7)
+    if(gamedata.menulayer == 6 || gamedata.menulayer == 7 || gamedata.menulayer == 14)
       draw_menu_layer(this_layer, ctx, 6, 0, 15);
     if(gamedata.menulayer == 7 || gamedata.menulayer == 8)
       draw_menu_layer(this_layer, ctx, 7, 0, 15);
@@ -157,6 +157,8 @@ void drawmaingame(Layer *this_layer, GContext *ctx){
       draw_menu_layer(this_layer, ctx, 12, 57, 15);
     if(gamedata.menulayer == 13)
       draw_menu_layer(this_layer, ctx, 13, 57, 15);
+    if(gamedata.menulayer == 14)
+      draw_menu_layer(this_layer, ctx, 14, 57, 15);
   }
   
   
@@ -429,7 +431,9 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     drawmenuandbox(this_layer, ctx, 0, 5, MENU6ITEMSCNT, x, y, 54, 0, " Map:\n Event:\n Tutorial\n Build\n -Back-");
   }
   if(menulayernumber == 6){
-    drawmenuandbox(this_layer, ctx, 0, 6, MENU7ITEMSCNT, x, y, 54, 0, " Resource:\n Ships:\n -Back-");
+    char menu7text[50];
+    snprintf(menu7text, sizeof(menu7text), " $: %i\n Resource:\n Ships:\n Money:\n -Back-", gamedata.storagewallet);
+    drawmenuandbox(this_layer, ctx, 0, 6, MENU7ITEMSCNT, x, y, 54, 1, menu7text);
   }
   if(menulayernumber == 7){
     char menu7text[100];
@@ -454,6 +458,9 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   }
   if(menulayernumber == 13){
     drawmenuandbox(this_layer, ctx, 0, 13, MENU14ITEMSCNT, x, y, 54, 0, " Buy:\n Sell:\n -Back-");
+  }
+  if(menulayernumber == 14){
+    drawmenuandbox(this_layer, ctx, 0, 14, MENU15ITEMSCNT, x, y, 60, 0, " Withdraw:\n Deposit:\n -Back-");
   }
 }
 

@@ -148,10 +148,29 @@ void update_ships(GameData* gamedata){
       if(gamedata->shipsorder[i] == 's'){ //shop
         //same as 'd', but instead, also deduct funds.  No need for this until later with the storage 
         //building the player can build
-      }
-      if(gamedata->shipsorder[i] == 'b'){ //shop
-        //same as 'd', but instead, also deduct funds.  No need for this until later with the storage 
-        //building the player can build
+        if(gamedata->shipscargo[i] > 0){ //if there is something in the cargo
+          //move to second island in array, offload cargo
+          //if the ship is at the island, move cargo onto the island
+          //APP_LOG(APP_LOG_LEVEL_INFO, "updaing for D, moving to %i", gamedata->shipsorderinfo[i][1]);
+          int8_t arrived = move_ship(gamedata, gamedata->shipsorderinfo[i][1], i);
+          if(arrived == 1){
+            if(gamedata->islandscargo[gamedata->shipsorderinfo[i][1]][gamedata->shipsorderinfo[i][2]] >= 100){
+              gamedata->shipscargo[i] = 0;
+            }
+            //APP_LOG(APP_LOG_LEVEL_INFO, "trying to give cargo");
+            ship_sell_cargo(gamedata, i, gamedata->shipsorderinfo[i][1], gamedata->shipscargo[i], gamedata->shipsorderinfo[i][2]);
+          }
+        }
+        if(gamedata->shipscargo[i] <= 0){ //if cargo is empty
+          //move to the first island in array
+          //if the ship is at the island, take cargo from the island
+          //APP_LOG(APP_LOG_LEVEL_INFO, "Attempting to deliver to %i", gamedata->shipsorderinfo[i][0]);
+          int8_t arrived = move_ship(gamedata, gamedata->shipsorderinfo[i][0], i);
+          if(arrived == 1){
+            //APP_LOG(APP_LOG_LEVEL_INFO, "Attempting to take cargo from %i", gamedata->shipsorderinfo[i][0]);
+            ship_buy_cargo(gamedata, i, gamedata->shipsorderinfo[i][0], MAX_SHIP_CARGO, gamedata->shipsorderinfo[i][2]);
+          }
+        }
       }
       if(gamedata->shipsorder[i] == 'n'){ //nothing
         //move to the host island.  Stay there
@@ -245,7 +264,7 @@ void destroy_ship(GameData* gamedata, int shipnumber){
 }
 
 
-void ship_take_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
+int ship_take_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
   //if the ship either has no resources, or the ship type is the same as the type it is picking up:
   if((gamedata->shipscargo[shipnumber] + amount) <= MAX_SHIP_CARGO && (gamedata->shipscargo[shipnumber] <= 0 || gamedata->shipstype[shipnumber] == resource)){ //if the ship can hold this cargo
     
@@ -255,28 +274,61 @@ void ship_take_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_
     gamedata->islandscargo[target][resource] += -amount; //take resource from island
     gamedata->shipscargo[shipnumber] = gamedata->shipscargo[shipnumber] + amount; //add cargo to ship
     gamedata->shipstype[shipnumber] = resource; //set ship resource to be what resource it took
-  
+    return amount;
   }
+  return 0;
 }
 
-void ship_give_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
+int ship_give_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
   //if the ship has cargo, and is putting the correct resource to the island
   //APP_LOG(APP_LOG_LEVEL_INFO, "Cargo: %i.  Type: %i.  ExpType: %i", gamedata->shipscargo[shipnumber], gamedata->shipstype[shipnumber], resource );
   if(gamedata->shipscargo[shipnumber] > 0 && gamedata->shipstype[shipnumber] == resource){
     if(gamedata->islandscargo[target][resource] + amount > MAX_ISLAND_CARGO){ //if the island cannot hold the amount
-      APP_LOG(APP_LOG_LEVEL_INFO, "island amount is: %i: Attempting to place %i", gamedata->islandscargo[target][resource], amount);
       amount = MAX_ISLAND_CARGO - gamedata->islandscargo[target][resource]; //put what can fit
       if(amount < 0) //always be secure.  If island somehow had more than the max, be sure not to get negative numbers
         amount = 0;
-      APP_LOG(APP_LOG_LEVEL_INFO, "New amount: %i", amount);
     }
     gamedata->islandscargo[target][resource] += +amount; //add resource to island
     gamedata->shipscargo[shipnumber] = gamedata->shipscargo[shipnumber] - amount; //add cargo from ship
+    return amount;
   }
+  return 0;
 }
 void ship_buy_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
+  ResourceValues values = getmoneyvalue(gamedata, target);
+  int cost;
+  cost = 0;
+  int multip = 1;
+  if(resource == 0)
+    cost = values.metalvalue;
+  if(resource == 1)
+    cost = values.woodvalue;
+  if(resource == 2)
+    cost = values.stonevalue;
+  if(resource == 3)
+    cost = values.foodvalue;
+  if((cost * 10) <= gamedata->storagewallet){
+    multip = ship_take_cargo(gamedata, shipnumber, target, amount, resource);
+    gamedata->storagewallet -= multip * cost;
+  }
   
 }
+
 void ship_sell_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource){
-  
+  ResourceValues values = getmoneyvalue(gamedata, target);
+  int cost;
+  int multip = 1;
+  cost = 0;
+  if(resource == 0)
+    cost = values.metalvalue;
+  if(resource == 1)
+    cost = values.woodvalue;
+  if(resource == 2)
+    cost = values.stonevalue;
+  if(resource == 3)
+    cost = values.foodvalue;
+  if(gamedata->storagewallet + (cost * 10) < 10000){
+    multip = ship_give_cargo(gamedata, shipnumber, target, amount, resource);
+    gamedata->storagewallet += multip * cost;
+  }
 }

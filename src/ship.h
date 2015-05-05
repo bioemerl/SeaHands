@@ -15,8 +15,8 @@ void give_ship_order(GameData* gamedata, int8_t ownernumber, int8_t shipnumber, 
 void destroy_ship(GameData* gamedata, int shipnumber);
 
 //removes and gives cargo to islands once the ship reaches the island (or player)
-void ship_take_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource);
-void ship_give_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource);
+int ship_take_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource);
+int ship_give_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource);
 //buys or sells cargo to islands once the ship reaches the island.
 void ship_buy_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource);
 void ship_sell_cargo(GameData* gamedata, int8_t shipnumber, int8_t target, int8_t amount, int8_t resource);

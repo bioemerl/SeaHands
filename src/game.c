@@ -101,6 +101,14 @@ int finddistance(int x1, int y1, int x2, int y2){
 //currentisland can either be a number 1 - max, or will default to "average" values with -1
 //returns values for all 4 inside of int8_t data
 ResourceValues getmoneyvalue(GameData* gamedata, int currentisland){
+  if(currentisland >= 10){
+    ResourceValues empty;
+    empty.metalvalue = 0;
+    empty.stonevalue = 0;
+    empty.woodvalue = 0;
+    empty.foodvalue = 0;
+    return empty;
+  }
   //APP_LOG(APP_LOG_LEVEL_INFO, "CURRENTISLAND IS: %i", currentisland);
   int totalmetal = 0, totalwood = 0, totalstone = 0, totalfood = 0, average = 0;
   for(int i = 0; i < TOTALISLANDS; i++){

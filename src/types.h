@@ -18,6 +18,7 @@ extern const int MENU11ITEMSCNT;
 extern const int MENU12ITEMSCNT;
 extern const int MENU13ITEMSCNT;
 extern const int MENU14ITEMSCNT;
+extern const int MENU15ITEMSCNT;
 extern const int BASE_PRICE_SUPPLIES;
 extern const int CURRENT_SAVE_VERSION;
 extern const int MAX_SHIP_CARGO;
@@ -56,6 +57,7 @@ typedef struct{
   int8_t islandscargo[11][4]; //max of 128 of any resource at an island, 10 islands, 4 ints per cargo
   int8_t islandsallegiance[11];
   int8_t storageexists;
+  int16_t storagewallet;
   
   //these adjust how much stuff an island produces, names should be self-descriptive.
   int8_t metalmultiplier;

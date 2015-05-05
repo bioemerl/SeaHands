@@ -92,6 +92,8 @@ void update_player_menu(GameData* gamedata){
     menutwelveupdate(gamedata);
   if(gamedata->menulayer == 13)
     menuthirteenupdate(gamedata);
+  if(gamedata->menulayer == 14)
+    menufourteenupdate(gamedata);
      
 }
 
@@ -359,14 +361,16 @@ void menusixupdate(GameData* gamedata){ //the storage core layer
     gamedata->menulayer = 9; 
     gamedata->buttonrelease = 0;
   }
-  if(buttonpress == 3 && gamedata->currentmenu[6] == 2){ //exit
+  if(buttonpress == 3 && gamedata->currentmenu[6] == 2  && gamedata->buttonrelease == 1){ //money
+    gamedata->menulayer = 14;
+    gamedata->buttonrelease = 0;
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[6] == 3){ //exit
     gamedata->currentmenu[6] = 0;
     gamedata->menulayer = 0;
     gamedata->gamemode = 'p';
     exitisland(gamedata);
   }
-  
-  
 }
   
 void menusevenupdate(GameData* gamedata){ //the resource selection for storage and removal
@@ -554,37 +558,30 @@ void menutwelveupdate(GameData* gamedata){ //select the resource
   //island are 0 1 2 3 4 5 6 7 8 9
   //metal stone food wood is 0 1 2 3 
   //void give_ship_order(GameData* gamedata, int8_t ownernumber, int8_t shipnumber, char ordercharacter, int8_t orderinfo[3]);
-  char shiporder;
-  if(gamedata->currentmenu[9] == 1)
-    shiporder = 'b';
-  if(gamedata->currentmenu[9] == 2)
-    shiporder = 's';
-  shiporder = 'd'; //set order to deliver, for testing, remove later on.
-  if(buttonpress == 3 && gamedata->currentmenu[12] == 0 && gamedata->buttonrelease == 1){ //metal
-    int8_t orderinfo[3];
+  char shiporder = 's';
+  int8_t orderinfo[3];
+  if(gamedata->currentmenu[9] == 1){
     orderinfo[0] = gamedata->currentmenu[11]; //buy from where
     orderinfo[1] = 10; //delivery to where
+  }
+  if(gamedata->currentmenu[9] == 2){
+    orderinfo[1] = gamedata->currentmenu[11];
+    orderinfo[0] = 10;
+  }
+  
+  if(buttonpress == 3 && gamedata->currentmenu[12] == 0 && gamedata->buttonrelease == 1){ //metal
     orderinfo[2] = gamedata->currentmenu[12]; //which resources
     give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
   }
   if(buttonpress == 3 && gamedata->currentmenu[12] == 1){ //stone
-    int8_t orderinfo[3];
-    orderinfo[0] = gamedata->currentmenu[11]; //buy from where
-    orderinfo[1] = 10; //delivery to where
     orderinfo[2] = gamedata->currentmenu[12]; //which resources
     give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
   }
   if(buttonpress == 3 && gamedata->currentmenu[12] == 2){ //wood
-    int8_t orderinfo[3];
-    orderinfo[0] = gamedata->currentmenu[11]; //buy from where
-    orderinfo[1] = 10; //delivery to where
     orderinfo[2] = gamedata->currentmenu[12]; //which resources
     give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
   }
   if(buttonpress == 3 && gamedata->currentmenu[12] == 3){ //food
-    int8_t orderinfo[3];
-    orderinfo[0] = gamedata->currentmenu[11]; //buy from where
-    orderinfo[1] = 10; //delivery to where
     orderinfo[2] = gamedata->currentmenu[12]; //which resources
     give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
   }
@@ -621,6 +618,27 @@ void menuthirteenupdate(GameData* gamedata){ //select to buy or sell ships
   }
 }
 
+void menufourteenupdate(GameData* gamedata){ //store or take money from core island
+  updatemenuselection(gamedata, 14, MENU15ITEMSCNT);
+  int buttonpress = check_current_button(gamedata);
+  if(buttonpress == 3 && gamedata->currentmenu[14] == 0 && gamedata->buttonrelease == 1){ //withdraw
+    if(gamedata->playerwallet <= 10000 && gamedata->storagewallet >= 10){
+      gamedata->storagewallet -= 10;
+      gamedata->playerwallet += 10;
+    }
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[14] == 1){ //deposit
+    if(gamedata->playerwallet >= 10 && gamedata->storagewallet <= 10000){
+      gamedata->playerwallet -= 10;
+      gamedata->storagewallet += 10;
+    }
+  }
+  if(buttonpress == 3 && gamedata->currentmenu[14] == 2){ //back
+    gamedata->menulayer = 6;
+    gamedata->currentmenu[14] = 0;
+    gamedata->buttonrelease = 0;
+  }
+}
 
 
 
