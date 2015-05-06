@@ -444,23 +444,23 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
     drawmenuandbox(this_layer, ctx, 0, 8, MENU9ITEMSCNT, x, y, 54, 0, " -Back-\n Store:\n Take");
   }
   if(menulayernumber == 9){
-    drawmenuandbox(this_layer, ctx, 0, 9, MENU10ITEMSCNT, x, y, 54, 0, " Order:\n Buy:\n Sell:\n -Back-");
+    drawmenuandbox(this_layer, ctx, 0, 9, MENU10ITEMSCNT, x, y, 60, 0, " Construct:\n OrderBuy:\n OrderSell:\n -Back-");
   }
   if(menulayernumber == 10){
     int numberofitems = gamedata.numberofplayerships + 1; //only draw the number of slots necessary based on how many player ships there are
     drawmenuandbox(this_layer, ctx, 0, 10, numberofitems, x, y, 54, 0, " -Back-\n Ship1:\n Ship2:\n Ship3:\n Ship4:\n");
   }
   if(menulayernumber == 11){
-    drawmenuandbox(this_layer, ctx, 1, 11, MENU12ITEMSCNT, x, y, 46, 0, " 1      2\n 3      4\n 5      6 \n 7      8\n 9      10\n -Back-");
+    drawmenuandbox(this_layer, ctx, 1, 11, MENU12ITEMSCNT, x, y, 52, 2, " SelcIslnd\n 1      2\n 3      4\n 5      6 \n 7      8\n 9      10\n -Back-"); //resource counts
   }
   if(menulayernumber == 12){
-    drawmenuandbox(this_layer, ctx, 0, 12, MENU13ITEMSCNT, x, y, 54, 0, " Metal:\n Stone:\n Wood:\n Food:\n -Back-");
+    drawmenuandbox(this_layer, ctx, 0, 12, MENU13ITEMSCNT, x, y, 54, 1, " SelcRes\n Metal:\n Stone:\n Wood:\n Food:\n -Back-");
   }
   if(menulayernumber == 13){
-    drawmenuandbox(this_layer, ctx, 0, 13, MENU14ITEMSCNT, x, y, 54, 0, " Buy:\n Sell:\n -Back-");
+    drawmenuandbox(this_layer, ctx, 0, 13, MENU14ITEMSCNT, x, y, 60, 0, " Construct:\n Destruct:\n -Back-"); //should show resources counts while this is open
   }
   if(menulayernumber == 14){
-    drawmenuandbox(this_layer, ctx, 0, 14, MENU15ITEMSCNT, x, y, 60, 0, " Withdraw:\n Deposit:\n -Back-");
+    drawmenuandbox(this_layer, ctx, 0, 14, MENU15ITEMSCNT, x, y, 60, 0, " Withdraw:\n Deposit:\n -Back-"); //should show money when this is open
   }
 }
 
@@ -473,7 +473,7 @@ void drawmenuandbox(Layer *this_layer, GContext *ctx, int issquarelayer, int lay
     layertext = GRect(x, y, xdiff, 4 + y+(itemscount - 1)*15 - itemscount);
   }
   else if(issquarelayer == 1){ //if you want to draw a number of boxes
-    if((gamedata.currentmenu[layernumber]%2) == 0 && gamedata.currentmenu[layernumber] == itemscount - 1){ //draw the last box as large, if number of items is odd
+    if((gamedata.currentmenu[layernumber]%(itemscount - offset - 1)) == 0 && gamedata.currentmenu[layernumber] != 0){ //draw the last box as large, if number of items is odd
       highlightbox = (GRect(x, 2 + y+((gamedata.currentmenu[layernumber] + offset)/ 2)*15 - (gamedata.currentmenu[layernumber]/2), xdiff, 15 )); //highlighting box
     }
     else if(((gamedata.currentmenu[layernumber] + 1)%2) == 0) //draw box around the second colm of entries

@@ -337,6 +337,7 @@ void menufiveupdate(GameData* gamedata){ //player menu that can be accessed anyw
     gamedata->islandsx[10] = gamedata->playerx;
     gamedata->islandsy[10] = gamedata->playery;
     gamedata->playerx = gamedata->playerx + 25;
+    exitmenus(gamedata);
     
     
   }
@@ -572,18 +573,42 @@ void menutwelveupdate(GameData* gamedata){ //select the resource
   if(buttonpress == 3 && gamedata->currentmenu[12] == 0 && gamedata->buttonrelease == 1){ //metal
     orderinfo[2] = gamedata->currentmenu[12]; //which resources
     give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
+    gamedata->menulayer = 6;
+    gamedata->currentmenu[12] = 0;
+    gamedata->currentmenu[11] = 0;
+    gamedata->currentmenu[10] = 0;
+    gamedata->currentmenu[9] = 0;
+    gamedata->buttonrelease = 0;
   }
   if(buttonpress == 3 && gamedata->currentmenu[12] == 1){ //stone
     orderinfo[2] = gamedata->currentmenu[12]; //which resources
     give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
+    gamedata->menulayer = 6;
+    gamedata->currentmenu[12] = 0;
+    gamedata->currentmenu[11] = 0;
+    gamedata->currentmenu[10] = 0;
+    gamedata->currentmenu[9] = 0;
+    gamedata->buttonrelease = 0;
   }
   if(buttonpress == 3 && gamedata->currentmenu[12] == 2){ //wood
     orderinfo[2] = gamedata->currentmenu[12]; //which resources
     give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
+    gamedata->menulayer = 6;
+    gamedata->currentmenu[12] = 0;
+    gamedata->currentmenu[11] = 0;
+    gamedata->currentmenu[10] = 0;
+    gamedata->currentmenu[9] = 0;
+    gamedata->buttonrelease = 0;
   }
   if(buttonpress == 3 && gamedata->currentmenu[12] == 3){ //food
     orderinfo[2] = gamedata->currentmenu[12]; //which resources
     give_ship_order(gamedata, gamedata->shipsowner[gamedata->currentplayership], gamedata->currentplayership, shiporder, orderinfo);
+    gamedata->menulayer = 6;
+    gamedata->currentmenu[12] = 0;
+    gamedata->currentmenu[11] = 0;
+    gamedata->currentmenu[10] = 0;
+    gamedata->currentmenu[9] = 0;
+    gamedata->buttonrelease = 0;
   }
   if(buttonpress == 3 && gamedata->currentmenu[12] == 4){ //back
     gamedata->menulayer = 11;
@@ -597,10 +622,12 @@ void menuthirteenupdate(GameData* gamedata){ //select to buy or sell ships
   int buttonpress = check_current_button(gamedata);
   if(buttonpress == 3 && gamedata->currentmenu[13] == 0 && gamedata->buttonrelease == 1){
     gamedata->buttonrelease = 0;
-    if(gamedata->numberofplayerships < 4){
+    if(gamedata->numberofplayerships < 4 && gamedata->islandscargo[10][1] >= 10 && gamedata->islandscargo[10][2] >= 10){
       //create a ship
       gamedata->numberofplayerships += 1;
       create_ship(gamedata, 10 + gamedata->numberofplayerships);
+      gamedata->islandscargo[10][1] -= 10;
+      gamedata->islandscargo[10][2] -= 10;
     }
   }
   if(buttonpress == 3 && gamedata->currentmenu[13] == 1 && gamedata->buttonrelease == 1){
@@ -609,6 +636,8 @@ void menuthirteenupdate(GameData* gamedata){ //select to buy or sell ships
       int shipnumber = find_owned_ship(gamedata, 10 + gamedata->numberofplayerships);
       destroy_ship(gamedata, shipnumber);
       gamedata->numberofplayerships -= 1;
+      gamedata->islandscargo[10][1] += 7;
+      gamedata->islandscargo[10][2] += 7;
     }
   }
   if(buttonpress == 3 && gamedata->currentmenu[13] == 2){
