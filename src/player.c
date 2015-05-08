@@ -23,10 +23,10 @@ void initialize_player(GameData* gamedata){
   gamedata->playerx = 50;
   gamedata->playery = 50;
   //initiate player cargo
-  gamedata->playercargo[0] = 40;
-  gamedata->playercargo[1] = 40;
-  gamedata->playercargo[2] = 40;
-  gamedata->playercargo[3] = 40;
+  gamedata->playercargo[0] = 2;
+  gamedata->playercargo[1] = 5;
+  gamedata->playercargo[2] = 2;
+  gamedata->playercargo[3] = 5;
   gamedata->playercargo[4] = 5;
   gamedata->currentwindspeed = calculatewindspeed(gamedata);
   gamedata->playersailsdeployed = 0;
