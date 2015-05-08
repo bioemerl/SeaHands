@@ -313,12 +313,6 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //any layer: draw the background box, then draw the highlighting box, then draw the text
   //base menu layer
   if(menulayernumber == 0){
-    
-    graphics_fill_rect(ctx, GRect(x,y,57, 4 + y+(MENUITEMSCNT - 1)*15 - MENUITEMSCNT), 0, GCornerNone); //background box
-    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0], 57, 15 )); //highlighting box
-    
-    //text prep
-    GRect textbox = GRect(x, y, 57, 105);
     char totalmenu[60];
     //create the char array for the menu    
     snprintf(totalmenu, sizeof(totalmenu), " Metal:%d\n Wood:%d\n Stone:%d\n Food:%d\n Island:\n -Exit-",
@@ -326,9 +320,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
            gamedata.islandscargo[gamedata.playerisland][1],
            gamedata.islandscargo[gamedata.playerisland][2],
            gamedata.islandscargo[gamedata.playerisland][3]);
-    //draw text
-    graphics_draw_text(ctx, totalmenu, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), textbox, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
-    
+    drawmenuandbox(this_layer, ctx, 0, 0, MENUITEMSCNT, x, y, 54, 0, totalmenu);
     //draw two white bars to display which resource is being bought or sold
     int producerectpos, consumerectpos;
     //find where the island produce is on the menu
@@ -356,11 +348,6 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   }
   //menu layer for buying and selling resources
   if(menulayernumber == 1){
-    
-    graphics_fill_rect(ctx, GRect(x,y,46,4 + y+(MENU2ITEMSCNT - 1)*15 - MENU2ITEMSCNT), 0, GCornerNone);
-    graphics_draw_rect(ctx, GRect(x, 2 + y+gamedata.currentmenu[1]*15 - gamedata.currentmenu[1], 46, 15));
-    //2 + y+gamedata.currentmenu[0]*15 - gamedata.currentmenu[0]
-      
     //needs to be made better later, shouldn't calculate for all at once, should do one at a time
     //this change will increase performance
     ResourceValues buysellvals = getmoneyvalue(&gamedata, gamedata.playerisland);
@@ -375,12 +362,9 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
       resourcevalue = buysellvals.foodvalue;
     gamedata.currentcosts = resourcevalue;
     //end area that needs changing 
-    //prepare the text
-    GRect layer2text = GRect(x,y,46, 50);
-    char firstmenulayer[30];
-    snprintf(firstmenulayer, sizeof(firstmenulayer), " -Back-\n Buy:%i\n Sell:", resourcevalue);
-    //print the text
-    graphics_draw_text(ctx, firstmenulayer, fonts_get_system_font(FONT_KEY_FONT_FALLBACK), layer2text, GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
+    char menu2text[27];
+    snprintf(menu2text, sizeof(menu2text), " -Back-\n Buy:%i\n Sell:", resourcevalue);
+    drawmenuandbox(this_layer, ctx, 0, 1, MENU2ITEMSCNT, x, y, 54, 0, menu2text);
   }
   //menu layer for upgrade purchases
   if(menulayernumber == 2){
@@ -594,10 +578,6 @@ void draw_map(Layer *this_layer, GContext *ctx){
   //draw all these points on the map.
   shipcoords[0] = gamedata.playerx; //accidentally used these for comparisons
   shipcoords[1] = gamedata.playery; //these will be adjusted later.
-  factorycoords[0] = 0;
-  factorycoords[1] = 0;
-  storagecoords[0] = 0;
-  storagecoords[1] = 0;
   int largestx = 0, largesty = 0, lowestx = 0, lowesty = 0;
   for(int i = 0; i < 10; i++){ //find the largest/lowest X and Y of the islands
     if(largestx < gamedata.islandsx[i])
@@ -615,27 +595,10 @@ void draw_map(Layer *this_layer, GContext *ctx){
     largestx = shipcoords[0];
   if(lowestx > shipcoords[0])
     lowestx = shipcoords[0];
-  if(largestx < factorycoords[0])
-    largestx = factorycoords[0];
-  if(lowestx > factorycoords[0])
-    lowestx = factorycoords[0];
-  if(largestx < storagecoords[0])
-    largestx = storagecoords[0];
-  if(lowestx > storagecoords[0])
-    lowestx = storagecoords[0];
-  
   if(largesty < shipcoords[1])
     largesty = shipcoords[1];
   if(lowesty > shipcoords[1])
     lowesty = shipcoords[1];
-  if(largesty < factorycoords[1])
-    largesty = factorycoords[1];
-  if(lowesty > factorycoords[1])
-    lowesty = factorycoords[1];
-  if(largesty < storagecoords[1])
-    largesty = storagecoords[1];
-  if(lowesty > storagecoords[1])
-    lowesty = storagecoords[1];
   
   //adjust the coordinates to fit on the pebble screen:
   //adjustcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty)
@@ -673,8 +636,6 @@ void draw_map(Layer *this_layer, GContext *ctx){
     graphics_context_set_fill_color(ctx, GColorBlack);
   }
   GPoint playerpoint = GPoint(shipcoords[0], shipcoords[1]);
-  GPoint storagepoint = GPoint(storagecoords[0], storagecoords[1]);
-  GPoint factorypoint = GPoint(factorycoords[0], factorycoords[1]);
   //draw factory and storage later
   graphics_fill_circle(ctx, playerpoint, 3);
   graphics_fill_circle(ctx, GPoint(shipcoords[0] + gamedata.playerxvelocity, shipcoords[1] + gamedata.playeryvelocity), 1);

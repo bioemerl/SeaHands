@@ -174,26 +174,21 @@ void save_data(GameData* gamedata){
   
   //set up the save values object with corresponding values from gamedata
   SaveValues saving;
-  for(int i = 0; i < 10; i++){
-    saving.shipsx[i] = gamedata->shipsx[i];
-    saving.shipsy[i] = gamedata->shipsy[i];
-    saving.islandsallegiance[i] = gamedata->islandsallegiance[i];
-    
-    
-    
-    //these are hardcoded... for now.
-    //islandsx[i] = gamedata->islandsx[i];
-    //islandsy[i] =  = gamedata->islandsy[i];
-    //islandstypes[i];
-    for(int j = 0; j < 4; j++)
-      saving.islandscargo[i][j] = gamedata->islandscargo[i][j];
+  for(int i = 0; i < 15; i++){
     saving.shipsowner[i] = gamedata->shipsowner[i];
     saving.shipstype[i] = gamedata->shipstype[i];
     saving.shipscargo[i] = gamedata->shipscargo[i];
     saving.shipsorder[i] = gamedata->shipsorder[i];
-    for(int j = 0; j < 3; j++){
+    saving.shipsx[i] = gamedata->shipsx[i];
+    saving.shipsy[i] = gamedata->shipsy[i];
+    for(int j = 0; j < 3; j++)
       saving.shipsorderinfo[i][j] = gamedata->shipsorderinfo[i][j];
-    }
+  }
+  for(int i = 0; i < 10; i++)
+    saving.islandsallegiance[i] = gamedata->islandsallegiance[i];
+  for(int i = 0; i < 11; i++){
+    for(int j = 0; j < 4; j++)
+      saving.islandscargo[i][j] = gamedata->islandscargo[i][j];
   }
   for(int i = 0; i < 5; i++)
     saving.playercargo[i] = gamedata->playercargo[i];
@@ -215,55 +210,114 @@ void save_data(GameData* gamedata){
   saving.eventday = gamedata->eventday;
   saving.totalships = gamedata->totalships;
   
+  saving.storagewallet = gamedata->storagewallet;
+  saving.storagex = gamedata->islandsx[10];
+  saving.storagey = gamedata->islandsy[10];
+  saving.storageexists = gamedata->storageexists;
+  saving.numberofplayerships = gamedata->numberofplayerships;
+  
   //save the object into memory
   persist_write_int(DATA_VERSION_KEY, CURRENT_SAVE_VERSION);
   persist_write_data(DATA_KEY, &saving, sizeof(saving));
 }
 
 void load_data(GameData* gamedata){
+  APP_LOG(APP_LOG_LEVEL_INFO, "MEMORY: %i", heap_bytes_free());
   if(persist_exists(DATA_VERSION_KEY)){
     if(persist_exists(DATA_KEY)){
-      SaveValues realloading;
-      persist_read_data(DATA_KEY, &realloading, sizeof(realloading));
-      
-      //load the values into gamedata
-      for(int i = 0; i < 10; i++){
-        gamedata->shipsx[i] = realloading.shipsx[i];
-        gamedata->shipsy[i] = realloading.shipsy[i];
-        gamedata->islandsallegiance[i] = realloading.islandsallegiance[i];
-        //these are hardcoded... for now.
-        //islandsx[i] = gamedata->islandsx[i];
-        //islandsy[i] =  = gamedata->islandsy[i];
-        //islandstypes[i];
-        for(int j = 0; j < 4; j++)
-          gamedata->islandscargo[i][j] = realloading.islandscargo[i][j];
-        gamedata->shipsowner[i] = realloading.shipsowner[i];
-        gamedata->shipstype[i] = realloading.shipstype[i];
-        gamedata->shipscargo[i] = realloading.shipscargo[i];
-        gamedata->shipsorder[i] = realloading.shipsorder[i];
-        for(int j = 0; j < 3; j++)
-          gamedata->shipsorderinfo[i][j] = realloading.shipsorderinfo[i][j];
+      int versionnumber = 0;
+      if(persist_exists(DATA_VERSION_KEY))
+        versionnumber = persist_read_int(DATA_VERSION_KEY);
+      if(versionnumber == 3){
+        //heap_bytes_free(void)
+        SaveValues versiontwoloading;
+        persist_read_data(DATA_KEY, &versiontwoloading, sizeof(versiontwoloading));
+        for(int i = 0; i < 15; i++){
+          gamedata->shipsowner[i] = versiontwoloading.shipsowner[i];
+          gamedata->shipstype[i] = versiontwoloading.shipstype[i];
+          gamedata->shipscargo[i] = versiontwoloading.shipscargo[i];
+          gamedata->shipsorder[i] = versiontwoloading.shipsorder[i];
+          gamedata->shipsx[i] = versiontwoloading.shipsx[i];
+          gamedata->shipsy[i] = versiontwoloading.shipsy[i];
+          for(int j = 0; j < 3; j++)
+           gamedata->shipsorderinfo[i][j] = versiontwoloading.shipsorderinfo[i][j];
+        }
+        for(int i = 0; i < 10; i++)
+          gamedata->islandsallegiance[i] = versiontwoloading.islandsallegiance[i];
+        for(int i = 0; i < 11; i++){
+          for(int j = 0; j < 4; j++)
+            gamedata->islandscargo[i][j] = versiontwoloading.islandscargo[i][j];
+        }
+        for(int i = 0; i < 5; i++)
+          gamedata->playercargo[i] = versiontwoloading.playercargo[i];
+        gamedata->playerwallet = versiontwoloading.playerwallet;
+        gamedata->maxplayercargo = versiontwoloading.maxplayercargo;
+        gamedata->currentspeed = versiontwoloading.currentspeed;
+        gamedata->cargolevel = versiontwoloading.cargolevel;
+        gamedata->speedlevel = versiontwoloading.speedlevel;
+        gamedata->metalmultiplier = versiontwoloading.metalmultiplier;
+        gamedata->stonemultiplier = versiontwoloading.stonemultiplier;
+        gamedata->woodmultiplier = versiontwoloading.woodmultiplier;
+        gamedata->foodmultiplier = versiontwoloading.foodmultiplier;
+        gamedata->metaldivisor = versiontwoloading.metaldivisor;
+        gamedata->stonedivisor = versiontwoloading.stonedivisor;
+        gamedata->wooddivisor = versiontwoloading.wooddivisor;
+        gamedata->fooddivisor = versiontwoloading.fooddivisor;
+        gamedata->currentevent = versiontwoloading.currentevent;
+        gamedata->eventhour = versiontwoloading.eventhour;
+        gamedata->eventday = versiontwoloading.eventday;
+        gamedata->totalships = versiontwoloading.totalships;
+  
+        gamedata->storagewallet = versiontwoloading.storagewallet;
+        gamedata->islandsx[10] = versiontwoloading.storagex;
+        gamedata->islandsy[10] = versiontwoloading.storagey;
+        gamedata->storageexists = versiontwoloading.storageexists;
+        gamedata->numberofplayerships = versiontwoloading.numberofplayerships;
       }
-      for(int i = 0; i < 5; i++)
-        gamedata->playercargo[i] = realloading.playercargo[i];
-      gamedata->playerwallet = realloading.playerwallet;
-      gamedata->maxplayercargo = realloading.maxplayercargo;
-      gamedata->currentspeed = realloading.currentspeed;
-      gamedata->playeryvelocity = realloading.currentspeed;
-      gamedata->cargolevel = realloading.cargolevel;
-      gamedata->speedlevel = realloading.speedlevel;
-      gamedata->metalmultiplier = realloading.metalmultiplier;
-      gamedata->stonemultiplier = realloading.stonemultiplier;
-      gamedata->woodmultiplier = realloading.woodmultiplier;
-      gamedata->foodmultiplier = realloading.foodmultiplier;
-      gamedata->metaldivisor = realloading.metaldivisor;
-      gamedata->stonedivisor = realloading.stonedivisor;
-      gamedata->wooddivisor = realloading.wooddivisor;
-      gamedata->fooddivisor = realloading.fooddivisor;
-      gamedata->currentevent = realloading.currentevent;
-      gamedata->eventhour = realloading.eventhour;
-      gamedata->eventday = realloading.eventday;
-      gamedata->totalships = realloading.totalships;
+      if(versionnumber == 2){
+        APP_LOG(APP_LOG_LEVEL_INFO, "USING OLD SYSTEM");
+        SaveValuesOne realloading;
+        persist_read_data(DATA_KEY, &realloading, sizeof(realloading));
+        
+        //load the values into gamedata
+        for(int i = 0; i < 10; i++){
+          gamedata->shipsx[i] = realloading.shipsx[i];
+          gamedata->shipsy[i] = realloading.shipsy[i];
+          gamedata->islandsallegiance[i] = realloading.islandsallegiance[i];
+          //these are hardcoded... for now.
+          //islandsx[i] = gamedata->islandsx[i];
+          //islandsy[i] =  = gamedata->islandsy[i];
+          //islandstypes[i];
+          for(int j = 0; j < 4; j++)
+            gamedata->islandscargo[i][j] = realloading.islandscargo[i][j];
+          gamedata->shipsowner[i] = realloading.shipsowner[i];
+          gamedata->shipstype[i] = realloading.shipstype[i];
+          gamedata->shipscargo[i] = realloading.shipscargo[i];
+          gamedata->shipsorder[i] = realloading.shipsorder[i];
+          for(int j = 0; j < 3; j++)
+            gamedata->shipsorderinfo[i][j] = realloading.shipsorderinfo[i][j];
+        }
+        for(int i = 0; i < 5; i++)
+          gamedata->playercargo[i] = realloading.playercargo[i];
+        gamedata->playerwallet = realloading.playerwallet;
+        gamedata->maxplayercargo = realloading.maxplayercargo;
+        gamedata->currentspeed = realloading.currentspeed;
+        gamedata->playeryvelocity = realloading.currentspeed;
+        gamedata->cargolevel = realloading.cargolevel;
+        gamedata->speedlevel = realloading.speedlevel;
+        gamedata->metalmultiplier = realloading.metalmultiplier;
+        gamedata->stonemultiplier = realloading.stonemultiplier;
+        gamedata->woodmultiplier = realloading.woodmultiplier;
+        gamedata->foodmultiplier = realloading.foodmultiplier;  
+        gamedata->metaldivisor = realloading.metaldivisor;
+        gamedata->stonedivisor = realloading.stonedivisor;
+        gamedata->wooddivisor = realloading.wooddivisor;
+        gamedata->fooddivisor = realloading.fooddivisor;
+        gamedata->currentevent = realloading.currentevent;
+        gamedata->eventhour = realloading.eventhour;
+        gamedata->eventday = realloading.eventday;
+        gamedata->totalships = realloading.totalships;
+      }
     }
     else{
       //if no previous data values, set default values
@@ -271,54 +325,9 @@ void load_data(GameData* gamedata){
     }
   }
   else{
-    APP_LOG(APP_LOG_LEVEL_INFO, "USING OLD SYSTEM");
-    OldSaveValues loading;
-    //Object read_object;
-    //persist_read_data(OBJECT_KEY, &read_object, sizeof(read_object));
-    //APP_LOG(APP_LOG_LEVEL_DEBUG, "read_object.field = %d", read_object.field);
-    if(persist_exists(DATA_KEY)){
-      persist_read_data(DATA_KEY, &loading, sizeof(loading));
-        //load the values into gamedata
-       for(int i = 0; i < 10; i++){
-      gamedata->shipsx[i] = loading.shipsx[i];
-      gamedata->shipsy[i] = loading.shipsy[i];
-      //these are hardcoded... for now.
-      //islandsx[i] = gamedata->islandsx[i];
-      //islandsy[i] =  = gamedata->islandsy[i];
-      //islandstypes[i];
-      for(int j = 0; j < 4; j++)
-        gamedata->islandscargo[i][j] = loading.islandscargo[i][j];
-      //gamedata->shipsowner[i] = loading.shipsisland[i];
-      //gamedata->shipstype[i] = loading.shipstype[i];
-    }
-    for(int i = 0; i < 5; i++)
-      gamedata->playercargo[i] = loading.playercargo[i];
-    gamedata->playerwallet = loading.playerwallet;
-    gamedata->maxplayercargo = loading.maxplayercargo;
-    gamedata->currentspeed = loading.currentspeed;
-    gamedata->playeryvelocity = loading.currentspeed;
-    gamedata->cargolevel = loading.cargolevel;
-    gamedata->speedlevel = loading.speedlevel;
-    gamedata->metalmultiplier = loading.metalmultiplier;
-    gamedata->stonemultiplier = loading.stonemultiplier;
-    gamedata->woodmultiplier = loading.woodmultiplier;
-    gamedata->foodmultiplier = loading.foodmultiplier;
-    gamedata->metaldivisor = loading.metaldivisor;
-    gamedata->stonedivisor = loading.stonedivisor;
-    gamedata->wooddivisor = loading.wooddivisor;
-    gamedata->fooddivisor = loading.fooddivisor;
-    gamedata->currentevent = loading.currentevent;
-    gamedata->eventhour = loading.eventhour;
-    gamedata->eventday = loading.eventday;
-    gamedata->totalships = 0;
-  }
-  else{
     //if no previous data values, set default values
     gamedata->playerwallet = 500;
   }
-  }
-  
-    
 }
 
 int check_for_player_upgrade(GameData* gamedata, int upgradetype){
