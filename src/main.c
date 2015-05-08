@@ -313,30 +313,30 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   //any layer: draw the background box, then draw the highlighting box, then draw the text
   //base menu layer
   if(menulayernumber == 0){
-    char totalmenu[60];
+    char totalmenu[65];
     //create the char array for the menu    
-    snprintf(totalmenu, sizeof(totalmenu), " Metal:%d\n Wood:%d\n Stone:%d\n Food:%d\n Island:\n -Exit-",
+    snprintf(totalmenu, sizeof(totalmenu), "Island %i\n Metal:%d\n Wood:%d\n Stone:%d\n Food:%d\n Island:\n -Exit-", gamedata.playerisland + 1,
            gamedata.islandscargo[gamedata.playerisland][0],
            gamedata.islandscargo[gamedata.playerisland][1],
            gamedata.islandscargo[gamedata.playerisland][2],
            gamedata.islandscargo[gamedata.playerisland][3]);
-    drawmenuandbox(this_layer, ctx, 0, 0, MENUITEMSCNT, x, y, 54, 0, totalmenu);
+    drawmenuandbox(this_layer, ctx, 0, 0, MENUITEMSCNT, x, y, 57, 1, totalmenu);
     //draw two white bars to display which resource is being bought or sold
     int producerectpos, consumerectpos;
     //find where the island produce is on the menu
-    producerectpos = 19 + (gamedata.islandstypes[gamedata.playerisland] * 15) - gamedata.islandstypes[gamedata.playerisland];
+    producerectpos = 19 + ((gamedata.islandstypes[gamedata.playerisland] + 1) * 15) - (gamedata.islandstypes[gamedata.playerisland] + 1);
     //find where island consumption is on the menu
     if(gamedata.islandstypes[gamedata.playerisland] == 0){
-      consumerectpos = 19 + (2 * 15) - 2; //2 + 2 + 15 + (2 * 15) - 2;
+      consumerectpos = 19 + (3 * 15) - 3; //2 + 2 + 15 + (2 * 15) - 2;
     }
     if(gamedata.islandstypes[gamedata.playerisland] == 1){
-      consumerectpos = 19 + (3 * 15) - 3; //2 + 2 + 15 + (3 * 15) - 3;
+      consumerectpos = 19 + (4 * 15) - 4; //2 + 2 + 15 + (3 * 15) - 3;
     }
     if(gamedata.islandstypes[gamedata.playerisland] == 2){
-      consumerectpos = 19 + (1 * 15) - 1; //2 + 2 + 15 + (1 * 15) - 1;
+      consumerectpos = 19 + (2 * 15) - 2; //2 + 2 + 15 + (1 * 15) - 1;
     }
     if(gamedata.islandstypes[gamedata.playerisland] == 3){
-      consumerectpos = 19 + (0 * 15) - 0; //2 + 2 + 15 + (0 * 15) - 0;
+      consumerectpos = 19 + (1 * 15) - 1; //2 + 2 + 15 + (0 * 15) - 0;
     }
     //draw the icons for the two
     graphics_context_set_fill_color(ctx, GColorWhite);
@@ -422,7 +422,7 @@ void draw_menu_layer(Layer *this_layer, GContext *ctx, int menulayernumber, int 
   if(menulayernumber == 7){
     char menu7text[100];
     snprintf(menu7text, sizeof(menu7text), " Metal: %i\n Wood: %i\n Stone%i\n Food %i\n -Back-", gamedata.islandscargo[10][0], gamedata.islandscargo[10][1], gamedata.islandscargo[10][2], gamedata.islandscargo[10][3]);
-    drawmenuandbox(this_layer, ctx, 0, 7, MENU8ITEMSCNT, x, y, 54, 0, menu7text);
+    drawmenuandbox(this_layer, ctx, 0, 7, MENU8ITEMSCNT, x, y, 64, 0, menu7text);
   }
   if(menulayernumber == 8){
     drawmenuandbox(this_layer, ctx, 0, 8, MENU9ITEMSCNT, x, y, 54, 0, " -Back-\n Store:\n Take");

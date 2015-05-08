@@ -5,15 +5,15 @@
 #include "player.h"
 #include "ship.h"
   
-const int PLAYER_Y_LEVEL = 140;
-const int ENEMY_Y_LEVEL = 10;
-const int ENEMY_FIRE_SPEED = 25;
-const int PLAYER_FIRE_SPEED = 42;
-const int PLAYER_MOVE_SPEED = 1;
-const int ENEMY_MOVE_SPEED = 1;
-const int SHOT_MOVE_SPEED = 3;
-const int PLAYER_SHIP_SIZE = 24; //must be higher than 8, devisible by 4
-const int ENEMY_SHIP_SIZE = 24; //same as below
+const int8_t PLAYER_Y_LEVEL = 140;
+const int8_t ENEMY_Y_LEVEL = 10;
+const int8_t ENEMY_FIRE_SPEED = 25;
+const int8_t PLAYER_FIRE_SPEED = 42;
+const int8_t PLAYER_MOVE_SPEED = 1;
+const int8_t ENEMY_MOVE_SPEED = 1;
+const int8_t SHOT_MOVE_SPEED = 3;
+const int8_t PLAYER_SHIP_SIZE = 24; //must be higher than 8, devisible by 4
+const int8_t ENEMY_SHIP_SIZE = 24; //same as below
 
 void initializebattle(ShipBattleData* shipbattledata){
   shipbattledata->playerx = 0;
