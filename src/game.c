@@ -29,12 +29,12 @@ void initialize_game(GameData* gamedata){
   //set up the tutorial
   gamedata->tutorialcounter = -1;
   if(persist_exists(DATA_KEY))
-     gamedata->tutorialcounter = 6;
+     gamedata->tutorialcounter = 7;
 }
 
 void update_game(GameData* gamedata){
   
-  if(gamedata->tutorialcounter <= 5)
+  if(gamedata->tutorialcounter <= 6)
       attempt_tutorial(gamedata);
   
   //set up a timer as to not update everything every frame
@@ -222,14 +222,12 @@ void save_data(GameData* gamedata){
 }
 
 void load_data(GameData* gamedata){
-  APP_LOG(APP_LOG_LEVEL_INFO, "MEMORY: %i", heap_bytes_free());
   if(persist_exists(DATA_VERSION_KEY)){
     if(persist_exists(DATA_KEY)){
       int versionnumber = 0;
       if(persist_exists(DATA_VERSION_KEY))
         versionnumber = persist_read_int(DATA_VERSION_KEY);
       if(versionnumber == 3){
-        //heap_bytes_free(void)
         SaveValues versiontwoloading;
         persist_read_data(DATA_KEY, &versiontwoloading, sizeof(versiontwoloading));
         for(int i = 0; i < 15; i++){
@@ -387,6 +385,8 @@ void attempt_tutorial(GameData* gamedata){
     if(gamedata->tutorialcounter == 4)
       displaynotification(gamedata, "Make money by\npillaging ships\nor by\nselling resources high\nand buying them low");
     if(gamedata->tutorialcounter == 5)
+      displaynotification(gamedata, "Build your HQ\n using the\n long press menu.\nStore resources\nOnce you load 40.\nHQ will consume resources.\nLet you build ships.");
+    if(gamedata->tutorialcounter == 6)
       displaynotification(gamedata, "Wind effects\nyour ship.\nPay attention\nto the time.\n\nGood Luck!");
     
   }

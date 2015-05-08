@@ -18,7 +18,7 @@ int check_for_player_upgrade(GameData* gamedata, int upgradetype);
 int check_player_upgrade_price(GameData* gamedata, int upgradetype);
 int check_current_button(GameData* gamedata);
 void attempt_tutorial(GameData* gamedata);
-void displaynotification(GameData* gamedata, char notificationtext[130]);
+void displaynotification(GameData* gamedata, char notificationtext[150]);
 void exitmenus(GameData* gamedata);
 void adjustminimapcoords(int coords[2], int largestx, int lowestx, int largesty, int lowesty);
 int manageislandallegiance(GameData* gamedata, int8_t islandnumber, int8_t adjustnumber);

@@ -23,10 +23,10 @@ void initialize_player(GameData* gamedata){
   gamedata->playerx = 50;
   gamedata->playery = 50;
   //initiate player cargo
-  gamedata->playercargo[0] = 0;
-  gamedata->playercargo[1] = 10;
-  gamedata->playercargo[2] = 0;
-  gamedata->playercargo[3] = 10;
+  gamedata->playercargo[0] = 40;
+  gamedata->playercargo[1] = 40;
+  gamedata->playercargo[2] = 40;
+  gamedata->playercargo[3] = 40;
   gamedata->playercargo[4] = 5;
   gamedata->currentwindspeed = calculatewindspeed(gamedata);
   gamedata->playersailsdeployed = 0;
@@ -357,7 +357,7 @@ void menusixupdate(GameData* gamedata){ //the storage core layer
     gamedata->menulayer = 7; //go to resources menu
     gamedata->buttonrelease = 0;
   }
-  if(buttonpress == 3 && gamedata->currentmenu[6] == 1  && gamedata->buttonrelease == 1 /*&& gamedata->storageexists == 1*/){ //ships
+  if(buttonpress == 3 && gamedata->currentmenu[6] == 1  && gamedata->buttonrelease == 1 && gamedata->storageexists == 1){ //ships
     //go to ships menu
     gamedata->menulayer = 9; 
     gamedata->buttonrelease = 0;
@@ -433,8 +433,8 @@ void menueightupdate(GameData* gamedata){ //the store/drop menu layer
     }
     //check to see if the resources total to an amount that allows the island to unlock
     if(gamedata->storageexists == 0){ //if island isn't yet built
-      if(gamedata->islandscargo[10][0] >= 40 && gamedata->islandscargo[10][0] >= 40 &&
-        gamedata->islandscargo[10][0] >= 40 && gamedata->islandscargo[10][0] >= 40){
+      if(gamedata->islandscargo[10][0] >= 40 && gamedata->islandscargo[10][1] >= 40 &&
+        gamedata->islandscargo[10][2] >= 40 && gamedata->islandscargo[10][3] >= 40){
         gamedata->storageexists = 1;
         for(int i = 0; i < 4; i++) //remove appropriate amount of resources
           gamedata->islandscargo[10][i] -= 40;

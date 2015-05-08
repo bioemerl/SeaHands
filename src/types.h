@@ -33,7 +33,7 @@ typedef struct{
   
   int8_t currentmenu[20];
   int8_t menulayer;
-  char notificationtext[130];
+  char notificationtext[150];
   
   int16_t currentcosts;
   
@@ -138,8 +138,8 @@ typedef struct{
   
   int8_t islandscargo[11][4]; //320 bits
   int8_t islandsallegiance[10]; //80 bits
-  int8_t storagex;
-  int8_t storagey;
+  int16_t storagex;
+  int16_t storagey;
   int8_t storageexists;
   int16_t storagewallet;
   int8_t numberofplayerships;
